@@ -14,6 +14,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLostAnimalDropdownOpen, setIsLostAnimalDropdownOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -73,6 +74,11 @@ function Header() {
 
   const handleMenuClick = () => {
     setIsMenuOpen(false);
+  };
+
+  const toggleMobileDropdown = (e) => {
+    e.stopPropagation();
+    setIsMobileDropdownOpen(!isMobileDropdownOpen);
   };
 
   return (
@@ -158,19 +164,26 @@ function Header() {
                 입양 동물
               </NavLink>
             </li>
-            <li className="tab-item">
-              <NavLink 
-                to="/lostAnimal" 
-                className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")} 
-                onClick={handleMenuClick}
-              >
-                실종 동물
-              </NavLink>
-              <div className="mobile-dropdown">
+            <li className="tab-item mobile-dropdown-container"
+                onMouseEnter={() => setIsMobileDropdownOpen(true)}
+                onMouseLeave={() => setIsMobileDropdownOpen(false)}
+            >
+              <div className="mobile-dropdown-trigger">
+                <NavLink 
+                  to="/lostAnimal" 
+                  className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")} 
+                >
+                  실종 동물
+                </NavLink>
+              </div>
+              <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
                 <NavLink 
                   to="/lostAnimal/lost" 
                   className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={handleMenuClick}
+                  onClick={() => {
+                    handleMenuClick();
+                    setIsMobileDropdownOpen(false);
+                  }}
                   end
                 >
                   실종
@@ -178,7 +191,10 @@ function Header() {
                 <NavLink 
                   to="/lostAnimal/found" 
                   className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={handleMenuClick}
+                  onClick={() => {
+                    handleMenuClick();
+                    setIsMobileDropdownOpen(false);
+                  }}
                   end
                 >
                   발견/보호
@@ -186,7 +202,10 @@ function Header() {
                 <NavLink 
                   to="/lostAnimal/rescue" 
                   className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={handleMenuClick}
+                  onClick={() => {
+                    handleMenuClick();
+                    setIsMobileDropdownOpen(false);
+                  }}
                   end
                 >
                   구조
