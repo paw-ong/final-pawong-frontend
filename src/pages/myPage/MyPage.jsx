@@ -1,8 +1,8 @@
 // src/pages/MyPage.jsx
 import React, { useContext } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
-import FavoritesSlider from '../components/mypage/FavoritesSlider'
-import defaultUserImage from '../assets/images/user.jpg'
+import { AuthContext } from '../../contexts/AuthContext'
+import FavoritesSlider from '../../components/mypage/FavoritesSlider'
+import defaultUserImage from '../../assets/images/user.jpg'
 
 export default function MyPage() {
   const { user, logout } = useContext(AuthContext)

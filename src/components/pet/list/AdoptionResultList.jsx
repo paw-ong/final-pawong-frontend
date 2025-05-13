@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import PropTypes from 'prop-types';
-import PetCard from "../PetCard";
+import PetCard from "../card/PetCard.jsx";
 import LoadingSpinner from "../../common/LoadingSpinner";
 import "./AdoptionResultList.css";
 import client from "../../../api/client";

@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Slider from "react-slick";
-import PetCard from "./PetCard.jsx";
+import PetCard from "../card/PetCard.jsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './List.css'
-import userImage from '../../assets/images/user.jpg';
+import userImage from '../../../assets/images/user.jpg';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 function SlickPrevArrow(props) {

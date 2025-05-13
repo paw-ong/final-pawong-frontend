@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Slider from "react-slick";
-import PetCard from "../PetCard.jsx";
+import PetCard from "../card/PetCard.jsx";
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -8,8 +8,8 @@ import './List.css'
 import {getAdoptionList} from "../../../services/adoptionService.js";
 import { useNavigate } from "react-router-dom";
 import PrimaryButton from "../../common/PrimaryButton.jsx";
-import Adoption from '/src/assets/images/main/Adoption.png';
-import LostAnimal from '/src/assets/images/main/LostAnimal.png';
+import Adoption from '../../../assets/images/main/Adoption.png';
+import LostAnimal from '../../../assets/images/main/LostAnimal.png';
 
 function SlickPrevArrow(props) {
   const { className, style, onClick } = props;

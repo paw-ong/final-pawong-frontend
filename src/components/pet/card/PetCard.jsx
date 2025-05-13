@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {Link} from 'react-router-dom';
 import './PetCard.css';
-import likeImg from '../../assets/images/like/like.png';
-import unlikeImg from '../../assets/images/like/unlike.png';
+import likeImg from '../../../assets/images/like/like.png';
+import unlikeImg from '../../../assets/images/like/unlike.png';
 import PropTypes from 'prop-types';
-import client from "../../api/client";
+import client from "../../../api/client";
 
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨

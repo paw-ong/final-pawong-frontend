@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
-import Adoption from "./pages/Adoption.jsx";
+import Adoption from "./pages/adoptionAnimal/Adoption.jsx";
 import LostAnimal from "./pages/lostAnimal/LostAnimal.jsx";
 import LostAnimalLost from "./pages/lostAnimal/LostAnimalLost.jsx";
 import LostAnimalFound from "./pages/lostAnimal/LostAnimalFound.jsx";
 import LostAnimalRescue from "./pages/lostAnimal/LostAnimalRescue.jsx";
 import MainPage from "./pages/mainPage/MainPage.jsx";
 import Login from "./pages/signup/Login.jsx";
-import MyPage from "./pages/MyPage.jsx";
-import AdoptionDetail from "./pages/AdoptionDetail.jsx";
+import MyPage from "./pages/myPage/MyPage.jsx";
+import AdoptionDetail from "./pages/adoptionAnimal/AdoptionDetail.jsx";
 import LostAnimalDetail from "./pages/lostAnimal/LostAnimalDetail.jsx";
 import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
@@ -31,7 +31,6 @@ function App() {
           <Route path="rescue" element={<LostAnimalRescue />} />
         </Route>
         <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
-        <Route path="lostAnimal/create" element={<LostAnimalCreate />} />
         <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
         <Route path="login" element={<Login />} />
         <Route

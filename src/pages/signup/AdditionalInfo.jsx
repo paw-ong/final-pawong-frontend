@@ -1,12 +1,11 @@
 // src/pages/AdditionalInfo.jsx
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import client from '../../api/client'
 import { AuthContext } from '../../contexts/AuthContext'
-import { useContext, useEffect } from 'react'
-import nicknameIcon from '../assets/images/info/user.png'
-import placeholderIcon from '../assets/images/info/placeholder.png'
-import phoneIcon from '../assets/images/info/phone.png'
+import nicknameIcon from '../../assets/images/info/user.png'
+import placeholderIcon from '../../assets/images/info/placeholder.png'
+import phoneIcon from '../../assets/images/info/phone.png'
 
 export default function AdditionalInfo() {
   const [form, setForm] = useState({ nickname: '', region: '', tel: '' })
