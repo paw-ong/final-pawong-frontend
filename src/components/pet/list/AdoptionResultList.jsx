@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import PropTypes from 'prop-types';
-import PetCard from "./PetCard";
-import LoadingSpinner from "../common/LoadingSpinner";
+import PetCard from "../PetCard";
+import LoadingSpinner from "../../common/LoadingSpinner";
 import "./AdoptionResultList.css";
-import client from "../../api/client";
+import client from "../../../api/client";
 
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨

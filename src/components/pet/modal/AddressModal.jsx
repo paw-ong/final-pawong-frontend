@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./AddressModal.css";
-import PrimaryButton from "../common/PrimaryButton";
-import addrData from "../../assets/data/addr.json";
+import PrimaryButton from "../../common/PrimaryButton";
+import addrData from "../../../assets/data/addr.json";
 
 function AddressModal({ onClose, onSelect }) {
   const [cities, setCities] = useState([]);

@@ -3,7 +3,7 @@ import {Link, NavLink, useNavigate} from 'react-router-dom'
 import './Header.css';
 import logo from '../../assets/images/logo/logo.png';
 import defaultUserImage from '../../assets/images/user.jpg'
-import { AuthContext } from '../../contexts/AuthContext';
+import { AuthContext } from '../../../contexts/AuthContext';
 import { useLocation } from "react-router-dom";
 
 function Header() {
