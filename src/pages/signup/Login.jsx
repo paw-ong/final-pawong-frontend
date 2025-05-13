@@ -1,6 +1,6 @@
 import React from "react";
 import './Login.css';
-import kakaoLoginBtn from '../assets/images/login/kakao_large.png'
+import kakaoLoginBtn from '../../assets/images/login/kakao_large.png'
 
 
 function Login() {

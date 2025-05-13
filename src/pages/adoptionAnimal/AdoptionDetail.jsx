@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import './AdoptionDetail.css';
-import userImage from '../assets/images/user.jpg'
-import likeImg from '../assets/images/like/like.png';
-import unlikeImg from '../assets/images/like/unlike.png';
-import client from "../api/client";
+import userImage from '../../assets/images/user.jpg'
+import likeImg from '../../assets/images/like/like.png';
+import unlikeImg from '../../assets/images/like/unlike.png';
+import client from "../../api/client";
 
 function AdoptionDetail() {
   const { id } = useParams();

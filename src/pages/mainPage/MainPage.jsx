@@ -1,9 +1,9 @@
 import React from "react";
-import AdoptionRecommendList from "../components/pet/AdoptionRecommendList.jsx";
-import LostAnimalList from "../components/pet/LostAnimalList.jsx";
+import AdoptionRecommendList from "../../components/pet/list/AdoptionRecommendList.jsx";
+import LostAnimalList from "../../components/pet/list/LostAnimalList.jsx";
 import './MainPage.css';
-import Adoption from "../assets/images/main/Adoption.png";
-import LostAnimal from "../assets/images/main/LostAnimal.png";
+import Adoption from "../../assets/images/main/Adoption.png";
+import LostAnimal from "../../assets/images/main/LostAnimal.png";
 import {useNavigate} from "react-router-dom";
 
 function MainPage() {

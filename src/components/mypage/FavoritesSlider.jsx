@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import PetCard from '../pet/PetCard';
+import PetCard from '../pet/card/PetCard';
 import client from '../../api/client';
 import './FavoritesSlider.css';
 
