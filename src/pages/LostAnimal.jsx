@@ -1,8 +1,12 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
+import "./LostAnimal.css";
 
 function LostAnimal() {
   return (
-      <h1>실종 동물</h1>
+    <div className="lost-animal-container">
+      <Outlet />
+    </div>
   );
 }
 

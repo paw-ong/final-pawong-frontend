@@ -3,6 +3,9 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Adoption from "./pages/Adoption.jsx";
 import LostAnimal from "./pages/LostAnimal.jsx";
+import LostAnimalLost from "./pages/LostAnimalLost.jsx";
+import LostAnimalFound from "./pages/LostAnimalFound.jsx";
+import LostAnimalRescue from "./pages/LostAnimalRescue.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import Login from "./pages/Login.jsx";
 import MyPage from "./pages/MyPage.jsx";
@@ -17,19 +20,24 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-      <Route index element={<Navigate to="/main" replace />} />
-      <Route path="main" element={<MainPage />} />
-      <Route path="adoptions" element={<Adoption />} />
-      <Route path="adoptions/:id" element={<AdoptionDetail />} />
-      <Route path="lostAnimal" element={<LostAnimal />} />
-      <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
-      <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
-      <Route path="login" element={<Login />} />
-      <Route
+        <Route index element={<Navigate to="/main" replace />} />
+        <Route path="main" element={<MainPage />} />
+        <Route path="adoptions" element={<Adoption />} />
+        <Route path="adoptions/:id" element={<AdoptionDetail />} />
+        <Route path="lostAnimal" element={<LostAnimal />}>
+          <Route index element={<Navigate to="lost" replace />} />
+          <Route path="lost" element={<LostAnimalLost />} />
+          <Route path="found" element={<LostAnimalFound />} />
+          <Route path="rescue" element={<LostAnimalRescue />} />
+        </Route>
+        <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
+        <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
+        <Route path="login" element={<Login />} />
+        <Route
           path="myPage"
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
         />
-      <Route path="signup/additional-info" element={<AdditionalInfo />} />
+        <Route path="signup/additional-info" element={<AdditionalInfo />} />
       </Route>
     </Routes>
   );
