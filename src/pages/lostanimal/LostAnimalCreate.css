@@ -242,6 +242,7 @@
   flex-direction: column;
   min-height: 300px;
   transition: height 0.3s;
+  margin-bottom: 0;
 }
 
 .lost-animal-feature-section {
