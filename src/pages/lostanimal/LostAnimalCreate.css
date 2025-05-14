@@ -754,3 +754,8 @@
     width: 100% !important;
   }
 }
+
+/* 게시글 작성 화면에서 푸터 숨기기 */
+.app-footer {
+  display: none !important;
+}

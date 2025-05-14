@@ -1,21 +1,23 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import './Layout.css';
 
 function Layout() {
+  const location = useLocation();
+  const isLostAnimalCreate = location.pathname.startsWith("/lostAnimal/create");
 
   return (
-      <div className="layout">
-        <Header />
-        <main className="main-content">
-          <div className="content-container">
+    <div className="layout">
+      <Header />
+      <main className="main-content">
+        <div className="content-container">
           <Outlet />
-          </div>
-        </main>
-        <Footer />
-      </div>
+        </div>
+      </main>
+      {!isLostAnimalCreate && <Footer />}
+    </div>
   );
 }
 
