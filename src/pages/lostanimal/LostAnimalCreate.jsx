@@ -160,7 +160,7 @@ export default function LostAnimalCreate() {
               </div>
             </div>
             <div className="main-basic-row">
-              <div className="main-basic-half">
+              <div className="main-basic-half age-input">
                 <div className="main-basic-pair">
                   <label>나이</label>
                   <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="예: 3" required />
