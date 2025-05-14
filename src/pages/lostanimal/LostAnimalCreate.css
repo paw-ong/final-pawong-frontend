@@ -131,9 +131,9 @@
 
 .lost-animal-sidebar {
   width: 33.33%;
-  min-width: 320px;
-  max-width: 480px;
-  margin: 2rem 2rem 2rem 2rem;
+  min-width: 0;
+  max-width: none;
+  margin: 2rem;
   padding: 0;
   background: transparent;
   border-right: none;
@@ -177,8 +177,9 @@
 
 .lost-animal-main {
   width: 66.66%;
-  margin: 2rem 2rem 2rem 2rem;
-  margin-left: 2rem;
+  min-width: 0;
+  max-width: none;
+  margin: 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -277,22 +278,21 @@
   .lost-animal-write-form {
     flex-direction: column;
   }
-  .lost-animal-sidebar {
+  .lost-animal-sidebar, .lost-animal-main {
     width: 100%;
     max-width: 100vw;
     margin: 0;
     padding: 0 0.5rem;
-    order: -1;
-  }
-  .lost-animal-main {
-    width: 100%;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0 0.5rem;
-    order: 0;
   }
   .lost-animal-main-type-section {
     margin-top: 1.5rem;
+    order: 0;
+  }
+  .lost-animal-image-section {
+    order: 1;
+  }
+  .lost-animal-main {
+    order: 2;
   }
   .lost-animal-main-type-section,
   .lost-animal-image-section,
@@ -586,13 +586,13 @@
 
 .main-basic-row {
   display: flex;
-  flex-wrap: wrap;
   gap: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
 .main-basic-half {
   flex: 1 1 50%;
+  max-width: 50%;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -644,8 +644,6 @@
 
 .main-basic-pair label {
   flex: 1 1 0;
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
   font-size: 1rem;
   color: #444;
   font-weight: 500;
@@ -655,7 +653,7 @@
 
 .main-basic-pair input,
 .main-basic-pair select {
-  flex: 2 1 0;
+  flex: 3 1 0;
   width: 100%;
   padding: 0.5rem 0.7rem;
   border: 1px solid #ccc;
@@ -691,17 +689,34 @@
   font-size: 1rem;
 }
 
+
 @media (max-width: 900px) {
-  .main-basic-half {
+  .main-basic-third {
     flex: 1 1 50%;
     max-width: 50%;
-    width: 50%;
   }
 }
 @media (max-width: 600px) {
+  .main-basic-third {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
   .main-basic-half {
     flex: 1 1 100% !important;
     max-width: 100% !important;
     width: 100% !important;
   }
 } 
+
+@media (max-width: 1200px) {
+  .main-basic-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .main-basic-half {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
