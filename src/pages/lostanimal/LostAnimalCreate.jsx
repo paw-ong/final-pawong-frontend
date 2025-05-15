@@ -276,9 +276,16 @@ export default function LostAnimalCreate() {
           </div>
           
           <div className="lost-animal-main-type-section">
-            <label className="main-section-label">
-              {formData.postType === 'LOST' ? '실종 장소' : '발견 장소'}
-            </label>
+            <div className="location-label-container">
+              <label className="main-section-label">
+                {formData.postType === 'LOST' ? '실종 장소' : '발견 장소'}
+              </label>
+              {formData.address && (
+                <span className="selected-address-inline">
+                  {formData.address}
+                </span>
+              )}
+            </div>
             <div 
               className="location-map-preview" 
               onClick={() => setIsMapModalOpen(true)}
@@ -287,11 +294,6 @@ export default function LostAnimalCreate() {
               {formData.latitude && formData.longitude ? (
                 <>
                   <div id="map-preview" style={{ width: '100%', height: '100%' }}></div>
-                  {formData.address && (
-                    <div className="selected-location-address">
-                      {formData.address}
-                    </div>
-                  )}
                 </>
               ) : (
                 <div className="location-placeholder">
