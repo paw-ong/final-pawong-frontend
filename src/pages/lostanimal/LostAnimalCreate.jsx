@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import PrimaryButton from "../../components/common/PrimaryButton";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import LocationSelectModal from "../../components/map/LocationSelectModal";
 import './LostAnimalCreate.css';
 
 const POST_TYPE_OPTIONS = [
@@ -37,12 +38,67 @@ export default function LostAnimalCreate() {
     content: '',
     rfidCd: '',
     location: '',
-    latitude: 0,
-    longitude: 0
+    latitude: null,
+    longitude: null,
+    address: null
   });
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+
+  // 카카오맵 SDK 로드
+  useEffect(() => {
+    if (!document.getElementById('kakao-map-sdk')) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-sdk';
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=477f4899afec6f55a1621413a0296cb3&autoload=false&libraries=services`;
+      script.async = true;
+      
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          // SDK 로드 완료 후 미리보기 지도 초기화
+          if (formData.latitude && formData.longitude) {
+            formData.latitude = 33.450701;
+            formData.longitude = 126.570667;
+          }
+          initPreviewMap();
+        });
+      };
+
+      script.onerror = (error) => {
+        console.error("SDK 스크립트 로드 실패:", error);
+      };
+
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  // 미리보기 지도 초기화 함수
+  const initPreviewMap = () => {
+    if (!window.kakao || !window.kakao.maps) return;
+    
+    const container = document.getElementById('map-preview');
+    if (!container) return;
+
+    const options = {
+      center: new window.kakao.maps.LatLng(formData.latitude, formData.longitude),
+      level: 3
+    };
+
+    const previewMap = new window.kakao.maps.Map(container, options);
+    const previewMarker = new window.kakao.maps.Marker({
+      position: new window.kakao.maps.LatLng(formData.latitude, formData.longitude)
+    });
+    previewMarker.setMap(previewMap);
+  };
+
+  // 위치가 변경될 때마다 미리보기 지도 업데이트
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps && formData.latitude && formData.longitude) {
+      initPreviewMap();
+    }
+  }, [formData.latitude, formData.longitude]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +125,16 @@ export default function LostAnimalCreate() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleLocationSelect = (location) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      location: location.address,
+      address: location.address
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -208,6 +274,33 @@ export default function LostAnimalCreate() {
               ))}
             </select>
           </div>
+          
+          <div className="lost-animal-main-type-section">
+            <label className="main-section-label">
+              {formData.postType === 'LOST' ? '실종 장소' : '발견 장소'}
+            </label>
+            <div 
+              className="location-map-preview" 
+              onClick={() => setIsMapModalOpen(true)}
+              style={{ height: '120px' }}
+            >
+              {formData.latitude && formData.longitude ? (
+                <>
+                  <div id="map-preview" style={{ width: '100%', height: '100%' }}></div>
+                  {formData.address && (
+                    <div className="selected-location-address">
+                      {formData.address}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="location-placeholder">
+                  <span>지도를 클릭하여 위치를 선택하세요</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="lost-animal-image-section">
             <h3>이미지 첨부</h3>
             <input
@@ -227,6 +320,14 @@ export default function LostAnimalCreate() {
           </div>
         </div>
       </form>
+
+      <LocationSelectModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        onLocationSelect={handleLocationSelect}
+        initialLocation={formData.latitude && formData.longitude ? 
+          [formData.latitude, formData.longitude] : null}
+      />
     </div>
   );
 }
