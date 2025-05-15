@@ -364,6 +364,17 @@
   }
 }
 
+@media (max-width: 1200px) {
+  .lost-animal-write-form {
+    width: 100%;
+    max-width: none;
+  }
+
+  .lost-animal-sidebar {
+    right: 16px;
+  }
+}
+
 .content-container:has(.lost-animal-write-container),
 .content-container:has(.lost-animal-write-form) {
   max-width: 100vw !important;
