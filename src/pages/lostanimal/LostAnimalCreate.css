@@ -386,6 +386,7 @@
   border-radius: 0;
   padding: 1.2rem 2rem;
   margin: 0;
+  z-index: 10000;
 }
 
 .lost-animal-create-title-text {
