@@ -6,7 +6,7 @@ import kakaoLoginBtn from '../../assets/images/login/kakao_large.png'
 function Login() {
 
   const handleKakaoLogin = () => {
-    window.location.href = 'http://localhost/oauth2/authorization/kakao';
+    window.location.href = '/oauth2/authorization/kakao';
   };
 
   return (
