@@ -44,6 +44,53 @@
   margin: 20px 0;
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
+}
+
+.current-location-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #007bff;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.current-location-button::before {
+  content: "📍";
+  font-size: 14px;
+}
+
+.current-location-button:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.current-location-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.current-location-button:disabled {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .modal-footer {

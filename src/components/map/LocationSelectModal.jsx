@@ -6,6 +6,7 @@ const LocationSelectModal = ({ isOpen, onClose, onLocationSelect, initialLocatio
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [address, setAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const mapContainerRef = useRef(null);
 
   useEffect(() => {
@@ -15,6 +16,43 @@ const LocationSelectModal = ({ isOpen, onClose, onLocationSelect, initialLocatio
       }, 0);
     }
   }, [isOpen]);
+
+  const moveToCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('이 브라우저에서는 위치 정보를 사용할 수 없습니다.');
+      return;
+    }
+
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const newPosition = [latitude, longitude];
+        
+        // 지도 이동
+        const moveLatLng = new window.kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(moveLatLng);
+        
+        // 마커 이동
+        marker.setPosition(moveLatLng);
+        
+        // 상태 업데이트
+        setPosition(newPosition);
+        searchAddressFromCoords(latitude, longitude);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error('위치 정보 가져오기 실패:', error);
+        alert('위치 정보를 가져오는데 실패했습니다.');
+        setIsLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 5000
+      }
+    );
+  };
 
   const searchAddressFromCoords = async (lat, lng) => {
     // Kakao JS SDK가 로드되었는지 확인
@@ -92,6 +130,13 @@ const LocationSelectModal = ({ isOpen, onClose, onLocationSelect, initialLocatio
         </div>
         <div className="map-container">
           <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }}></div>
+          <button 
+            className="current-location-button"
+            onClick={moveToCurrentLocation}
+            disabled={isLoading}
+          >
+            {isLoading ? '위치 확인 중...' : '현재 위치로 이동'}
+          </button>
         </div>
         <div className="modal-footer">
           {address && (
