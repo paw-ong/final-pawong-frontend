@@ -3,7 +3,7 @@ name: CI/CD Deploy Frontend
 on:
   push:
     branches:
-      - feature/#7
+      - develop
       - main
 
 jobs:
