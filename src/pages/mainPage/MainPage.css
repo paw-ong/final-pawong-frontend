@@ -30,7 +30,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #EAD8C0;
+  /* background: #EAD8C0; */
+  background: darkmagenta;
   color: #3E3232 ;
   border: none;
   border-radius: 12px;
