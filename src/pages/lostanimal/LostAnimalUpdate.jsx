@@ -196,7 +196,7 @@ export default function LostAnimalUpdate() {
         });
         imageKey = presign.objectKey;
       }
-      const response = await client.put(`lost-animals/lost-posts/${postId}`, {
+      const response = await client.put(`/lost-animals/lost-posts/${postId}`, {
         ...formData,
         imageKey
       });
