@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import PrimaryButton from "../../components/common/PrimaryButton";
-import LoadingSpinner from "../../components/common/LoadingSpinner";
 import LocationSelectModal from "../../components/map/LocationSelectModal";
 import './LostAnimalCreate.css';
 
@@ -181,7 +180,6 @@ export default function LostAnimalCreate() {
         <span className="lost-animal-create-title-text">실종 동물 공고 작성하기</span>
         <PrimaryButton type="submit" form="lost-animal-create-form">등록하기</PrimaryButton>
       </div>
-      {uploading && <LoadingSpinner />}
       <form onSubmit={handleSubmit} className="lost-animal-write-form" id="lost-animal-create-form">
         <div className="lost-animal-main">
           <div className="lost-animal-main-basic-section">
