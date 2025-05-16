@@ -156,7 +156,7 @@ export default function LostAnimalCreate() {
         });
         imageUrl = presign.objectKey;
       }
-      const response = await client.post('/lost-posts', {
+      const response = await client.post('lost-animals/lost-posts', {
         ...formData,
         imageUrl
       });
