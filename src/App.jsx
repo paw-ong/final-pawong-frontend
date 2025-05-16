@@ -15,6 +15,7 @@ import LostAnimalCreate from "./pages/lostAnimal/LostAnimalCreate.jsx";
 import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
+import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -33,6 +34,7 @@ function App() {
         </Route>
         <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
         <Route path="lostAnimal/create" element={<LostAnimalCreate />} />
+        <Route path="lostAnimal/update/:postId" element={<LostAnimalUpdate />} />
         <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
         <Route path="login" element={<Login />} />
         <Route
