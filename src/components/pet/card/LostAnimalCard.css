@@ -1,0 +1,196 @@
+.lost-animal-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+  height: 400px;
+  width: 300px;
+  cursor: pointer;
+}
+
+.lost-animal-card:hover {
+  transform: translateY(-4px);
+}
+
+.post-type-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 16px;
+  height: calc(100% - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookmark-container {
+  position: relative;
+  z-index: 2;
+}
+
+.bookmark-button {
+  background-color: rgba(240, 240, 240, 0.935);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  padding: 0;
+  outline: none;
+}
+
+.bookmark-button.bookmarked {
+  background-color: rgba(255, 245, 245, 0.95);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+  transform: scale(1.05);
+}
+
+.bookmark-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(220, 220, 220, 1);
+}
+
+.bookmark-button:active {
+  background-color: rgba(180, 180, 180, 1);
+}
+
+.bookmark-button:focus {
+  outline: none;
+  border: none;
+}
+
+.bookmark-button[data-is-bookmarked="true"] .bookmark-icon {
+  animation: bookmarkBeat 0.3s ease-in-out;
+}
+
+@keyframes bookmarkBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.bookmark-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.bookmark-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bookmark-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  margin-top: 8px;
+  animation: fadeInOut 3s ease;
+  z-index: 10;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.card-info {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.card-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #495057;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #868e96;
+  margin-top: auto;
+}
+
+.author {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.created-at {
+  font-style: italic;
+  white-space: nowrap;
+} 

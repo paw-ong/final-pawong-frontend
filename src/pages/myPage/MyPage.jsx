@@ -2,6 +2,8 @@
 import React, { useContext } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import FavoritesSlider from '../../components/mypage/FavoritesSlider'
+import LostPostsSlider from '../../components/mypage/LostPostsSlider'
+import LostBookmarksSlider from '../../components/mypage/LostBookmarksSlider'
 import defaultUserImage from '../../assets/images/user.jpg'
 
 export default function MyPage() {
@@ -33,9 +35,19 @@ export default function MyPage() {
           </div>
         </div>
         
-        {/* 찜 목록 슬라이더 추가 */}
+        {/* 찜 목록 슬라이더 */}
         <div style={styles.favoritesContainer}>
           <FavoritesSlider />
+        </div>
+
+        {/* 실종/발견 게시글 슬라이더 */}
+        <div style={styles.favoritesContainer}>
+          <LostPostsSlider />
+        </div>
+
+        {/* 북마크한 실종/발견 게시글 슬라이더 */}
+        <div style={styles.favoritesContainer}>
+          <LostBookmarksSlider />
         </div>
       </div>
     </div>
@@ -102,7 +114,7 @@ const styles = {
     borderRadius: '10px',
     overflow: 'hidden',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    padding: '10px 0 30px',
+    padding: '10px 0 10px',
     minHeight: '450px', /* PetCard가 잘리지 않도록 충분한 높이 */
   },
   logoutBtnContainer: {
