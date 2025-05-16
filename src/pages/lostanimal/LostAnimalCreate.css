@@ -396,11 +396,6 @@
     gap: 1.2rem;
   }
 
-  .main-basic-third {
-    flex: 1 1 33.33%;
-    max-width: 33.33%;
-    width: 33.33%;
-  }
 
   /* 900px 이상에서 pair 구조 유지 */
   .main-basic-pair {
