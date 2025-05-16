@@ -141,7 +141,7 @@ export default function LostAnimalCreate() {
     e.preventDefault();
     setUploading(true);
     try {
-      let imageUrl = null;
+      let imageKey = null;
       if (imageFile) {
         const { data: presign } = await client.post("/images/presign-upload", {
           fileName: imageFile.name,
@@ -154,11 +154,11 @@ export default function LostAnimalCreate() {
           headers: { "Content-Type": imageFile.type },
           body: imageFile
         });
-        imageUrl = presign.objectKey;
+        imageKey = presign.objectKey;
       }
-      const response = await client.post('lost-animals/lost-posts', {
+      const response = await client.post('lost-posts', {
         ...formData,
-        imageUrl
+        imageKey
       });
       if (response.status === 201) {
         alert('게시글이 성공적으로 작성되었습니다.');
@@ -188,54 +188,56 @@ export default function LostAnimalCreate() {
             <label className="main-section-label">기본 정보</label>
             <div className="section-divider" />
             <div className="main-basic-row">
-              <div className="main-basic-half">
-                <div className="main-basic-pair">
-                  <label>실종 날짜</label>
-                  <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-                </div>
+              <div className="main-basic-pair">
+                <label>실종 날짜</label>
+                <input type="date" name="date" value={formData.date} onChange={handleChange} required />
               </div>
-              <div className="main-basic-half">
-                <div className="main-basic-pair">
-                  <label>축종</label>
-                  <select name="upKindNm" value={formData.upKindNm} onChange={handleChange} required>
-                    <option value="">선택해주세요</option>
-                    {UP_KIND_OPTIONS.map(option => (
-                      <option key={option.value} value={option.label}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="main-basic-pair">
+                <label>축종</label>
+                <select name="upKindNm" value={formData.upKindNm} onChange={handleChange} required>
+                  <option value="">선택해주세요</option>
+                  {UP_KIND_OPTIONS.map(option => (
+                    <option key={option.value} value={option.label}>{option.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="main-basic-row">
-              <div className="main-basic-half">
-                <div className="main-basic-pair">
-                  <label>성별</label>
-                  <select name="sexCd" value={formData.sexCd} onChange={handleChange} required>
-                    <option value="">선택해주세요</option>
-                    {SEX_OPTIONS.map(option => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="main-basic-pair">
+                <label>성별</label>
+                <select name="sexCd" value={formData.sexCd} onChange={handleChange} required>
+                  <option value="">선택해주세요</option>
+                  {SEX_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
               </div>
-              <div className="main-basic-half">
-                <div className="main-basic-pair">
-                  <label>품종</label>
-                  <input type="text" name="kindNm" value={formData.kindNm} onChange={handleChange} placeholder="예: 리트리버" required />
-                </div>
+              <div className="main-basic-pair">
+                <label>품종</label>
+                <input type="text" name="kindNm" value={formData.kindNm} onChange={handleChange} placeholder="예: 리트리버" required />
               </div>
             </div>
             <div className="main-basic-row">
-              <div className="main-basic-half age-input">
-                <div className="main-basic-pair">
-                  <label>나이</label>
-                  <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="예: 3" required />
-                </div>
+              <div className="main-basic-pair age-input">
+                <label>나이</label>
+                <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="예: 3" required />
               </div>
-              <div className="main-basic-half">
+              <div className="main-basic-pair">
+                <label>색상</label>
+                <input type="text" name="color" value={formData.color} onChange={handleChange} placeholder="예: 흰색" required />
+              </div>
+            </div>
+            <div className="main-basic-row full-width">
+              <div className="main-basic-full">
                 <div className="main-basic-pair">
-                  <label>색상</label>
-                  <input type="text" name="color" value={formData.color} onChange={handleChange} placeholder="예: 흰색" required />
+                  <label>마이크로칩 번호</label>
+                  <input
+                    type="text"
+                    name="rfidCd"
+                    value={formData.rfidCd}
+                    onChange={handleChange}
+                    placeholder="RFID 번호를 입력해주세요 (예: 410098100123456)"
+                  />
                 </div>
               </div>
             </div>

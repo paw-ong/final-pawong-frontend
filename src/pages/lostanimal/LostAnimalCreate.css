@@ -312,6 +312,46 @@
   .lost-animal-image-section { 
     order: 2 !important;
   }
+
+  /* 900px 이하에서 입력란 한 줄에 하나씩 표시 */
+  .main-basic-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .main-basic-third {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* 900px 이하에서 pair 구조 해제 */
+  .main-basic-pair {
+    display: block;
+    width: 100%;
+  }
+
+  .main-basic-pair label {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-basic-pair input,
+  .main-basic-pair select {
+    display: block;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  /* 기본 정보 섹션 전체 너비 조정 */
+  .lost-animal-main-basic-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.2rem;
+    box-sizing: border-box;
+  }
 }
 
 @media (min-width: 901px) {
@@ -322,6 +362,7 @@
     margin: 0 auto;
     padding: 0;
   }
+
   .lost-animal-sidebar {
     position: fixed;
     top: 3.5rem;
@@ -338,6 +379,7 @@
     flex-direction: column;
     gap: 1.2rem;
   }
+
   .lost-animal-main {
     width: 66.66%;
     min-width: 0;
@@ -348,19 +390,65 @@
     gap: 2rem;
     box-sizing: border-box;
   }
+
   .main-basic-row {
     flex-direction: row;
     gap: 1.2rem;
   }
-  .main-basic-half {
-    flex: 1 1 50%;
-    max-width: 50%;
-    width: 50%;
-  }
+
   .main-basic-third {
     flex: 1 1 33.33%;
     max-width: 33.33%;
     width: 33.33%;
+  }
+
+  /* 900px 이상에서 pair 구조 유지 */
+  .main-basic-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .main-basic-pair label {
+    flex: 1 1 0;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 0;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .main-basic-pair input,
+  .main-basic-pair select {
+    flex: 3 1 0;
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 3px;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  /* 900px 이상에서 마이크로칩 번호만 한 줄 전체 차지 */
+  .main-basic-row.full-width {
+    width: 100%;
+  }
+
+  .main-basic-full {
+    width: 100%;
+  }
+
+  .main-basic-full .main-basic-pair {
+    width: 100%;
+  }
+
+  .main-basic-full input {
+    width: 100%;
   }
 }
 
@@ -651,41 +739,9 @@
 
 .main-basic-row {
   display: flex;
-  gap: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
-.main-basic-half {
-  flex: 1 1 50%;
-  max-width: 50%;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.main-basic-half.age-input {
-  position: relative;
-}
-
-.main-basic-half.age-input::after {
-  content: "개월";
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.main-basic-half.age-input input {
-  padding-right: 45px;
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
 
 .main-basic-third {
   flex: 1 1 33.33%;
@@ -860,4 +916,20 @@
   text-align: center;
   padding: 20px;
   font-weight: 500;
+}
+
+.main-basic-row.full-width {
+  width: 100%;
+}
+
+.main-basic-full {
+  width: 100%;
+}
+
+.main-basic-full .main-basic-pair {
+  width: 100%;
+}
+
+.main-basic-full input {
+  width: 100%;
 }
