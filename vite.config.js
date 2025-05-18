@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5004,
-    host: true,     // 또는 host: '0.0.0.0'
+    host: true,            // 또는 '0.0.0.0'
+    allowedHosts: [
+      'www.pawong.co.kr'
+    ]
   }
 })
