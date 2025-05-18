@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import client from "../api/client";
-import userImage from '../assets/images/user.jpg';
+import client from "../../api/client";
+import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
 
 function LostAnimalDetail() {
