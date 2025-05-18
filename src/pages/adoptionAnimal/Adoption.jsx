@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import AdoptionSearchBar from "../components/pet/AdoptionSearchBar";
-import AdoptionResultList from "../components/pet/AdoptionResultList";
-import client from "../api/client";
+import AdoptionSearchBar from "../../components/pet/search/AdoptionSearchBar";
+import AdoptionResultList from "../../components/pet/list/AdoptionResultList";
+import client from "../../api/client";
 
 function Adoption() {
   const [isSearch, setIsSearch] = useState(false);

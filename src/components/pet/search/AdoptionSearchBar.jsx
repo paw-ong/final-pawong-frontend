@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import AddressModal from "./AddressModal";
-import PrimaryButton from "../common/PrimaryButton";
-import client from "../../api/client";
+import AddressModal from "../modal/AddressModal";
+import PrimaryButton from "../../common/PrimaryButton";
+import client from "../../../api/client";
 import "./AdoptionSearchBar.css";
 
 const KIND_MAP = [
