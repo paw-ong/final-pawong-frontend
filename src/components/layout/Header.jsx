@@ -20,6 +20,18 @@ function Header() {
   const dropdownRef = useRef(null);
   const location = useLocation();
   const isMainPage = location.pathname === '/main';
+  const [activeType, setActiveType] = useState('LOST');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+
+    // URL에서 type 파라미터 확인
+    const searchParams = new URLSearchParams(location.search);
+    const type = searchParams.get('type') || 'LOST';
+    setActiveType(type);
+  }, [location]);
 
   useEffect(() => {
     if (user && user.profileImage) {
@@ -58,6 +70,12 @@ function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 900);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleUserClick = () => {
     if (user) {
       navigate('/mypage');
@@ -76,9 +94,8 @@ function Header() {
     setIsMenuOpen(false);
   };
 
-  const toggleMobileDropdown = (e) => {
-    e.stopPropagation();
-    setIsMobileDropdownOpen(!isMobileDropdownOpen);
+  const toggleMobileDropdown = () => {
+    setIsMobileDropdownOpen((prev) => !prev);
   };
 
   return (
@@ -111,27 +128,27 @@ function Header() {
                 </NavLink>
                 {isLostAnimalDropdownOpen && (
                   <div className="dropdown-menu">
-                    <NavLink 
-                      to="/lostAnimal/lost" 
-                      className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                      end
+                    <a
+                      href="/lostAnimal"
+                      className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
+                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal'; }}
                     >
                       실종
-                    </NavLink>
-                    <NavLink 
-                      to="/lostAnimal/found" 
-                      className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                      end
+                    </a>
+                    <a
+                      href="/lostAnimal?type=FOUND"
+                      className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
+                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOUND'; }}
                     >
                       발견/보호
-                    </NavLink>
-                    <NavLink 
-                      to="/lostAnimal/rescue" 
-                      className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                      end
+                    </a>
+                    <a
+                      href="/lostAnimal?type=FOSTER"
+                      className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
+                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOSTER'; }}
                     >
                       구조
-                    </NavLink>
+                    </a>
                   </div>
                 )}
               </div>
@@ -168,48 +185,45 @@ function Header() {
                 onMouseEnter={() => setIsMobileDropdownOpen(true)}
                 onMouseLeave={() => setIsMobileDropdownOpen(false)}
             >
-              <div className="mobile-dropdown-trigger">
-                <NavLink 
-                  to="/lostAnimal" 
-                  className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")} 
+              {isMobile ? (
+                <button
+                  className="mobile-dropdown-trigger"
+                  onClick={toggleMobileDropdown}
+                  style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                  type="button"
                 >
                   실종 동물
-                </NavLink>
-              </div>
+                </button>
+              ) : (
+                <div className="mobile-dropdown-trigger">
+                  <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}
+                  >
+                    실종 동물
+                  </NavLink>
+                </div>
+              )}
               <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
-                <NavLink 
-                  to="/lostAnimal/lost" 
-                  className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={() => {
-                    handleMenuClick();
-                    setIsMobileDropdownOpen(false);
-                  }}
-                  end
+                <button
+                  className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
+                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal'); }}
+                  type="button"
                 >
                   실종
-                </NavLink>
-                <NavLink 
-                  to="/lostAnimal/found" 
-                  className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={() => {
-                    handleMenuClick();
-                    setIsMobileDropdownOpen(false);
-                  }}
-                  end
+                </button>
+                <button
+                  className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
+                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOUND'); }}
+                  type="button"
                 >
                   발견/보호
-                </NavLink>
-                <NavLink 
-                  to="/lostAnimal/rescue" 
-                  className={({ isActive }) => `dropdown-item ${isActive ? "active" : ""}`}
-                  onClick={() => {
-                    handleMenuClick();
-                    setIsMobileDropdownOpen(false);
-                  }}
-                  end
+                </button>
+                <button
+                  className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
+                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOSTER'); }}
+                  type="button"
                 >
                   구조
-                </NavLink>
+                </button>
               </div>
             </li>
           </ul>
