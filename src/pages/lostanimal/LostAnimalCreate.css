@@ -1,0 +1,930 @@
+.lost-animal-create-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.lost-animal-create-container h1 {
+  text-align: center;
+  color: #3E3232;
+  margin-bottom: 2rem;
+}
+
+.lost-animal-form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #3E3232;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #EAD8C0;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.image-preview {
+  margin-top: 1rem;
+  max-width: 300px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.cancel-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background-color: #e5e5e5;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .lost-animal-create-container {
+    padding: 1rem;
+  }
+
+  .lost-animal-form {
+    padding: 1rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+
+.lost-animal-write-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  background: #f8f9fa;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin: 0;
+  padding-bottom: 90px;
+}
+
+.lost-animal-write-form {
+  display: flex;
+  flex-direction: row;
+  width: 80vw;
+  max-width: 80vw;
+  min-height: 100vh;
+  background: transparent;
+  box-sizing: border-box;
+  overflow: visible;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.lost-animal-sidebar {
+  position: fixed;
+  top: 2rem;
+  right: 2.5rem;
+  width: 350px;
+  z-index: 100;
+  margin: 0;
+  margin-top: 3.5rem;
+  padding: 0 1rem;
+  background: transparent;
+  border-right: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.lost-animal-sidebar h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.lost-animal-sidebar label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #444;
+}
+
+.lost-animal-sidebar input,
+.lost-animal-sidebar select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.sidebar-field-box {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lost-animal-main {
+  width: 66.66%;
+  min-width: 0;
+  max-width: none;
+  /* margin: 2rem; */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-sizing: border-box;
+}
+
+.lost-animal-image-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: min-height 0.3s;
+}
+
+.lost-animal-image-section h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.image-preview {
+  margin-top: 1rem;
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  object-fit: contain;
+  transition: max-height 0.3s;
+}
+
+.lost-animal-section.lost-animal-feature-section,
+.lost-animal-section.lost-animal-detail-section {
+  padding: 1.2rem;
+}
+
+.lost-animal-section label {
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.lost-animal-section textarea {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.lost-animal-feature-section,
+.lost-animal-detail-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  transition: height 0.3s;
+  margin-bottom: 0;
+}
+
+.lost-animal-feature-section {
+  min-height: 300px;
+}
+.lost-animal-detail-section {
+  min-height: 300px;
+}
+
+.lost-animal-feature-section h3,
+.lost-animal-detail-section h3 {
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.lost-animal-feature-section textarea,
+.lost-animal-detail-section textarea {
+  width: 100%;
+  flex: 1 1 0;
+  resize: vertical;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-height: 40px;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+@media (max-width: 900px) {
+  .lost-animal-write-form {
+    flex-direction: column;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .lost-animal-sidebar {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    transform: none !important;
+    margin-top: 1.5rem !important;
+    order: 1 !important;
+  }
+  
+  .lost-animal-main { 
+    order: 2 !important;
+    margin-right: 0;
+    width: 100%;
+    max-width: 100vw;
+    padding: 1rem;
+  }
+
+  .lost-animal-main-type-section { 
+    order: 1 !important;
+  }
+  
+  .lost-animal-image-section { 
+    order: 2 !important;
+  }
+
+  /* 900px 이하에서 입력란 한 줄에 하나씩 표시 */
+  .main-basic-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .main-basic-third {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* 900px 이하에서 pair 구조 해제 */
+  .main-basic-pair {
+    display: block;
+    width: 100%;
+  }
+
+  .main-basic-pair label {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-basic-pair input,
+  .main-basic-pair select {
+    display: block;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  /* 기본 정보 섹션 전체 너비 조정 */
+  .lost-animal-main-basic-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.2rem;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 901px) {
+  .lost-animal-write-form {
+    flex-direction: row;
+    width: 80vw;
+    max-width: 80vw;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .lost-animal-sidebar {
+    position: fixed;
+    top: 3.5rem;
+    right: 8rem;
+    width: 350px;
+    z-index: 100;
+    margin: 0;
+    margin-top: 3.5rem;
+    padding: 0 1rem;
+    background: transparent;
+    border-right: none;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .lost-animal-main {
+    width: 66.66%;
+    min-width: 0;
+    max-width: none;
+    margin-right: 370px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    box-sizing: border-box;
+  }
+
+  .main-basic-row {
+    flex-direction: row;
+    gap: 1.2rem;
+  }
+
+
+  /* 900px 이상에서 pair 구조 유지 */
+  .main-basic-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .main-basic-pair label {
+    flex: 1 1 0;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 0;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .main-basic-pair input,
+  .main-basic-pair select {
+    flex: 3 1 0;
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 3px;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  /* 900px 이상에서 마이크로칩 번호만 한 줄 전체 차지 */
+  .main-basic-row.full-width {
+    width: 100%;
+  }
+
+  .main-basic-full {
+    width: 100%;
+  }
+
+  .main-basic-full .main-basic-pair {
+    width: 100%;
+  }
+
+  .main-basic-full input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .lost-animal-write-form {
+    width: 100%;
+    max-width: none;
+  }
+
+  .lost-animal-sidebar {
+    right: 16px;
+  }
+}
+
+.content-container:has(.lost-animal-write-container),
+.content-container:has(.lost-animal-write-form) {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+.lost-animal-create-title-header {
+  width: 100vw;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  border-radius: 0;
+  padding: 1.2rem 2rem;
+  margin: 0;
+  z-index: 10000;
+}
+
+.lost-animal-create-title-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: -1px;
+  pointer-events: none;
+}
+
+.lost-animal-create-title-header .back-btn {
+  z-index: 1;
+}
+
+.lost-animal-create-title-header .PrimaryButton {
+  z-index: 1;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #333;
+  cursor: pointer;
+  margin-right: 1.2rem;
+  padding: 0;
+  transition: color 0.2s;
+}
+.back-btn:hover {
+  color: #007bff;
+}
+
+.post-type-label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.post-type-label select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 0.3rem;
+}
+
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: #e5e5e5;
+  margin: 0.5rem 0 0.5rem 0;
+  border: none;
+}
+
+.selected-image-name {
+  margin-left: 1rem;
+  font-size: 1rem;
+  color: #555;
+  vertical-align: middle;
+  word-break: break-all;
+}
+
+.lost-animal-image-section .PrimaryButton {
+  width: auto;
+  min-width: 120px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: inline-block;
+}
+
+.lost-animal-title-top {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  text-align: left;
+  margin: 2.5rem 0 1.5rem 2rem;
+}
+
+.main-form-fields {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.main-form-row {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.main-form-field {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.main-form-field label {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.main-form-field input,
+.main-form-field select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.lost-animal-sidebar-fields {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.sidebar-field-row {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-field-half {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-field-third {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lost-animal-sidebar-fields label {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.lost-animal-sidebar-fields input,
+.lost-animal-sidebar-fields select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.lost-animal-title-top-form {
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-sizing: border-box;
+}
+
+.title-top-form-row {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.title-top-form-half {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title-top-form-third {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title-top-form-fifth {
+  flex: 1 1 20%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lost-animal-title-top-form label {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.lost-animal-title-top-form input,
+.lost-animal-title-top-form select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.lost-animal-title-top-form label > input,
+.lost-animal-title-top-form label > select {
+  margin-top: 0.4rem;
+}
+
+.lost-animal-main-basic-section {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem 0 0 1.2rem;
+  box-sizing: border-box;
+}
+
+.main-section-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.main-basic-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+
+.main-basic-third {
+  flex: 1 1 33.33%;
+  max-width: 33.33%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.main-basic-third label {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+
+.main-basic-third input,
+.main-basic-third select {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 0.4rem;
+}
+
+.main-basic-third label > input,
+.main-basic-third label > select {
+  margin-top: 3px;
+}
+
+.lost-animal-section label > textarea {
+  margin-top: 3px;
+}
+
+.main-basic-pair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.main-basic-pair label {
+  flex: 1 1 0;
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 0;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.main-basic-pair input,
+.main-basic-pair select {
+  flex: 3 1 0;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 3px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.lost-animal-main-type-section {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-sizing: border-box;
+}
+
+.lost-animal-main-type-section label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.lost-animal-main-type-section select {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* 게시글 작성 화면에서 푸터 숨기기 */
+.app-footer {
+  display: none !important;
+}
+
+.lost-animal-location-section {
+  margin: 20px 0;
+}
+
+.location-label-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selected-address-inline {
+  font-size: 13px;
+  color: #666;
+}
+
+.selected-address-text {
+  margin-top: 8px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.location-map-preview {
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.selected-location-address {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.95);
+  font-size: 12px;
+  color: #333;
+  border-top: 1px solid #eee;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  font-size: 13px;
+}
+
+#map-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.selected-location {
+  color: #007bff;
+  text-align: center;
+  padding: 20px;
+  font-weight: 500;
+}
+
+.main-basic-row.full-width {
+  width: 100%;
+}
+
+.main-basic-full {
+  width: 100%;
+}
+
+.main-basic-full .main-basic-pair {
+  width: 100%;
+}
+
+.main-basic-full input {
+  width: 100%;
+}
