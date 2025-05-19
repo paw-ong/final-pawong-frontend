@@ -69,10 +69,11 @@ function LostAnimalCard({ post, type }) {
   };
 
   const handleCardClick = () => {
-    const path = post.postType === 'FOSTER'
-      ? `/lost-animals/lost-adoptions/${post.postId}`
-      : `/lost-animals/lost-posts/${post.postId}`;
-    navigate(path);
+    if (post.postType === 'FOSTER') {
+      navigate(`/adoptions/${post.postId}`);
+    } else {
+      navigate(`/lostAnimal/detail/${post.postId}`, { state: { postType: post.postType } });
+    }
   };
 
   const renderInfoItem = (label, value) => {

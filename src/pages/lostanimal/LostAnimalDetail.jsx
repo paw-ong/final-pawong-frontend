@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import client from "../../api/client";
+import { useParams, useLocation } from "react-router-dom";
+import axios from "axios";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
 
 function LostAnimalDetail() {
   const { id } = useParams();
+  const currentLocation = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -14,15 +15,19 @@ function LostAnimalDetail() {
     const fetchData = async () => {
       console.log('Fetching data for ID:', id);
       try {
-        const url = `/lost-animals/${id}?type=lost-posts`;
+        const postType = currentLocation.state?.postType;
+        const url = postType === 'FOSTER'
+          ? `/api/lost-animals/lost-adoptions/${id}`
+          : `/api/lost-animals/lost-posts/${id}`;
+        
         console.log('Request URL:', url);
         
-        const response = await client.get(url);
+        const response = await axios.get(url);
         console.log('API Response:', response);
         
-        if (response && response.data && response.data.lostPostDetailDto) {
-          console.log('Response data:', response.data.lostPostDetailDto);
-          setData(response.data.lostPostDetailDto);
+        if (response && response.data) {
+          console.log('Response data:', response.data);
+          setData(response.data);
         } else {
           console.error('Invalid response format:', response);
           setError('데이터 형식이 올바르지 않습니다.');
@@ -40,7 +45,7 @@ function LostAnimalDetail() {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, currentLocation.state]);
 
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
