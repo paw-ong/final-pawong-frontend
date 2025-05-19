@@ -30,33 +30,37 @@ function LostAnimalResultList({ isSearch, searchResults, loading, type = "LOST" 
     
     try {
       setLocalLoading(true);
-      let endpoint = '/api/lost-animals';
-      let requestType = type;
-      
-      // FOSTER 타입일 경우 다른 엔드포인트와 타입 사용
-      if (type === 'FOSTER') {
-        endpoint = '/api/lost-animals/adoptions';
-        requestType = 'MISSING';
-      }
-      
-      const params = {
-        type: requestType,
+      let endpoint = '/lost-animals';
+      let params = {
+        type: type,
         page: page - 1,
         size: 12
       };
+      
+      if (type === 'FOSTER') {
+        endpoint = '/lost-animals/adoption';
+        params = {
+          page: page - 1,
+          size: 12
+        };
+      }
 
       const response = await client.get(endpoint, { params });
       
+      console.log('API Response Data:', response.data);
+      console.log('LostPostCards:', response.data?.lostPostCards);
+      console.log('First Card Data:', response.data?.lostPostCards?.[0]);
+      
       // 첫 페이지일 경우 데이터 교체, 아닐 경우 추가
       if (page === 1) {
-        setPets(response.data.content || []);
+        setPets(response.data?.lostPostCards || []);
       } else {
-        setPets(prevPets => [...prevPets, ...(response.data.content || [])]);
+        setPets(prevPets => [...prevPets, ...(response.data?.lostPostCards || [])]);
       }
       
-      setHasMore(!response.data.last);
+      setHasMore(response.data?.hasNext || false);
     } catch (error) {
-      // 에러 처리 로직 제거
+      console.error('Failed to fetch lost animal list:', error);
     } finally {
       setLocalLoading(false);
     }

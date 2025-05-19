@@ -9,6 +9,13 @@ export default defineConfig({
     host: true,            // 또는 '0.0.0.0'
     allowedHosts: [
       'www.pawong.co.kr'
-    ]
+    ],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 })
