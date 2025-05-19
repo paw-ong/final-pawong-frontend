@@ -16,24 +16,28 @@ function LostAnimalTab({ activeTab, onTabChange }) {
     }
   };
 
+  const handleTabClick = (tab) => {
+    onTabChange(tab);
+  };
+
   return (
     <div className="lost-animal-tab-wrapper">
       <div className="lost-animal-tab-container">
         <button
           className={`lost-animal-tab ${activeTab === 'LOST' ? 'active' : ''}`}
-          onClick={() => onTabChange('LOST')}
+          onClick={() => handleTabClick('LOST')}
         >
           찾습니다
         </button>
         <button
           className={`lost-animal-tab ${activeTab === 'FOUND' ? 'active' : ''}`}
-          onClick={() => onTabChange('FOUND')}
+          onClick={() => handleTabClick('FOUND')}
         >
           발견했어요
         </button>
         <button
           className={`lost-animal-tab ${activeTab === 'FOSTER' ? 'active' : ''}`}
-          onClick={() => onTabChange('FOSTER')}
+          onClick={() => handleTabClick('FOSTER')}
         >
           보호중입니다
         </button>

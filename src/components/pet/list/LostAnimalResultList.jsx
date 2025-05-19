@@ -85,6 +85,13 @@ function LostAnimalResultList({ isSearch, searchResults, loading, type = "LOST" 
     }
   }, [isSearch, searchResults]);
 
+  // 타입이 변경될 때 페이지 초기화 및 데이터 다시 로드
+  useEffect(() => {
+    setPage(1);
+    setPets([]);
+    setHasMore(true);
+  }, [type]);
+
   // 페이지 변경 시 데이터 로드
   useEffect(() => {
     if (!isSearch) {
