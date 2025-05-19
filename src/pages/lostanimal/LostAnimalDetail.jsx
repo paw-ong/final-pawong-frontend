@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import userImage from '../../assets/images/user.jpg';
@@ -10,24 +10,86 @@ function LostAnimalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const mapRef = useRef(null);
+  const mapContainerRef = useRef(null);
+
+  // 카카오맵 SDK 로드
+  useEffect(() => {
+    if (!document.getElementById('kakao-map-sdk')) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-sdk';
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=477f4899afec6f55a1621413a0296cb3&autoload=false&libraries=services`;
+      script.async = true;
+      
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          if (data?.geoPoint) {
+            initMap();
+          }
+        });
+      };
+
+      script.onerror = (error) => {
+        console.error("SDK 스크립트 로드 실패:", error);
+      };
+
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  // 지도 초기화 함수
+  const initMap = () => {
+    if (!window.kakao || !window.kakao.maps) return;
+    
+    const { latitude, longitude } = data.geoPoint;
+    
+    const options = {
+      center: new window.kakao.maps.LatLng(latitude, longitude),
+      level: 3
+    };
+
+    const map = new window.kakao.maps.Map(mapContainerRef.current, options);
+    mapRef.current = map;
+
+    // 마커 생성
+    const marker = new window.kakao.maps.Marker({
+      position: new window.kakao.maps.LatLng(latitude, longitude)
+    });
+
+    // 마커를 지도에 표시
+    marker.setMap(map);
+
+    // 인포윈도우 생성
+    const infowindow = new window.kakao.maps.InfoWindow({
+      content: `<div style="padding:5px;font-size:12px;">${data.location || '분실 장소'}</div>`
+    });
+
+    // 인포윈도우를 마커 위에 표시
+    infowindow.open(map, marker);
+  };
+
+  // 데이터가 변경될 때마다 지도 업데이트
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps && data?.geoPoint) {
+      initMap();
+    }
+  }, [data]);
 
   useEffect(() => {
     const fetchData = async () => {
       console.log('Fetching data for ID:', id);
       try {
         const postType = currentLocation.state?.postType;
-        const url = postType === 'FOSTER'
-          ? `/api/lost-animals/lost-adoptions/${id}`
-          : `/api/lost-animals/lost-posts/${id}`;
+        const url = `/api/lost-animals/lost-posts/${id}`;
         
         console.log('Request URL:', url);
         
         const response = await axios.get(url);
         console.log('API Response:', response);
         
-        if (response && response.data) {
+        if (response && response.data && response.data.lostPostDetailDto) {
           console.log('Response data:', response.data);
-          setData(response.data);
+          setData(response.data.lostPostDetailDto);
         } else {
           console.error('Invalid response format:', response);
           setError('데이터 형식이 올바르지 않습니다.');
@@ -65,7 +127,8 @@ function LostAnimalDetail() {
     content,
     rfidCd,
     location,
-    author
+    author,
+    createdAt
   } = data;
 
   // 성별 한글 변환
@@ -101,7 +164,8 @@ function LostAnimalDetail() {
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실신고자 정보</th>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 분실신고자 정보</th>
+            <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr>
             <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>신고자</td>
@@ -116,6 +180,19 @@ function LostAnimalDetail() {
             <td style={{ fontWeight: 600, padding: 12 }}>분실장소</td>
             <td colSpan={3} style={{ padding: 12 }}>{location || '-'}</td>
           </tr>
+          <tr>
+            <td colSpan={4} style={{ padding: 12 }}>
+              <div 
+                ref={mapContainerRef} 
+                style={{ 
+                  width: '100%', 
+                  height: '300px',
+                  borderRadius: '8px',
+                  border: '1px solid #eee'
+                }}
+              />
+            </td>
+          </tr>
           <tr style={{ background: '#f7f7f7' }}>
             <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실동물 정보</th>
           </tr>
@@ -129,7 +206,7 @@ function LostAnimalDetail() {
             <td style={{ fontWeight: 600, padding: 12 }}>색상</td>
             <td style={{ padding: 12 }}>{color || '-'}</td>
             <td style={{ fontWeight: 600, padding: 12 }}>성별</td>
-            <td style={{ padding: 12 }}>{sexText || '-'}</td>
+            <td style={{ padding: 12 }}>{sexText}</td>
           </tr>
           <tr>
             <td style={{ fontWeight: 600, padding: 12 }}>나이</td>
