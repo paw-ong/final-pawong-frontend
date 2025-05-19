@@ -39,7 +39,7 @@ function AdoptionDetail() {
     const userToken = localStorage.getItem('userToken');
     
     if (userToken && id) {
-      client.get(`/users/me/favorites/${id}/status`)
+      client.get(`/users/favorites/${id}/status`)
         .then(response => {
           setIsFavorite(response.data.inFavorites);
         })
@@ -57,7 +57,7 @@ function AdoptionDetail() {
       return;
     }
     
-    client.post(`/users/me/favorites/${id}`)
+    client.post(`/users/favorites/${id}/toggle`)
       .then(response => {
         setIsFavorite(response.data.inFavorites);
         setModalMsg(response.data.inFavorites ? "즐겨찾기에 추가하였습니다." : "즐겨찾기가 해제되었습니다.");
