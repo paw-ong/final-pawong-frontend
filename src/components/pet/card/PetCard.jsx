@@ -23,8 +23,8 @@ function PetCard({ pet, type }) {
     // 로그인 상태에서만 찜 상태 확인
     if (userToken && pet.id) {
       // 초기 찜 상태 확인 API 호출
-      // console.log(`찜 상태 확인 API 호출: /api/users/me/favorites/${pet.id}/status`);
-      client.get(`/users/me/favorites/${pet.id}/status`)
+      // console.log(`찜 상태 확인 API 호출: /api/users/favorites/${pet.id}/status`);
+      client.get(`/users/favorites/${pet.id}/status`)
       .then(response => {
         // console.log('찜 상태 응답:', response);
         setIsFavorite(response.data.inFavorites);
@@ -43,8 +43,8 @@ function PetCard({ pet, type }) {
       return;
     }
     
-    console.log(`찜하기 토글 API 호출: /api/users/me/favorites/${pet.id}`);
-    client.post(`/users/me/favorites/${pet.id}`)
+    console.log(`찜하기 토글 API 호출: /api/users/favorites/${pet.id}/toggle`);
+    client.post(`/users/favorites/${pet.id}/toggle`)
     .then(response => {
       console.log('찜 처리 응답222:', response);
       setIsFavorite(response.data.inFavorites);
