@@ -11,7 +11,6 @@ import Login from "./pages/signup/Login.jsx";
 import MyPage from "./pages/myPage/MyPage.jsx";
 import AdoptionDetail from "./pages/adoptionAnimal/AdoptionDetail.jsx";
 import LostAnimalDetail from "./pages/lostanimal/LostAnimalDetail.jsx";
-import LostAnimalDetail from "./pages/lostAnimal/LostAnimalDetail.jsx";
 import LostAnimalCreate from "./pages/lostAnimal/LostAnimalCreate.jsx";
 import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
