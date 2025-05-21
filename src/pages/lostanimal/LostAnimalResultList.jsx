@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import './LostAnimalResultList.css';
@@ -16,7 +16,7 @@ const LostAnimalResultList = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
 
-    const fetchLostAnimals = async (page = 0) => {
+    const fetchLostAnimals = useCallback(async (page = 0) => {
         try {
             setLoading(true);
             setError(null);
@@ -26,7 +26,6 @@ const LostAnimalResultList = () => {
             const size = 12;
 
             if (!token) {
-                console.error('No token available');
                 navigate('/login');
                 return;
             }
@@ -39,33 +38,36 @@ const LostAnimalResultList = () => {
                 }
             });
 
-            if (response.data && response.data.content) {
-                setLostAnimals(response.data.content);
-                setTotalPages(response.data.totalPages);
+            if (response.data && response.data.lostPostCards) {
+                setLostAnimals(response.data.lostPostCards);
+                setTotalPages(response.data.totalPages || 1);
                 setCurrentPage(page);
             }
         } catch (error) {
-            console.error('Failed to fetch lost animal list:', error);
             const errorMessage = error.response?.data?.message || '데이터를 불러오는데 실패했습니다.';
             setError(errorMessage);
             
             if (error.response?.status === 401 || error.response?.status === 404) {
-                console.log('Authentication error, redirecting to login...');
                 localStorage.removeItem('token');
                 navigate('/login');
             }
         } finally {
             setLoading(false);
         }
-    };
+    }, [location.search, token, navigate]);
 
     useEffect(() => {
         if (!token) {
-            console.log('No token found, redirecting to login...');
             navigate('/login');
             return;
         }
         fetchLostAnimals(0);
+    }, []);
+
+    useEffect(() => {
+        if (token) {
+            fetchLostAnimals(0);
+        }
     }, [location.search, token]);
 
     const handlePageChange = (page) => {
@@ -84,7 +86,7 @@ const LostAnimalResultList = () => {
         <div className="lost-animal-result-list">
             <div className="lost-animal-grid">
                 {lostAnimals.map((animal) => (
-                    <LostAnimalCard key={animal.id} animal={animal} />
+                    <LostAnimalCard key={animal.postId} animal={animal} />
                 ))}
             </div>
             {totalPages > 1 && (
