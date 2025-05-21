@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import client from '../../api/client';
 import './LostAnimalResultList.css';
 import LostAnimalCard from '../../components/lost-animal/LostAnimalCard';
 import Pagination from '../../components/common/Pagination';
@@ -31,29 +31,11 @@ const LostAnimalResultList = () => {
                 return;
             }
 
-            // 토큰 디코딩하여 확인
-            try {
-                const tokenParts = token.split('.');
-                if (tokenParts.length !== 3) {
-                    throw new Error('Invalid token format');
-                }
-                const payload = JSON.parse(atob(tokenParts[1]));
-                console.log('Token payload:', payload);
-            } catch (e) {
-                console.error('Token decode error:', e);
-            }
-
-            console.log('Making API request with token:', token);
-            console.log('Request URL:', `http://localhost:8080/api/lost-animals?type=${type}&page=${page}&size=${size}`);
-            const response = await axios.get('http://localhost:8080/api/lost-animals', {
+            const response = await client.get('/lost-animals', {
                 params: {
                     type,
                     page,
                     size
-                },
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
                 }
             });
 
@@ -64,18 +46,11 @@ const LostAnimalResultList = () => {
             }
         } catch (error) {
             console.error('Failed to fetch lost animal list:', error);
-            console.error('Error details:', {
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                data: error.response?.data,
-                headers: error.response?.headers
-            });
             const errorMessage = error.response?.data?.message || '데이터를 불러오는데 실패했습니다.';
             setError(errorMessage);
             
             if (error.response?.status === 401 || error.response?.status === 404) {
                 console.log('Authentication error, redirecting to login...');
-                // 토큰이 있지만 유효하지 않은 경우 토큰을 제거하고 로그인 페이지로 이동
                 localStorage.removeItem('token');
                 navigate('/login');
             }

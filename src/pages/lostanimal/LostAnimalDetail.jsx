@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import axios from "axios";
+import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
 
@@ -80,11 +80,11 @@ function LostAnimalDetail() {
       console.log('Fetching data for ID:', id);
       try {
         const postType = currentLocation.state?.postType;
-        const url = `/api/lost-animals/lost-posts/${id}`;
+        const url = `/lost-animals/lost-posts/${id}`;
         
         console.log('Request URL:', url);
         
-        const response = await axios.get(url);
+        const response = await client.get(url);
         console.log('API Response:', response);
         
         if (response && response.data && response.data.lostPostDetailDto) {
