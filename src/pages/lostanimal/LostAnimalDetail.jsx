@@ -15,31 +15,33 @@ function LostAnimalDetail() {
 
   // 카카오맵 SDK 로드
   useEffect(() => {
-    if (!document.getElementById('kakao-map-sdk')) {
-      const script = document.createElement('script');
-      script.id = 'kakao-map-sdk';
-      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=477f4899afec6f55a1621413a0296cb3&autoload=false&libraries=services`;
-      script.async = true;
-      
-      script.onload = () => {
-        window.kakao.maps.load(() => {
-          if (data?.geoPoint) {
-            initMap();
-          }
-        });
-      };
+    const loadKakaoMap = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        const script = document.createElement('script');
+        script.id = 'kakao-map-sdk';
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=477f4899afec6f55a1621413a0296cb3&autoload=false&libraries=services`;
+        script.async = true;
+        
+        script.onload = () => {
+          window.kakao.maps.load(() => {
+            if (data?.geoPoint) {
+              initMap();
+            }
+          });
+        };
 
-      script.onerror = (error) => {
-        console.error("SDK 스크립트 로드 실패:", error);
-      };
+        document.head.appendChild(script);
+      } else if (data?.geoPoint) {
+        initMap();
+      }
+    };
 
-      document.head.appendChild(script);
-    }
-  }, []);
+    loadKakaoMap();
+  }, [data]);
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps) return;
+    if (!window.kakao || !window.kakao.maps || !data?.geoPoint) return;
     
     const { latitude, longitude } = data.geoPoint;
     
@@ -77,30 +79,19 @@ function LostAnimalDetail() {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('Fetching data for ID:', id);
       try {
         const postType = currentLocation.state?.postType;
         const url = `/lost-animals/lost-posts/${id}`;
         
-        console.log('Request URL:', url);
-        
         const response = await client.get(url);
-        console.log('API Response:', response);
         
         if (response && response.data && response.data.lostPostDetailDto) {
-          console.log('Response data:', response.data);
           setData(response.data.lostPostDetailDto);
         } else {
-          console.error('Invalid response format:', response);
           setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (error) {
         console.error('API Error:', error);
-        console.error('Error details:', {
-          message: error.message,
-          response: error.response,
-          request: error.request
-        });
         setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);

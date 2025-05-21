@@ -10,12 +10,17 @@ function LostAnimal() {
   const [searchResults, setSearchResults] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('LOST');
+  const [activeTab, setActiveTab] = useState(() => {
+    // 초기 상태를 URL 파라미터와 동기화
+    return searchParams.get('type') || 'LOST';
+  });
 
   // URL 쿼리 파라미터 변경 감지
   useEffect(() => {
     const type = searchParams.get('type') || 'LOST';
-    setActiveTab(type);
+    if (type !== activeTab) {
+      setActiveTab(type);
+    }
   }, [searchParams]);
 
   const handleSearch = (results) => {
