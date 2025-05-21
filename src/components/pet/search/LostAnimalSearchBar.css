@@ -1,153 +1,291 @@
 .lost-animal-search-bar-wrapper {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto 32px auto;
+}
+
+.lost-animal-search-bar-wrapper span, label, button {
+  white-space: nowrap;
 }
 
 .lost-animal-search-bar {
+  background: #FDEDE8;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(167, 146, 119, 0.12);
+  padding: 16px 16px 12px 16px;
+  width: 100%;
+  max-width: 1100px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
-.filter-row {
+.lost-animal-filter-row {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.lost-animal-filter-group {
   display: flex;
   align-items: center;
-  gap: 30px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  gap: 10px;
+  background: none;
 }
 
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.filter-label {
+.lost-animal-filter-label {
   font-weight: 600;
-  color: #495057;
-  font-size: 0.95rem;
-  white-space: nowrap;
+  color: #3E3232;
+  margin-right: 6px;
 }
 
-.checkbox-group {
+.lost-animal-checkbox-group {
   display: flex;
-  gap: 12px;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.checkbox-label {
+.lost-animal-checkbox-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #495057;
-  white-space: nowrap;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-select {
-  padding: 8px 12px;
-  border: 1px solid #dee2e6;
+  gap: 4px;
+  position: relative;
+  padding: 5px 8px;
   border-radius: 6px;
-  font-size: 0.9rem;
-  color: #495057;
-  background-color: white;
   cursor: pointer;
-  min-width: 100px;
+  transition: background 0.15s;
+  white-space: nowrap;
 }
 
-.search-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
+.lost-animal-checkbox-label:hover {
+  background: #f4d8bd;
 }
 
-.address-container {
+.lost-animal-checkbox-label input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #F0803C;
+  border-radius: 4px;
+  background: #fff;
+  margin-right: 4px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  vertical-align: middle;
+}
+
+.lost-animal-checkbox-label input[type="checkbox"]:checked {
+  background: #F0803C;
+  border-color: #F0803C;
+}
+
+.lost-animal-checkbox-label input[type="checkbox"]:checked:after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 13px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.lost-animal-checkbox-label input[type="checkbox"]:checked + span {
+  font-weight: bold;
+  color: #3E3232;
+}
+
+.lost-animal-checkbox-label span {
+  font-size: 1rem;
+  color: #3E3232;
+  user-select: none;
+}
+
+.lost-animal-select {
+  padding: 6px 28px 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #F0803C;
+  background: #fff url('data:image/svg+xml;utf8,<svg fill="%23F0803C" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 8.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 10px center/18px 18px;
+  font-size: 1rem;
+  color: #3E3232;
+  outline: none;
+  appearance: none;
+  min-width: 80px;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+
+.lost-animal-select:focus {
+  border-color: #d96a1c;
+  outline: none;
+}
+
+.lost-animal-search-row {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 18px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.lost-animal-search-container {
+  position: relative;
   flex: 1;
 }
 
-.selected-addresses {
+.lost-animal-search-input-wrapper {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  min-height: 48px;
+}
+
+.lost-animal-search-input {
+  flex: 1;
+  min-width: 200px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 0;
+  background: transparent;
+}
+
+.lost-animal-search-input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.lost-animal-selected-addresses {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  flex: 1;
+  margin: 0;
+  padding: 0;
 }
 
-.address-tag {
-  display: inline-flex;
+.lost-animal-address-tag {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #e9ecef;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: #F0803C;
+  color: white;
+  border-radius: 16px;
   font-size: 0.9rem;
-  color: #495057;
+  white-space: nowrap;
 }
 
-.remove-address-btn {
+.lost-animal-remove-address-btn {
   background: none;
   border: none;
-  color: #868e96;
+  color: white;
   cursor: pointer;
+  font-size: 1.2rem;
   padding: 0;
-  font-size: 1.1rem;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
 }
 
-.remove-address-btn:hover {
-  color: #495057;
+.lost-animal-remove-address-btn:hover {
+  opacity: 1;
 }
 
-@media (max-width: 768px) {
-  .filter-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
+.lost-animal-autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+  background-color: #f5f5f5;
+}
+
+.lost-animal-primary-btn {
+  white-space: nowrap;
+  outline: none !important;
+  background-color: #F0803C !important;
+  border-color: #F0803C !important;
+  color: white !important;
+}
+
+.lost-animal-primary-btn:hover {
+  background-color: #d96a1c !important;
+  border-color: #d96a1c !important;
+}
+
+.lost-animal-primary-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 900px) {
+  .lost-animal-search-bar {
+    padding: 12px;
+    max-width: 98vw;
   }
-
-  .filter-group {
-    width: 100%;
+  .lost-animal-filter-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+  }
+  .lost-animal-search-row {
+    flex-direction: row;
     gap: 10px;
-  }
-
-  .checkbox-group {
     width: 100%;
-    flex-wrap: wrap;
   }
-
-  .search-row {
-    flex-direction: column;
-    align-items: stretch;
+  .lost-animal-search-input {
+    width: 100%;
   }
+}
 
-  .address-container {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 600px) {
+  .lost-animal-search-bar {
+    padding: 8px;
   }
-
-  .selected-addresses {
-    max-height: 100px;
-    overflow-y: auto;
+  .lost-animal-search-row {
+    flex-direction: row;
+    gap: 6px;
+  }
+  .lost-animal-search-input {
+    padding: 12px 10px;
+    font-size: 1rem;
+  }
+  .lost-animal-primary-btn {
+    font-size: 0.95rem;
+    padding: 8px 14px;
   }
 } 
