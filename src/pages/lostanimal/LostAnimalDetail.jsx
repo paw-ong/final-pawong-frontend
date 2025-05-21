@@ -15,6 +15,8 @@ function LostAnimalDetail() {
 
   // 카카오맵 SDK 로드
   useEffect(() => {
+    let isMounted = true;
+
     const loadKakaoMap = () => {
       if (!window.kakao || !window.kakao.maps) {
         const script = document.createElement('script');
@@ -23,57 +25,77 @@ function LostAnimalDetail() {
         script.async = true;
         
         script.onload = () => {
+          if (!isMounted) return;
           window.kakao.maps.load(() => {
-            if (data?.geoPoint) {
-              initMap();
+            if (!isMounted) return;
+            if (data?.geoPoint && mapContainerRef.current) {
+              setTimeout(() => {
+                if (isMounted) {
+                  initMap();
+                }
+              }, 100);
             }
           });
         };
 
         document.head.appendChild(script);
-      } else if (data?.geoPoint) {
-        initMap();
+      } else if (data?.geoPoint && mapContainerRef.current) {
+        setTimeout(() => {
+          if (isMounted) {
+            initMap();
+          }
+        }, 100);
       }
     };
 
     loadKakaoMap();
+
+    return () => {
+      isMounted = false;
+    };
   }, [data]);
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps || !data?.geoPoint) return;
+    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) return;
     
-    const { latitude, longitude } = data.geoPoint;
-    
-    const options = {
-      center: new window.kakao.maps.LatLng(latitude, longitude),
-      level: 3
-    };
+    try {
+      const { latitude, longitude } = data.geoPoint;
+      
+      const options = {
+        center: new window.kakao.maps.LatLng(latitude, longitude),
+        level: 3
+      };
 
-    const map = new window.kakao.maps.Map(mapContainerRef.current, options);
-    mapRef.current = map;
+      const map = new window.kakao.maps.Map(mapContainerRef.current, options);
+      mapRef.current = map;
 
-    // 마커 생성
-    const marker = new window.kakao.maps.Marker({
-      position: new window.kakao.maps.LatLng(latitude, longitude)
-    });
+      // 마커 생성
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(latitude, longitude)
+      });
 
-    // 마커를 지도에 표시
-    marker.setMap(map);
+      // 마커를 지도에 표시
+      marker.setMap(map);
 
-    // 인포윈도우 생성
-    const infowindow = new window.kakao.maps.InfoWindow({
-      content: `<div style="padding:5px;font-size:12px;">${data.location || '분실 장소'}</div>`
-    });
+      // 인포윈도우 생성
+      const infowindow = new window.kakao.maps.InfoWindow({
+        content: `<div style="padding:5px;font-size:12px;">${data.location || '분실 장소'}</div>`
+      });
 
-    // 인포윈도우를 마커 위에 표시
-    infowindow.open(map, marker);
+      // 인포윈도우를 마커 위에 표시
+      infowindow.open(map, marker);
+    } catch (error) {
+      console.error('지도 초기화 중 오류 발생:', error);
+    }
   };
 
   // 데이터가 변경될 때마다 지도 업데이트
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && data?.geoPoint) {
-      initMap();
+    if (window.kakao && window.kakao.maps && data?.geoPoint && mapContainerRef.current) {
+      setTimeout(() => {
+        initMap();
+      }, 100);
     }
   }, [data]);
 
@@ -102,8 +124,6 @@ function LostAnimalDetail() {
 
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
-
-  console.log('화면에 표시할 데이터:', data);
 
   // 데이터 구조 확인을 위한 로깅
   const {
