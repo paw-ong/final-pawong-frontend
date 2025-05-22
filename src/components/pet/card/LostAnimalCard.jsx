@@ -52,14 +52,9 @@ function LostAnimalCard({ post, type }) {
       const { data } = await client.post(endpoint);
       setIsBookmarked(data.bookmarked);
     } catch (error) {
-      console.error('북마크 토글 중 오류 발생:', error);
-      if (error.response) {
-        const status = error.response.status;
-        if (status >= 400 && status < 500) {
-          alert('로그인이 필요한 서비스입니다!');
-        } else if (status >= 500) {
-          alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        }
+      // console.error('북마크 토글 중 오류 발생:', error);
+      if (error.status && error.status === 401) {
+        alert('로그인이 필요한 서비스입니다!');
       } else {
         alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       }
