@@ -1,152 +1,74 @@
-// ./src/components/pet/LostAnimalList.jsx
-
-import React, { useState, useEffect } from 'react';
-import Slider from "react-slick";
+import React, { useEffect, useState } from "react";
 import PetCard from "../card/PetCard.jsx";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import './List.css'
-import userImage from '../../../assets/images/user.jpg';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-
-function SlickPrevArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-      <button
-          className={className}
-          style={{
-            ...style,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            left: "-30px",
-            zIndex: 2,
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.9)",
-            boxShadow: "0 2px 8px rgba(167,146,119,0.15)",
-            border: "2px solid #D1BB9E",
-            color: "#D1BB9E",
-            transition: "background 0.2s, color 0.2s",
-          }}
-          onClick={onClick}
-          aria-label="이전"
-      >
-        <FaChevronLeft size={22}/>
-      </button>
-  );
-}
-
-function SlickNextArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-      <button
-          className={className}
-          style={{
-            ...style,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            right: "-30px",
-            zIndex: 2,
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.9)",
-            boxShadow: "0 2px 8px rgba(167,146,119,0.15)",
-            border: "2px solid #D1BB9E",
-            color: "#D1BB9E",
-            transition: "background 0.2s, color 0.2s",
-          }}
-          onClick={onClick}
-          aria-label="다음"
-      >
-        <FaChevronRight size={22}/>
-      </button>
-  );
-}
+import LoadingSpinner from "../../common/LoadingSpinner";
+import "./LostAnimalList.css";
+import client from "../../../api/client";
 
 function LostAnimalList() {
   const [pets, setPets] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-  //
-  // useEffect(() => {
-  //   const fetchPets = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await axios.get('api link');
-  //       setPets(response.data);
-  //     } catch (error) {
-  //       setError(error.message || '데이터를 불러오는데 실패했습니다.');
-  //       console.error('데이터를 불러오는데 실패했습니다: ', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //
-  //   fetchPets();
-  // }, []);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const dummyPets = Array.from({ length: 12 }).map((_, idx) => ({
-      id: idx + 1,
-      upKindNm: '토끼',
-      sexCd: '암컷',
-      age: '2021년생',
-      imgUrl: userImage
-    }));
-    setPets(dummyPets);
+    const fetchLostAnimals = async () => {
+      try {
+        const response = await client.get('/lost-animals', {
+          params: { 
+            page: 1,
+            size: 4,  // 메인 페이지에서는 4개만 보여줌
+            type: 'LOST'
+          }
+        });
+        setPets(response.data.lostAnimalCards || []);
+      } catch (error) {
+        console.error('Failed to fetch lost animal list:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLostAnimals();
   }, []);
 
-  const settings = {
-    dots: false,
-    arrows: true,
-    infinite: pets.length > 12,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    nextArrow: <SlickNextArrow />,
-    prevArrow: <SlickPrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        }
-      }
-    ]
+  // API 응답을 PetCard 형식에 맞게 변환
+  const formatPetData = (item) => {
+    const currentYear = new Date().getFullYear();
+    const ageInYears = item.age ? currentYear - item.age : null;
+    const ageString = ageInYears ? `${ageInYears}살` : '나이 미상';
+
+    return {
+      id: item.lostAnimalId,
+      imgUrl: item.imageUrl,
+      kindNm: item.kindNm || '기타',
+      sexCd: item.sexCd === 'M' ? '수컷' : item.sexCd === 'F' ? '암컷' : '미상',
+      age: ageString,
+      type: item.type || 'LOST'
+    };
   };
 
+  if (loading) {
+    return (
+      <div className="lost-animal-list-loading">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!pets || pets.length === 0) {
+    return <div className="lost-animal-list-empty">등록된 실종 동물이 없습니다.</div>;
+  }
+
   return (
-      <section className="lost-animal-section">
-        <h2 className="section-title">실종 공고</h2>
-        <p className="sub-title">아래 동물을 보시면 연락주세요!</p>
-        <Slider {...settings}>
-          {pets.slice(0, 12).map(pet => (
-              <div key={pet.id}>
-                <PetCard pet={pet} type="lostAnimal"/>
-              </div>
-          ))}
-        </Slider>
-      </section>
+    <div className="lost-animal-list-container">
+      <h2>실종 동물</h2>
+      <div className="lost-animal-list-grid">
+        {pets.map((item, index) => (
+          <div key={`${item.lostAnimalId}-${index}`} className="lost-animal-list-item">
+            <PetCard pet={formatPetData(item)} type="lost-animals" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
-export default LostAnimalList;
+export default LostAnimalList; 
