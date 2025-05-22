@@ -10,5 +10,8 @@ export default defineConfig({
     allowedHosts: [
       'www.pawong.co.kr'
     ]
+  },
+  define: {
+    global: 'globalThis'
   }
 })
