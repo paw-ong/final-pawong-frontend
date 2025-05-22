@@ -76,7 +76,7 @@ export function AuthProvider({ children }) {
     const logout = () => {
         localStorage.removeItem('userToken')
         localStorage.removeItem('status')
-        // localStorage.removeItem('userInfo')
+        localStorage.removeItem('userInfo')
         setUser(null)
         setIsRegistered(false)
         navigate('/login')
