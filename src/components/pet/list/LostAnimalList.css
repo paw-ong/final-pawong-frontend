@@ -1,0 +1,61 @@
+.lost-animal-list-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.lost-animal-list-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.lost-animal-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.lost-animal-list-item {
+  width: 100%;
+  transition: transform 0.2s;
+}
+
+.lost-animal-list-item:hover {
+  transform: translateY(-4px);
+}
+
+.lost-animal-list-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+}
+
+.lost-animal-list-empty {
+  text-align: center;
+  padding: 48px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .lost-animal-list-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-animal-list-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .lost-animal-list-container {
+    padding: 0 8px;
+  }
+} 
