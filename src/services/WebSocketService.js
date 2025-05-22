@@ -10,18 +10,17 @@ class WebSocketService {
     this.stompClient = null;
     this.connected = false;
     this.commonHeaders = {};
+    this.subscriptions = new Map();
   }
 
+  // 인증 오류 처리
   handleAuthError() {
-    // 로컬 스토리지의 토큰 제거
     localStorage.removeItem('userToken');
     
-    // 모달을 표시할 div 생성
     const modalContainer = document.createElement('div');
     modalContainer.id = 'auth-modal-container';
     document.body.appendChild(modalContainer);
 
-    // React 컴포넌트 렌더링
     const root = createRoot(modalContainer);
     root.render(
       React.createElement(AuthRequiredModal, {
@@ -29,13 +28,14 @@ class WebSocketService {
         onClose: () => {
           root.unmount();
           document.body.removeChild(modalContainer);
-          window.location.href = '/login';  // 페이지 리다이렉션
+          window.location.href = '/login';
         }
       })
     );
   }
 
-  connect(onConnect, onError) {
+  // 웹소켓 연결
+  async connect() {
     return new Promise((resolve, reject) => {
       const token = localStorage.getItem('userToken');
       const csrfToken = Cookies.get('XSRF-TOKEN');
@@ -51,38 +51,42 @@ class WebSocketService {
         'X-XSRF-TOKEN': `${csrfToken}`
       };
       
-      const socket = new SockJS('/ws?token=' + token);
+      const socket = new SockJS(
+        '/ws?token=' + token,
+        null,
+        { transports: ['websocket'] }
+      );
+
       this.stompClient = new Client({
         webSocketFactory: () => socket,
         connectHeaders: this.commonHeaders,
         debug: (str) => {
-          console.log('STOMP Debug:', str);
+          console.log('[STOMP]', str);
         },
-        onWebSocketClose: (event) => {
-          console.log('WebSocket Closed:', event);
+        onWebSocketClose: () => {
+          console.log('[WebSocket] Connection closed');
           this.connected = false;
+          this.subscriptions.clear();
         },
         onWebSocketError: (event) => {
-          console.error('WebSocket Error:', event);
+          console.error('[WebSocket] Error:', event);
           this.connected = false;
+          this.subscriptions.clear();
           this.handleAuthError();
         }
       });
 
       this.stompClient.onConnect = (frame) => {
-        console.log('STOMP Connected Successfully:', frame);
+        console.log('[STOMP] Connected successfully');
         this.connected = true;
-        if (onConnect) onConnect(frame);
         resolve(frame);
       };
 
       this.stompClient.onStompError = (frame) => {
-        console.error('STOMP Error Headers:', frame.headers);
-        console.error('STOMP Error Body:', frame.body);
-        console.error('STOMP Error Command:', frame.command);
+        console.error('[STOMP] Error:', frame);
         this.connected = false;
+        this.subscriptions.clear();
         
-        // 인증 관련 에러인 경우
         if (frame.headers['message']?.includes('401') || 
             frame.headers['message']?.includes('403') ||
             frame.body?.includes('Unauthorized') ||
@@ -90,42 +94,81 @@ class WebSocketService {
           this.handleAuthError();
         }
         
-        if (onError) onError(frame);
         reject(frame);
       };
 
-      console.log('Activating STOMP Client...');
       this.stompClient.activate();
     });
   }
 
+  // 웹소켓 연결 해제
   disconnect() {
     if (this.stompClient) {
-      console.log('Disconnecting STOMP Client...');
+      console.log('[STOMP] Disconnecting...');
       this.stompClient.deactivate();
       this.connected = false;
+      this.subscriptions.clear();
     }
   }
 
+  // 웹소켓 구독
   subscribe(destination, callback) {
     if (!this.connected) {
-      console.error('Cannot subscribe: WebSocket is not connected');
+      console.error('[STOMP] Cannot subscribe: Not connected');
       return null;
     }
-    console.log('Subscribing to:', destination);
-    return this.stompClient.subscribe(destination, callback);
+
+    if (this.subscriptions.has(destination)) {
+      console.log('[STOMP] Already subscribed to:', destination);
+      return this.subscriptions.get(destination);
+    }
+
+    console.log('[STOMP] Subscribing to:', destination);
+    const subscription = this.stompClient.subscribe(destination, callback);
+    this.subscriptions.set(destination, subscription);
+    return subscription;
   }
 
+  // 웹소켓 구독 해제
+  unsubscribe(destination) {
+    const subscription = this.subscriptions.get(destination);
+    if (subscription) {
+      console.log('[STOMP] Unsubscribing from:', destination);
+      subscription.unsubscribe();
+      this.subscriptions.delete(destination);
+    }
+  }
+
+  // 웹소켓 메시지 전송
   send(destination, body) {
     if (!this.connected) {
-      console.error('Cannot send: WebSocket is not connected');
+      console.error('[STOMP] Cannot send: Not connected');
       return;
     }
-    console.log('Sending message to:', destination, 'Body:', body);
+
+    console.log('[STOMP] Sending message to:', destination);
     this.stompClient.publish({
       destination: destination,
       body: JSON.stringify(body)
     });
+  }
+
+  // 웹소켓 메시지 전송 및 구독
+  async connectAndSendMessage(sendDestination, message, onMessageReceived, subscribeDestination) {
+    try {
+      if (!this.connected) {
+        await this.connect();
+      }
+
+      if (!this.subscriptions.has(subscribeDestination)) {
+        this.subscribe(subscribeDestination, onMessageReceived);
+      }
+
+      this.send(sendDestination, message);
+    } catch (error) {
+      console.error('[STOMP] Failed to connect and send message:', error);
+      throw error;
+    }
   }
 }
 
