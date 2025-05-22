@@ -79,9 +79,10 @@ function LostAnimalResultList({ isSearch, searchResults, loading, type = "LOST" 
   // 검색 결과가 변경될 때
   useEffect(() => {
     if (isSearch && searchResults) {
+      console.log('검색 결과 업데이트:', searchResults);
       // 검색 결과로 데이터 교체
-      setPets(searchResults.content || []);
-      setHasMore(!searchResults.last);
+      setPets(searchResults.lostPostCards || []);
+      setHasMore(searchResults.hasNext || false);
     }
   }, [isSearch, searchResults]);
 

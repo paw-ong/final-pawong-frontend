@@ -149,9 +149,18 @@ function LostAnimalSearchBar({ onSearch }) {
   };
 
   // 검색 버튼 클릭 시
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    console.log('검색 시작 - 현재 상태:', {
+      searchTerm,
+      selectedKinds,
+      sex,
+      selectedType,
+      selectedAddresses
+    });
+
     if (!searchTerm.trim() && selectedKinds.length === 0 && sex === "ALL" && selectedType === "ALL" && selectedAddresses.length === 0) {
-      return; // 검색 조건이 하나도 없으면 검색하지 않음
+      console.log('검색 조건이 없어 검색을 수행하지 않습니다.');
+      return;
     }
 
     const addressStrings = selectedAddresses.map(addr => {
@@ -161,16 +170,38 @@ function LostAnimalSearchBar({ onSearch }) {
       return `${addr.city} ${addr.district}`;
     });
 
-    onSearch({
-      selectedKinds: selectedKinds.length > 0 ? selectedKinds : undefined,
-      sex: sex === "ALL" ? undefined : sex,
-      selectedType: selectedType === "ALL" ? undefined : selectedType,
-      searchTerm: searchTerm.trim() || undefined,
-      addresses: addressStrings.length > 0 ? addressStrings : undefined,
-    });
+    const searchData = {
+      type: selectedType === "ALL" ? undefined : selectedType,
+      upKindCds: selectedKinds.length > 0 ? selectedKinds : undefined,
+      sexCd: sex === "ALL" ? undefined : sex,
+      regions: addressStrings.length > 0 ? addressStrings : undefined,
+    };
+
+    console.log('검색 데이터:', searchData);
+
+    try {
+      const response = await client.get('/lost-animals/search', {
+        params: {
+          ...searchData,
+          page: 0,
+          size: 20,
+          sort: 'lostPostId,desc'
+        },
+        paramsSerializer: {
+          indexes: null // 배열 파라미터를 반복되는 키로 변환
+        }
+      });
+
+      console.log('검색 결과:', response.data);
+      onSearch(response.data);
+    } catch (error) {
+      console.error('검색 실패:', error);
+      alert('검색 중 오류가 발생했습니다.');
+    }
   };
   
   const handleAddressSelect = (addresses) => {
+    console.log('선택된 주소:', addresses); // 주소 선택 시 로그 추가
     setSelectedAddresses(addresses);
     setIsModalOpen(false);
   };
