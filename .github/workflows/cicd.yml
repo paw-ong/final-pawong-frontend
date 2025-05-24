@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - fix/#24
 
 jobs:
   build-and-deploy:
