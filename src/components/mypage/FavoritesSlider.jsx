@@ -30,7 +30,7 @@ function FavoritesSlider() {
       try {
         const { data } = await client.get('/users/me/favorites')
         // console.log('찜 목록 응답:', data);
-        setFavorites(data.favoritesList || []);
+        setFavorites(data.content || []);
       } catch (error) {
         console.error('찜 목록 로딩 중 오류 발생:', error);
       } finally {
@@ -43,17 +43,18 @@ function FavoritesSlider() {
 
   // PetCard 형식에 맞게 데이터 변환
   const formatPetData = (item) => {
+    const adoptionCard = item.adoptionCard;
     const currentYear = new Date().getFullYear();
-    const ageInYears = item.age ? currentYear - item.age : null;
+    const ageInYears = adoptionCard.age ? currentYear - adoptionCard.age : null;
     const ageString = ageInYears ? `${ageInYears}살` : '나이 미상';
 
     return {
-      id: item.adoptionId,
-      imgUrl: item.popfile1,
-      kindNm: item.kindNm || '기타',
-      sexCd: item.sexCd === 'M' ? '수컷' : item.sexCd === 'F' ? '암컷' : '미상',
+      id: adoptionCard.adoptionId,
+      imgUrl: adoptionCard.popfile1,
+      kindNm: adoptionCard.kindNm || '기타',
+      sexCd: adoptionCard.sexCd === 'M' ? '수컷' : adoptionCard.sexCd === 'F' ? '암컷' : '미상',
       age: ageString,
-      neuterYn: item.neuterYn === 'Y' ? '중성화 O' : item.neuterYn === 'N' ? '중성화 X' : '중성화 미상'
+      neuterYn: adoptionCard.neuterYn === 'Y' ? '중성화 O' : adoptionCard.neuterYn === 'N' ? '중성화 X' : '중성화 미상'
     };
   };
 
@@ -106,7 +107,7 @@ function FavoritesSlider() {
           className="favorites-swiper"
         >
           {favorites.map(pet => (
-            <SwiperSlide key={pet.adoptionId}>
+            <SwiperSlide key={pet.adoptionCard.adoptionId}>
               <div className="favorites-slide">
                 <PetCard pet={formatPetData(pet)} type="adoptions" />
               </div>
