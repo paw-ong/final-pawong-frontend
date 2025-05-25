@@ -1,0 +1,58 @@
+.lost-animal-result-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.lost-animal-result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lost-animal-result-item {
+  display: flex;
+  justify-content: center;
+}
+
+.lost-animal-result-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.lost-animal-result-empty {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1200px) {
+  .lost-animal-result-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .lost-animal-result-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-animal-result-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .lost-animal-result-container {
+    padding: 0 8px;
+  }
+} 

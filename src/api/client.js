@@ -1,5 +1,9 @@
 // src/api/client.js
 import axios from 'axios';
+axios.defaults.withCredentials = true;
+
+// CSRF 토큰 쿠키 발급 요청
+await axios.get('/api/auth/csrf-token');
 
 const client = axios.create({
     baseURL: '/api', // 상대 경로 활용
