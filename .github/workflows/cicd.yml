@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - main
 
 jobs:
   build-and-deploy:
@@ -37,7 +36,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             cd /home/ubuntu/deploy
-            sudo docker-compose stop frontend
+            sudo docker compose stop frontend
             sudo docker rmi pawong/frontend:latest || true
             sudo docker pull pawong/frontend:latest
-            sudo docker-compose up -d --no-deps --build frontend
+            sudo docker compose up -d --no-deps --build frontend
