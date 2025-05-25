@@ -13,6 +13,7 @@ import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
+import ChatRoom from "./pages/chat/ChatRoom.jsx";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -34,6 +35,9 @@ function App() {
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
         />
         <Route path="signup/additional-info" element={<AdditionalInfo />} />
+        <Route 
+          path="chat/:roomId" element={<ChatRoom />}
+        />
       </Route>
     </Routes>
   );
