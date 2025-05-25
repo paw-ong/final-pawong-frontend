@@ -1,0 +1,85 @@
+.lost-animal-tab-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  padding: 0 16px;
+}
+
+.lost-animal-tab-container {
+  display: flex;
+  gap: 16px;
+}
+
+.lost-animal-tab {
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lost-animal-tab:hover {
+  border-color: #EAD8C0;
+  background-color: #fff;
+}
+
+.lost-animal-tab.active {
+  background-color: #fff;
+  color: #333;
+  border-color: #EAD8C0;
+}
+
+.lost-animal-write-btn {
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lost-animal-write-btn:hover {
+  border-color: #EAD8C0;
+  background-color: #fff;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .lost-animal-tab-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .lost-animal-tab-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .lost-animal-write-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-animal-tab-container {
+    gap: 8px;
+  }
+
+  .lost-animal-tab {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  .lost-animal-write-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+} 

@@ -8,7 +8,6 @@ RUN npm install
 
 # 전체 소스 코드 복사 후 빌드 실행
 COPY . .
-RUN npm run build
 
 # 컨테이너에 가동시 실행되는 명령
 CMD ["npm", "run", "dev"]
