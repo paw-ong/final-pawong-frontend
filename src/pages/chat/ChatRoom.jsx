@@ -43,6 +43,28 @@ const ChatRoom = () => {
     };
   }, [roomId]);
 
+  useEffect(() => {
+    let isMounted = true;
+    const connectAndSubscribe = async () => {
+      try {
+          await WebSocketService.connect();
+          await WebSocketService.subscribe(`/user/queue/chat/${roomId}`, (message) => {
+            if (!isMounted) return;
+            const receivedMessage = JSON.parse(message.body);
+            setMessages(prev => [...prev, receivedMessage]);
+          });
+      } catch (error) {
+        console.error('WebSocket 연결 실패:', error);
+      }
+    };
+    connectAndSubscribe();
+    return () => {
+      isMounted = false;
+      WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
+      WebSocketService.disconnect();
+    };
+  }, [roomId]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     
@@ -54,16 +76,7 @@ const ChatRoom = () => {
         createdAt: Date.now() // 에폭크 타임(밀리초)으로 전송
       };
 
-      await WebSocketService.connectAndSendMessage(
-        `/app/chat.send/${roomId}`,
-        chatMessage,
-        (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          setMessages(prev => [...prev, receivedMessage]);
-        },
-        `/user/queue/chat/${roomId}`
-      );
-
+      WebSocketService.send(`/app/chat.send/${roomId}`,chatMessage);
       setNewMessage('');
     } catch (error) {
       console.error('메시지 전송 실패:', error);
