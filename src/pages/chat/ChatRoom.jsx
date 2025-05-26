@@ -22,65 +22,12 @@ const ChatRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await client.get(`/chat/${roomId}`);
-        setMessages(response.data.chatMessageDetails || []);
-        scrollToBottom();
-      } catch (error) {
-        console.error('메시지 가져오기 실패:', error);
-      }
-    };
-    fetchMessages();
-    return () => {
-      // 컴포넌트 언마운트 시 구독 해제
-      WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
-    };
-  }, [roomId]);
-
-  // 읽음 요청 함수
-  const sendReadReceipt = () => {
-    WebSocketService.send(`/app/chat.read/${roomId}`, {});
-  };
-
-  // 1. 채팅방 진입/마운트 시
-  useEffect(() => {
-    sendReadReceipt();
-  }, [roomId]);
-
-  // 2. 브라우저 포커스/가시성 변화 시
-  useEffect(() => {
-    const handleFocus = () => {
-      sendReadReceipt();
-    };
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        sendReadReceipt();
-      }
-    });
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleFocus);
-    };
-  }, [roomId]);
-
-  // 3. 새 메시지 도착 시(상대방이 보낸 메시지일 때만)
-  useEffect(() => {
-    if (!messages.length) return;
-    const lastMsg = messages[messages.length - 1];
-    if (Number(lastMsg.senderId) !== Number(user?.userId)) {
-      sendReadReceipt();
-    }
-  }, [messages, user, roomId]);
+  console.log('ChatRoom 컴포넌트 렌더링!');
 
   useEffect(() => {
     let isMounted = true;
+    console.log('채팅방 마운트됨! (페이지 진입)');
+
     const connectAndSubscribe = async () => {
       try {
           await WebSocketService.connect();
@@ -111,12 +58,72 @@ const ChatRoom = () => {
     };
     connectAndSubscribe();
     return () => {
+      console.log('채팅방 언마운트됨! (페이지 이탈)');
       isMounted = false;
       WebSocketService.unsubscribe(`/user/queue/read-receipts/${roomId}`);
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
       WebSocketService.disconnect();
     };
   }, [roomId]);
+
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await client.get(`/chat/${roomId}`);
+        setMessages(response.data.chatMessageDetails || []);
+        scrollToBottom();
+      } catch (error) {
+        console.error('메시지 가져오기 실패:', error);
+      }
+    };
+    fetchMessages();
+    return () => {
+      // 컴포넌트 언마운트 시 구독 해제
+      WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
+    };
+  }, [roomId]);
+
+  // 읽음 요청 함수
+  const sendReadReceipt = () => {
+    WebSocketService.send(`/app/chat.read/${roomId}`, {});
+  };
+
+  // 채팅방 페이지에 진입했을 때, 그리고 포커스/가시성 복귀 시에만 읽음 요청
+  useEffect(() => {
+    const handleFocusOrVisible = () => {
+      if (document.visibilityState === 'visible') {
+        sendReadReceipt();
+      }
+    };
+
+    window.addEventListener('focus', handleFocusOrVisible);
+    document.addEventListener('visibilitychange', handleFocusOrVisible);
+
+    // 마운트 시에도 한 번 실행 (채팅방 진입)
+    handleFocusOrVisible();
+
+    return () => {
+      window.removeEventListener('focus', handleFocusOrVisible);
+      document.removeEventListener('visibilitychange', handleFocusOrVisible);
+    };
+  }, [roomId]);
+
+  // 3. 새 메시지 도착 시(상대방이 보낸 메시지일 때만)
+  useEffect(() => {
+    if (!messages.length) return;
+    if (document.visibilityState !== 'visible') return;
+    if (window.focus !== true) return;
+    
+    const lastMsg = messages[messages.length - 1];
+    if (Number(lastMsg.senderId) !== Number(user?.userId)) {
+      sendReadReceipt();
+    }
+  }, [messages, user, roomId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
