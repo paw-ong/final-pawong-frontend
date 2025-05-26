@@ -166,13 +166,6 @@ function LostAnimalDetail() {
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
 
-  // 디버깅을 위한 로그 추가
-  console.log('전체 유저 정보:', user);
-  console.log('로그인 상태:', isLoggedIn);
-  console.log('현재 로그인한 사용자 ID:', user?.userId);
-  console.log('게시글 작성자 ID:', data.authorId);  
-  console.log('조건부 렌더링 결과:', isLoggedIn && user?.userId === data.authorId);
-
   // 데이터 구조 확인을 위한 로깅
   const {
     lostPostId,
