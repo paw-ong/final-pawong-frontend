@@ -14,6 +14,7 @@ import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
 import ChatRoom from "./pages/chat/ChatRoom.jsx";
+import ChatRooms from './pages/chat/ChatRooms';
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -38,6 +39,7 @@ function App() {
         <Route 
           path="chat/:roomId" element={<ChatRoom />}
         />
+        <Route path="chatrooms" element={<ChatRooms />} />
       </Route>
     </Routes>
   );

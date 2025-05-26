@@ -153,6 +153,11 @@ function Header() {
                 )}
               </div>
             </li>
+            <li className="tab-item">
+              <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")}>
+                채팅 목록
+              </NavLink>
+            </li>
                 </>
                 )}
           </ul>
