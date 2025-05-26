@@ -33,11 +33,8 @@ const ChatRoom = () => {
 
     try {
       const chatMessage = {
-        type: 'CHAT',
         content: newMessage,
-        roomId: roomId,
-        sender: user?.nickname || 'Anonymous',
-        timestamp: new Date().toISOString()
+        createAt: Date.now() // 에폭크 타임(밀리초)으로 전송
       };
 
       await WebSocketService.connectAndSendMessage(
@@ -73,11 +70,15 @@ const ChatRoom = () => {
       >
         <div className={styles.messageContent}>
           {!isSystemMessage && (
-            <span className={styles.sender}>{message.sender}</span>
+            <span className={styles.sender}>{message.senderName}</span>
           )}
           <p>{message.content}</p>
           <span className={styles.timestamp}>
-            {new Date(message.timestamp).toLocaleTimeString()}
+            {new Date(message.createAt).toLocaleTimeString('ko-KR ', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            })}
           </span>
         </div>
       </div>
