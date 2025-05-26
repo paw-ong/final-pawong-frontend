@@ -45,7 +45,7 @@ const ChatRoom = () => {
     try {
       const chatMessage = {
         content: newMessage,
-        createAt: Date.now() // 에폭크 타임(밀리초)으로 전송
+        createdAt: Date.now() // 에폭크 타임(밀리초)으로 전송
       };
 
       await WebSocketService.connectAndSendMessage(
@@ -53,7 +53,8 @@ const ChatRoom = () => {
         chatMessage,
         (message) => {
           const receivedMessage = JSON.parse(message.body);
-          setMessages(prev => [...prev, receivedMessage]);
+          const payload = receivedMessage.chatMessageDetail;
+          setMessages(prev => [...prev, payload]);
         },
         `/user/queue/chat/${roomId}`
       );
@@ -66,6 +67,7 @@ const ChatRoom = () => {
 
   const renderMessage = (message) => {
     const isMyMessage = message.senderId === user?.userId;
+    const messageDate = new Date(Number(message.createdAt));
 
     return (
       <div 
@@ -77,11 +79,13 @@ const ChatRoom = () => {
         <div className={styles.messageContent}>
           <p>{message.content}</p>
           <span className={styles.timestamp}>
-            {new Date(message.createAt).toLocaleTimeString('ko-KR ', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            })}
+            {isNaN(messageDate.getTime())
+              ? 'None'
+              : messageDate.toLocaleTimeString('ko-KR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
           </span>
         </div>
       </div>
