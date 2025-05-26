@@ -22,12 +22,8 @@ const ChatRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  console.log('ChatRoom 컴포넌트 렌더링!');
-
   useEffect(() => {
     let isMounted = true;
-    console.log('채팅방 마운트됨! (페이지 진입)');
-
     const connectAndSubscribe = async () => {
       try {
           await WebSocketService.connect();
@@ -39,7 +35,6 @@ const ChatRoom = () => {
           WebSocketService.subscribe(`/user/queue/read-receipts/${roomId}`, (message) => {
             if (!isMounted) return;
             const readMessage = JSON.parse(message.body);
-            console.log('읽음 이벤트 수신:', readMessage);
             setMessages(prev => {
               const updated = prev.map(msg =>
                 Number(msg.senderId) === Number(user?.userId) &&
@@ -47,7 +42,6 @@ const ChatRoom = () => {
                   ? { ...msg, status: 'READ' }
                   : msg
               );
-              console.log('업데이트될 messages:', updated);
               return updated;
             });
           });
@@ -58,7 +52,6 @@ const ChatRoom = () => {
     };
     connectAndSubscribe();
     return () => {
-      console.log('채팅방 언마운트됨! (페이지 이탈)');
       isMounted = false;
       WebSocketService.unsubscribe(`/user/queue/read-receipts/${roomId}`);
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
