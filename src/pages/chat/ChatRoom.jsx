@@ -59,8 +59,7 @@ const ChatRoom = () => {
         chatMessage,
         (message) => {
           const receivedMessage = JSON.parse(message.body);
-          const payload = receivedMessage.chatMessageDetail;
-          setMessages(prev => [...prev, payload]);
+          setMessages(prev => [...prev, receivedMessage]);
         },
         `/user/queue/chat/${roomId}`
       );
