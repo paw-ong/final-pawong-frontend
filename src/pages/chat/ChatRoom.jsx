@@ -37,7 +37,7 @@ const ChatRoom = () => {
         content: newMessage,
         roomId: roomId,
         sender: user?.nickname || 'Anonymous',
-        timestamp: new Date().toISOString()
+        timestamp: Date.now()
       };
 
       await WebSocketService.connectAndSendMessage(
@@ -77,7 +77,7 @@ const ChatRoom = () => {
           )}
           <p>{message.content}</p>
           <span className={styles.timestamp}>
-            {new Date(message.timestamp).toLocaleTimeString()}
+            {new Date(parseInt(message.timestamp)).toLocaleTimeString()}
           </span>
         </div>
       </div>
