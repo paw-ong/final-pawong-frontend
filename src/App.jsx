@@ -15,6 +15,7 @@ import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
 import ChatRoom from "./pages/chat/ChatRoom.jsx";
 import ChatRooms from './pages/chat/ChatRooms';
+import ChatRoomsByPost from './pages/chat/ChatRoomsByPost';
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -40,6 +41,10 @@ function App() {
           path="chat/:roomId" element={<ChatRoom />}
         />
         <Route path="chatrooms" element={<ChatRooms />} />
+        <Route 
+          path="chatrooms/post/:postId" 
+          element={user ? <ChatRoomsByPost /> : <Navigate to="/login" replace />} 
+        />
       </Route>
     </Routes>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
@@ -14,6 +14,7 @@ function LostAnimalDetail() {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const { user, isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -131,6 +132,13 @@ function LostAnimalDetail() {
       return;
     }
 
+    // 작성자인 경우 채팅방 목록 페이지로 이동
+    if (isLoggedIn && user?.userId === data.authorId) {
+      navigate(`/chatrooms/post/${data.lostPostId}`);
+      return;
+    }
+
+    // 작성자가 아닌 경우 기존 로직 실행
     const requestData = {
       postId: Number(data.lostPostId),
       authorId: Number(data.authorId)
@@ -140,7 +148,6 @@ function LostAnimalDetail() {
       const response = await client.post('/chat/rooms', requestData);
       
       if (response && response.data && response.data.chatRoomId) {
-        // 성공 시 채팅방으로 리다이렉트
         window.location.href = `/chat/${response.data.chatRoomId}`;
       }
     } catch (error) {
@@ -158,6 +165,13 @@ function LostAnimalDetail() {
 
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
+
+  // 디버깅을 위한 로그 추가
+  console.log('전체 유저 정보:', user);
+  console.log('로그인 상태:', isLoggedIn);
+  console.log('현재 로그인한 사용자 ID:', user?.userId);
+  console.log('게시글 작성자 ID:', data.authorId);  
+  console.log('조건부 렌더링 결과:', isLoggedIn && user?.userId === data.authorId);
 
   // 데이터 구조 확인을 위한 로깅
   const {
@@ -269,26 +283,44 @@ function LostAnimalDetail() {
             <td style={{ fontWeight: 600, padding: 12 }}>추가설명</td>
             <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
           </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
       
       {/* 채팅하기 버튼 */}
       <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
-        <button 
-          onClick={handleChatButtonClick}
-          style={{
-            backgroundColor: '#FF8A3D',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            padding: '12px 24px',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-        >
-          채팅하기
-        </button>
+        {isLoggedIn && user?.userId === data.authorId ? (
+          <button 
+            onClick={handleChatButtonClick}
+            style={{
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            요청된 채팅으로 이동
+          </button>
+        ) : (
+          <button 
+            onClick={handleChatButtonClick}
+            style={{
+              backgroundColor: '#FF8A3D',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            채팅하기
+          </button>
+        )}
       </div>
     </div>
   );
