@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
+import client from '../../api/client';
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -20,6 +21,16 @@ const ChatRoom = () => {
   }, [messages]);
 
   useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await client.get(`/chat/${roomId}`);
+        setMessages(response.data.chatMessageDetails || []);
+        scrollToBottom();
+      } catch (error) {
+        console.error('메시지 가져오기 실패:', error);
+      }
+    };
+    fetchMessages();
     return () => {
       // 컴포넌트 언마운트 시 구독 해제
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
@@ -54,24 +65,16 @@ const ChatRoom = () => {
   };
 
   const renderMessage = (message) => {
-    const isSystemMessage = message.sender === 'System';
-    const isMyMessage = message.sender === user?.nickname;
+    const isMyMessage = message.senderId === user?.userId;
 
     return (
-      <div
-        key={message.timestamp}
+      <div 
+        key={message.chatMessageId}
         className={`${styles.message} ${
-          isSystemMessage 
-            ? styles.systemMessage 
-            : isMyMessage 
-              ? styles.myMessage 
-              : styles.otherMessage
+          isMyMessage ? styles.myMessage : styles.otherMessage
         }`}
       >
         <div className={styles.messageContent}>
-          {!isSystemMessage && (
-            <span className={styles.sender}>{message.senderName}</span>
-          )}
           <p>{message.content}</p>
           <span className={styles.timestamp}>
             {new Date(message.createAt).toLocaleTimeString('ko-KR ', {
