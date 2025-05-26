@@ -81,6 +81,11 @@ const ChatRoom = () => {
           minute: '2-digit',
           hour12: true,
         });
+    // 읽음/안읽음 숫자 표시
+    let unreadCount = null;
+    if (isMyMessage && message.status === 'SENT') {
+      unreadCount = <span className={styles.unreadCount}>1</span>;
+    }
 
     return (
       <div
@@ -90,7 +95,10 @@ const ChatRoom = () => {
         }`}
       >
         {isMyMessage && (
-          <span className={styles.timestampLeft}>{timeString}</span>
+          <span className={styles.timestampLeft}>
+            {unreadCount && <span className={styles.unreadCountWrapper}>{unreadCount}</span>}
+            {timeString}
+            </span>
         )}
         <div
           className={`${styles.message} ${
