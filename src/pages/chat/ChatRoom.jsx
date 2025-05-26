@@ -43,16 +43,68 @@ const ChatRoom = () => {
     };
   }, [roomId]);
 
+  // 읽음 요청 함수
+  const sendReadReceipt = () => {
+    WebSocketService.send(`/app/chat.read/${roomId}`, {});
+  };
+
+  // 1. 채팅방 진입/마운트 시
+  useEffect(() => {
+    sendReadReceipt();
+  }, [roomId]);
+
+  // 2. 브라우저 포커스/가시성 변화 시
+  useEffect(() => {
+    const handleFocus = () => {
+      sendReadReceipt();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        sendReadReceipt();
+      }
+    });
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [roomId]);
+
+  // 3. 새 메시지 도착 시(상대방이 보낸 메시지일 때만)
+  useEffect(() => {
+    if (!messages.length) return;
+    const lastMsg = messages[messages.length - 1];
+    if (Number(lastMsg.senderId) !== Number(user?.userId)) {
+      sendReadReceipt();
+    }
+  }, [messages, user, roomId]);
+
   useEffect(() => {
     let isMounted = true;
     const connectAndSubscribe = async () => {
       try {
           await WebSocketService.connect();
-          await WebSocketService.subscribe(`/user/queue/chat/${roomId}`, (message) => {
+          WebSocketService.subscribe(`/user/queue/chat/${roomId}`, (message) => {
             if (!isMounted) return;
             const receivedMessage = JSON.parse(message.body);
             setMessages(prev => [...prev, receivedMessage]);
           });
+          WebSocketService.subscribe(`/user/queue/read-receipts/${roomId}`, (message) => {
+            if (!isMounted) return;
+            const readMessage = JSON.parse(message.body);
+            console.log('읽음 이벤트 수신:', readMessage);
+            setMessages(prev => {
+              const updated = prev.map(msg =>
+                Number(msg.senderId) === Number(user?.userId) &&
+                msg.chatMessageId <= readMessage.lastReadMessageId
+                  ? { ...msg, status: 'READ' }
+                  : msg
+              );
+              console.log('업데이트될 messages:', updated);
+              return updated;
+            });
+          });
+          WebSocketService.send(`/app/chat.read/${roomId}`, {});
       } catch (error) {
         console.error('WebSocket 연결 실패:', error);
       }
@@ -60,6 +112,7 @@ const ChatRoom = () => {
     connectAndSubscribe();
     return () => {
       isMounted = false;
+      WebSocketService.unsubscribe(`/user/queue/read-receipts/${roomId}`);
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
       WebSocketService.disconnect();
     };
