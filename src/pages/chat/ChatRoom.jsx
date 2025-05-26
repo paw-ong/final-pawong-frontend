@@ -66,28 +66,38 @@ const ChatRoom = () => {
   };
 
   const renderMessage = (message) => {
-    const isMyMessage = message.senderId === user?.userId;
+    const isMyMessage = Number(message.senderId) === Number(user?.userId);
     const messageDate = new Date(Number(message.createdAt));
+    const timeString = isNaN(messageDate.getTime())
+      ? '시간 정보 없음'
+      : messageDate.toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
 
     return (
-      <div 
+      <div
         key={message.chatMessageId}
-        className={`${styles.message} ${
-          isMyMessage ? styles.myMessage : styles.otherMessage
+        className={`${styles.messageRow} ${
+          isMyMessage ? styles.myMessageRow : styles.otherMessageRow
         }`}
       >
-        <div className={styles.messageContent}>
-          <p>{message.content}</p>
-          <span className={styles.timestamp}>
-            {isNaN(messageDate.getTime())
-              ? 'None'
-              : messageDate.toLocaleTimeString('ko-KR', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
-          </span>
+        {isMyMessage && (
+          <span className={styles.timestampLeft}>{timeString}</span>
+        )}
+        <div
+          className={`${styles.message} ${
+            isMyMessage ? styles.myMessage : styles.otherMessage
+          }`}
+        >
+          <div className={styles.messageContent}>
+            <p>{message.content}</p>
+          </div>
         </div>
+        {!isMyMessage && (
+          <span className={styles.timestampRight}>{timeString}</span>
+        )}
       </div>
     );
   };
