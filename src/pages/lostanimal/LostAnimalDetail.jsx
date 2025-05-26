@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
+import { AuthContext } from "../../contexts/AuthContext";
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ function LostAnimalDetail() {
   const [data, setData] = useState(null);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const { user, isLoggedIn } = useContext(AuthContext);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -122,11 +124,44 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  // 채팅 버튼 클릭 핸들러
+  const handleChatButtonClick = async () => {
+    if (!data || !isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
+    const requestData = {
+      postId: Number(data.lostPostId),
+      authorId: Number(data.authorId)
+    };
+    
+    try {
+      const response = await client.post('/chat/rooms', requestData);
+      
+      if (response && response.data && response.data.chatRoomId) {
+        // 성공 시 채팅방으로 리다이렉트
+        window.location.href = `/chat/${response.data.chatRoomId}`;
+      }
+    } catch (error) {
+      console.error('채팅방 생성 오류:', error);
+      
+      if (error.status === 401 || error.status === 403) {
+        alert('로그인이 필요하거나 권한이 없습니다.');
+      } else if (error.code === 'CHATROOM_POST_ERROR') {
+        alert('채팅방을 생성할 수 없습니다');
+      } else {
+        alert('채팅방 생성 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
 
   // 데이터 구조 확인을 위한 로깅
   const {
+    lostPostId,
     date,
     upKindNm,
     kindNm,
@@ -139,6 +174,7 @@ function LostAnimalDetail() {
     rfidCd,
     location,
     author,
+    authorId,
     createdAt
   } = data;
 
@@ -235,6 +271,25 @@ function LostAnimalDetail() {
           </tr>
         </tbody>
       </table>
+      
+      {/* 채팅하기 버튼 */}
+      <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+        <button 
+          onClick={handleChatButtonClick}
+          style={{
+            backgroundColor: '#FF8A3D',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '12px 24px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          채팅하기
+        </button>
+      </div>
     </div>
   );
 }
