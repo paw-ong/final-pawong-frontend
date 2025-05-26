@@ -5,6 +5,12 @@ import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
 import client from '../../api/client';
 
+function formatDateWithDay(date) {
+  const d = new Date(Number(date));
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
+}
+
 const ChatRoom = () => {
   const { roomId } = useParams();
   const { user } = useContext(AuthContext);
@@ -102,6 +108,27 @@ const ChatRoom = () => {
     );
   };
 
+  const renderMessagesWithDateDivider = (messages) => {
+    let lastDate = null;
+    return messages.map((message, idx) => {
+      const messageDate = new Date(Number(message.createdAt));
+      const dateKey = `${messageDate.getFullYear()}-${messageDate.getMonth()}-${messageDate.getDate()}`;
+      const showDateDivider = lastDate !== dateKey;
+      lastDate = dateKey;
+
+      return (
+        <React.Fragment key={message.chatMessageId}>
+          {showDateDivider && (
+            <div className={styles.dateDivider}>
+              <span className={styles.dateText}>{formatDateWithDay(message.createdAt)}</span>
+            </div>
+          )}
+          {renderMessage(message)}
+        </React.Fragment>
+      );
+    });
+  };
+
   return (
     <div className={styles.chatRoom}>
       <div className={styles.chatHeader}>
@@ -109,7 +136,7 @@ const ChatRoom = () => {
       </div>
       
       <div className={styles.messagesContainer}>
-        {messages.map(renderMessage)}
+        {renderMessagesWithDateDivider(messages)}
         <div ref={messagesEndRef} />
       </div>
 

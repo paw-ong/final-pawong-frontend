@@ -137,3 +137,29 @@
   background-color: #cccccc;
   cursor: not-allowed;
 } 
+
+.dateDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0 0.5rem 0;
+  position: relative;
+}
+
+.dateDivider::before,
+.dateDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0 1rem;
+}
+
+.dateText {
+  background-color: #f5f5f5;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
