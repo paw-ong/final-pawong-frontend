@@ -41,7 +41,7 @@ function AdoptionDetail() {
     if (userToken && id) {
       client.get(`/users/favorites/${id}/status`)
         .then(response => {
-          setIsFavorite(response.data.inFavorites);
+          setIsFavorite(response.data.isInFavorites);
         })
         .catch(error => console.error('찜 상태 확인 실패: ', error));
     }
@@ -59,8 +59,8 @@ function AdoptionDetail() {
     
     client.post(`/users/favorites/${id}/toggle`)
       .then(response => {
-        setIsFavorite(response.data.inFavorites);
-        setModalMsg(response.data.inFavorites ? "즐겨찾기에 추가하였습니다." : "즐겨찾기가 해제되었습니다.");
+        setIsFavorite(response.data.isInFavorites);
+        setModalMsg(response.data.isInFavorites ? "즐겨찾기에 추가하였습니다." : "즐겨찾기가 해제되었습니다.");
         setShowModal(true);
         setTimeout(() => setShowModal(false), 1500);
       })
