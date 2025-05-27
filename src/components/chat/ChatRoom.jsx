@@ -18,10 +18,12 @@ const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const [animalData, setAnimalData] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
 
   useEffect(() => {
     let isMounted = true;
@@ -81,6 +83,21 @@ const ChatRoom = () => {
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
     };
   }, [roomId]);
+
+  useEffect(() => {
+    client.get(`/lost-animals/lost-posts/${id}`).then(res => setAnimalData(res.data.lostPostDetailDto));
+  }, [id]);
+
+  const getOtherProfileImage = (message) => {
+    if (!animalData || !user) return userImage;
+  
+    // 내 userId와 authorId가 같으면 상대방은 profileImage
+    if (animalData.authorId === user.userId) {
+      return message.senderProfileImage || userImage;
+    }
+    // 다르면 상대방 프로필 이미지는 공고의 imageUrl
+    return animalData.imageUrl || userImage;
+  };
 
   // 읽음 요청 함수
   const sendReadReceipt = () => {
@@ -162,7 +179,7 @@ const ChatRoom = () => {
       >
         {!isMyMessage && (
         <img
-          src={message.senderProfileImage || userImage}
+          src={getOtherProfileImage(message)}
           alt="프로필"
           className={styles.profileImage}
           />
