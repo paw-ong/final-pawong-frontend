@@ -195,3 +195,33 @@
   display: flex;
   flex-direction: column;
 }
+
+.nicknameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.nicknameLeft {
+  justify-content: flex-start;
+}
+
+.nicknameRight {
+  justify-content: flex-end;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #aaa;
+  opacity: 0.8;
+}
+
+.profileImage {
+  width: 32px;         /* 또는 36px, 40px 등 */
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}

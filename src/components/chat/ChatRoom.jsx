@@ -4,6 +4,7 @@ import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
 import client from '../../api/client';
+import userImage from '../../assets/images/user.jpg';
 
 function formatDateWithDay(date) {
   const d = new Date(Number(date));
@@ -159,6 +160,13 @@ const ChatRoom = () => {
           isMyMessage ? styles.myMessageRow : styles.otherMessageRow
         }`}
       >
+        {!isMyMessage && (
+        <img
+          src={message.senderProfileImage || userImage}
+          alt="프로필"
+          className={styles.profileImage}
+          />
+        )}
         {isMyMessage && (
           <span className={styles.timestampLeft}>
             {unreadCount && <span className={styles.unreadCountWrapper}>{unreadCount}</span>}
@@ -176,6 +184,14 @@ const ChatRoom = () => {
         </div>
         {!isMyMessage && (
           <span className={styles.timestampRight}>{timeString}</span>
+        )}
+        {/* 내 메시지: 말풍선 → 프로필 */}
+        {isMyMessage && (
+          <img
+            src={user?.profileImage || userImage}
+            alt="프로필"
+            className={styles.profileImage}
+          />
         )}
       </div>
     );
