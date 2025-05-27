@@ -13,12 +13,13 @@ import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
-import ChatRoom from "./pages/chat/ChatRoom.jsx";
+import ChatRoom from "./components/chat/ChatRoom.jsx";
 import InAppNotification from "./firebase/InAppNotification.jsx";
 import { getFcmToken } from "./firebase/fcm.jsx";
 import { createContext } from "react";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase/config.jsx";
+import ChatRoomPage from "./pages/chat/ChatRoomPage.jsx";
 
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
