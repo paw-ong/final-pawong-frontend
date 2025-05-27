@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
+import LostAnimalCard from "../../components/pet/card/LostAnimalCard";
 import "./LostAnimal.css";
 
 function LostAnimalDetail() {
@@ -10,6 +11,8 @@ function LostAnimalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [similarAnimals, setSimilarAnimals] = useState([]);
+  const [isPolling, setIsPolling] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
 
@@ -122,6 +125,31 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  useEffect(() => {
+    const fetchSimilarAnimals = async () => {
+      try {
+        const response = await client.get(`/lost-animals/lost-posts/${id}/similar-animals`);
+        console.log('유사 동물 API 응답:', response);
+        
+        if (response.status === 200) {
+          // lostAnimals 배열에서 데이터 추출
+          const animals = response.data.lostAnimals || [];
+          console.log('유사 동물 데이터:', animals);
+          setSimilarAnimals(animals);
+          setIsPolling(false);
+        } else if (response.status === 202) {
+          setIsPolling(true);
+          setTimeout(fetchSimilarAnimals, 2000);
+        }
+      } catch (error) {
+        console.error('유사 동물 조회 중 오류 발생:', error);
+        setIsPolling(false);
+      }
+    };
+
+    fetchSimilarAnimals();
+  }, [id]);
+
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
 
@@ -172,7 +200,12 @@ function LostAnimalDetail() {
           }}
         />
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
+      <table style={{ 
+        width: '100%', 
+        borderCollapse: 'collapse', 
+        marginBottom: 32,
+        tableLayout: 'fixed'
+      }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
             <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 분실신고자 정보</th>
@@ -232,6 +265,53 @@ function LostAnimalDetail() {
           <tr>
             <td style={{ fontWeight: 600, padding: 12 }}>추가설명</td>
             <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
+          </tr>
+          <tr style={{ background: '#f7f7f7' }}>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 유사 동물</th>
+          </tr>
+          <tr>
+            <td colSpan={4} style={{ padding: 12 }}>
+              {isPolling ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사 동물을 찾는 중입니다...
+                </div>
+              ) : similarAnimals.length > 0 ? (
+                <div style={{ 
+                  display: 'flex', 
+                  overflowX: 'auto', 
+                  gap: '16px',
+                  padding: '16px 0',
+                  width: '100%',
+                  scrollbarWidth: 'thin',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': {
+                    height: '6px'
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: '#f1f1f1',
+                    borderRadius: '3px'
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: '#888',
+                    borderRadius: '3px'
+                  }
+                }}>
+                  {similarAnimals.map((animal, index) => (
+                    <div key={index} style={{ 
+                      minWidth: '300px',
+                      flex: '0 0 auto',
+                      maxWidth: '300px'
+                    }}>
+                      <LostAnimalCard post={animal} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사한 동물이 없습니다.
+                </div>
+              )}
+            </td>
           </tr>
         </tbody>
       </table>
