@@ -12,7 +12,7 @@ function formatDateWithDay(date) {
 }
 
 const ChatRoom = () => {
-  const { roomId } = useParams();
+  const { id, roomId } = useParams();
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
