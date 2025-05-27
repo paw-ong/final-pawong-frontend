@@ -98,6 +98,17 @@ const ChatRoom = () => {
     // 다르면 상대방 프로필 이미지는 공고의 imageUrl
     return animalData.imageUrl || userImage;
   };
+  const getOtherNickname = (animalData, user, messages) => {
+    if (!animalData || !user) return '';
+    // 내가 공고 작성자가 아니면 공고 작성자가 상대방
+    if (animalData.authorId !== user.userId) {
+      return animalData.author; // 공고 작성자 닉네임
+    }
+    // 내가 공고 작성자라면, 상대방은 채팅 메시지의 senderName
+    // 가장 최근 메시지에서 내 메시지가 아닌 첫 메시지의 senderName을 찾음
+    const otherMsg = messages.find(msg => Number(msg.senderId) !== Number(user.userId));
+    return otherMsg ? otherMsg.senderName : '';
+  };
 
   // 읽음 요청 함수
   const sendReadReceipt = () => {
@@ -238,7 +249,14 @@ const ChatRoom = () => {
   return (
     <div className={styles.chatRoom}>
       <div className={styles.chatHeader}>
-        <h2>채팅방 {roomId}</h2>
+        <img
+          src={animalData?.imageUrl || '/default-animal.png'}
+          alt="동물 이미지"
+          className={styles.headerAnimalImage}
+        />
+        <span className={styles.headerNickname}>
+          {getOtherNickname(animalData, user, messages)}
+        </span>
       </div>
       
       <div className={styles.messagesContainer}>
