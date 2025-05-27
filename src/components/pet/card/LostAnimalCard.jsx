@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import client from '../../../api/client';
 import './LostAnimalCard.css';
 
@@ -8,7 +7,6 @@ import bookmarkEmpty from '../../../assets/images/bookmark/unbookmark.png';
 import bookmarkFilled from '../../../assets/images/bookmark/bookmark.png';
 
 function LostAnimalCard({ post, type }) {
-  const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(post.bookmarked);
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -40,7 +38,8 @@ function LostAnimalCard({ post, type }) {
   };
 
   const handleBookmarkToggle = async (e) => {
-    e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+    e.preventDefault(); // 기본 동작 방지
+    e.stopPropagation(); // 이벤트 전파 방지
     if (isLoading) return;
     setIsLoading(true);
 
@@ -52,7 +51,6 @@ function LostAnimalCard({ post, type }) {
       const { data } = await client.post(endpoint);
       setIsBookmarked(data.bookmarked);
     } catch (error) {
-      // console.error('북마크 토글 중 오류 발생:', error);
       if (error.status && error.status === 401) {
         alert('로그인이 필요한 서비스입니다!');
       } else {
@@ -60,14 +58,6 @@ function LostAnimalCard({ post, type }) {
       }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleCardClick = () => {
-    if (post.postType === 'FOSTER') {
-      navigate(`/adoptions/${post.postId}`);
-    } else {
-      navigate(`/lostAnimal/detail/${post.postId}`, { state: { postType: post.postType } });
     }
   };
 
@@ -87,7 +77,11 @@ function LostAnimalCard({ post, type }) {
   };
 
   return (
-    <div className="lost-animal-card" onClick={handleCardClick}>
+    <a 
+      href={post.postType === 'FOSTER' ? `/adoptions/${post.postId}` : `/lostAnimal/detail/${post.postId}`}
+      className="lost-animal-card"
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+    >
       <div className="post-type-badge" style={{ backgroundColor: getPostTypeColor(post.postType) }}>
         {getPostTypeText(post.postType)}
       </div>
@@ -128,7 +122,7 @@ function LostAnimalCard({ post, type }) {
           <span className="created-at">{post.createdAt}</span>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 

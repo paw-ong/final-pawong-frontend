@@ -15,6 +15,7 @@ function LostAnimalDetail() {
   const [isPolling, setIsPolling] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const hasCalledApi = useRef(false);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -126,20 +127,32 @@ function LostAnimalDetail() {
   }, [id, currentLocation.state]);
 
   useEffect(() => {
+    let timeoutId = null;
+
     const fetchSimilarAnimals = async () => {
+      // LOST 타입이 아닐 경우 API 호출하지 않음
+      if (data?.postType !== 'LOST') {
+        setSimilarAnimals([]);
+        setIsPolling(false);
+        return;
+      }
+
       try {
         const response = await client.get(`/lost-animals/lost-posts/${id}/similar-animals`);
         console.log('유사 동물 API 응답:', response);
         
         if (response.status === 200) {
-          // lostAnimals 배열에서 데이터 추출
           const animals = response.data.lostAnimals || [];
           console.log('유사 동물 데이터:', animals);
           setSimilarAnimals(animals);
           setIsPolling(false);
         } else if (response.status === 202) {
           setIsPolling(true);
-          setTimeout(fetchSimilarAnimals, 2000);
+          // 이전 타이머가 있다면 취소
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          timeoutId = setTimeout(fetchSimilarAnimals, 2000);
         }
       } catch (error) {
         console.error('유사 동물 조회 중 오류 발생:', error);
@@ -147,8 +160,22 @@ function LostAnimalDetail() {
       }
     };
 
-    fetchSimilarAnimals();
-  }, [id]);
+    // data가 로드되고 LOST 타입일 때만 API 호출
+    if (data && data.postType === 'LOST') {
+      console.log('유사 동물 API 호출 시작');
+      fetchSimilarAnimals();
+    } else {
+      setSimilarAnimals([]);
+      setIsPolling(false);
+    }
+
+    // cleanup 함수
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [data, id]);
 
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
@@ -271,7 +298,11 @@ function LostAnimalDetail() {
           </tr>
           <tr>
             <td colSpan={4} style={{ padding: 12 }}>
-              {isPolling ? (
+              {data?.postType !== 'LOST' ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
+                </div>
+              ) : isPolling ? (
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                   유사 동물을 찾는 중입니다...
                 </div>
