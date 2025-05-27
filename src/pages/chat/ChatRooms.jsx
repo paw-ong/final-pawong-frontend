@@ -59,20 +59,27 @@ function ChatRooms() {
                 <img src={room.lostPostInfo.imageUrl} alt="분실동물" />
               </div>
               <div className="chat-room-info">
-                <div className="chat-room-kind">{room.lostPostInfo.kindNm}</div>
-                <div className="chat-room-location">{room.lostPostInfo.location}</div>
-                <div className="chat-room-author">작성자: {room.lostPostInfo.author}</div>
-                {room.status === 'INACTIVE' && (
-                  <div className="chat-room-status">종료된 채팅</div>
-                )}
-                <div 
-                  className="post-link"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}`);
-                  }}
-                >
-                  공고로 이동 &gt;
+                <div className="chat-room-header">
+                  <span className="chat-room-kind">{room.lostPostInfo.kindNm}</span>
+                  <span className="chat-room-location">{room.lostPostInfo.location}</span>
+                  <span className={`chat-room-status ${room.status.toLowerCase()}`}>
+                    {room.status === 'ACTIVE' ? '🟢 진행중' : '🔴 종료됨'}
+                  </span>
+                </div>
+                <div className="chat-room-message">
+                  {room.latestMessageContent || "새로운 채팅을 시작해보세요!"}
+                </div>
+                <div className="chat-room-footer">
+                  <span className="chat-room-author">공고 작성자: {room.lostPostInfo.author}</span>
+                  <span 
+                    className="post-link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}`);
+                    }}
+                  >
+                    공고로 이동 &gt;
+                  </span>
                 </div>
               </div>
             </div>
