@@ -9,7 +9,7 @@ function ChatRooms() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, user } = useContext(AuthContext);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -70,7 +70,12 @@ function ChatRooms() {
                   {room.latestMessageContent || "새로운 채팅을 시작해보세요!"}
                 </div>
                 <div className="chat-room-footer">
-                  <span className="chat-room-author">공고 작성자: {room.lostPostInfo.author}</span>
+                  <span className="chat-room-author">
+                    {user?.userId === room.lostPostInfo.authorId 
+                      ? `채팅 요청자: ${room.participantUserName}`
+                      : `공고 작성자: ${room.lostPostInfo.author}`
+                    }
+                  </span>
                   <span 
                     className="post-link"
                     onClick={(e) => {
