@@ -247,38 +247,40 @@ const ChatRoom = () => {
   };
 
   return (
-    <div className={styles.chatRoom}>
-      <div className={styles.chatHeader}>
-        <img
-          src={animalData?.imageUrl || '/default-animal.png'}
-          alt="동물 이미지"
-          className={styles.headerAnimalImage}
-        />
-        <span className={styles.headerNickname}>
-          {getOtherNickname(animalData, user, messages)}
-        </span>
-      </div>
-      
-      <div className={styles.messagesContainer}>
-        {renderMessagesWithDateDivider(messages)}
-        <div ref={messagesEndRef} />
-      </div>
+    <div className="main-content">
+      <div className={styles.chatRoom}>
+        <div className={styles.chatHeader}>
+          <img
+            src={animalData?.imageUrl || '/default-animal.png'}
+            alt="동물 이미지"
+            className={styles.headerAnimalImage}
+          />
+          <span className={styles.headerNickname}>
+            {getOtherNickname(animalData, user, messages)}
+          </span>
+        </div>
+        
+        <div className={styles.messagesContainer}>
+          {renderMessagesWithDateDivider(messages)}
+          <div ref={messagesEndRef} />
+        </div>
 
-      <form onSubmit={handleSendMessage} className={styles.inputForm}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="메시지를 입력하세요..."
-          className={styles.messageInput}
-        />
-        <button 
-          type="submit" 
-          className={styles.sendButton}
-        >
-          전송
-        </button>
-      </form>
+        <form onSubmit={handleSendMessage} className={styles.inputForm}>
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="메시지를 입력하세요..."
+            className={styles.messageInput}
+          />
+          <button 
+            type="submit" 
+            className={styles.sendButton}
+          >
+            전송
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
