@@ -3,6 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  padding-bottom: 20px; /* Footer와의 간격 추가 */
 }
 
 .lost-animal-result-grid {
@@ -46,13 +47,20 @@
   }
 }
 
+@media (max-width: 768px) {
+  .lost-animal-result-container {
+    padding-bottom: 30px;
+  }
+}
+
 @media (max-width: 480px) {
   .lost-animal-result-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .lost-animal-result-container {
     padding: 0 8px;
+    padding-bottom: 20px;
   }
-} 
+}

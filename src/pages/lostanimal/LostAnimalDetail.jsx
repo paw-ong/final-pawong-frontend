@@ -158,7 +158,7 @@ function LostAnimalDetail() {
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
-          alt="분실동물" 
+          alt="실종 동물"
           style={{ 
             width: 400, 
             height: 400, 
@@ -175,20 +175,20 @@ function LostAnimalDetail() {
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 분실신고자 정보</th>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 실종 신고자 정보</th>
             <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr>
             <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>신고자</td>
             <td style={{ width: '25%', padding: 12 }}>{author || '-'}</td>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>분실일자</td>
+            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>실종 일자</td>
             <td style={{ width: '25%', padding: 12 }}>{date || '-'}</td>
           </tr>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실장소</th>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 장소</th>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>분실장소</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>실종 장소</td>
             <td colSpan={3} style={{ padding: 12 }}>{location || '-'}</td>
           </tr>
           <tr>
@@ -205,10 +205,10 @@ function LostAnimalDetail() {
             </td>
           </tr>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실동물 정보</th>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 동물 정보</th>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>동물종류</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>동물 종류</td>
             <td style={{ padding: 12 }}>{upKindNm || '-'}</td>
             <td style={{ fontWeight: 600, padding: 12 }}>품종</td>
             <td style={{ padding: 12 }}>{kindNm || '-'}</td>
@@ -230,7 +230,7 @@ function LostAnimalDetail() {
             <td colSpan={3} style={{ padding: 12 }}>{specialMark || '-'}</td>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>추가설명</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>추가 설명</td>
             <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
           </tr>
         </tbody>
