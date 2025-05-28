@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -162,6 +162,14 @@ function ChatRooms() {
     navigate(`/chat/${chatRoomId}`);
   };
 
+  const sortedRooms = useMemo(() => {
+    return [...chatRooms].sort((a, b) => {
+      if (a.status === b.status) return 0;
+      // a가 INACTIVE 면 뒤로, 아니면 앞으로
+      return a.status === 'INACTIVE' ? 1 : -1;
+    });
+  }, [chatRooms]);
+
   if (loading) return <div className="chat-rooms-container">로딩 중...</div>;
   if (error) return <div className="chat-rooms-container">{error}</div>;
 
@@ -169,12 +177,12 @@ function ChatRooms() {
     <div className="chat-rooms-container">
       <h1>채팅 목록</h1>
       <div className="chat-rooms-list">
-        {chatRooms.length === 0 ? (
+      {sortedRooms.length === 0 ? (
           <div className="no-chat-rooms">
             진행 중인 채팅이 없습니다.
           </div>
         ) : (
-          chatRooms.map((room) => {
+          sortedRooms.map(room => {
             const isAuthor = user?.userId === room.lostPostInfo.authorId;
             const postTypeLabel = room.lostPostInfo.postType === 'LOST' ? '실종' : '발견';
             
@@ -217,7 +225,7 @@ function ChatRooms() {
                     <span className="chat-room-author">
                       {isAuthor
                         ? `${room.participantUserName}님`
-                        : room.lostPostInfo.location
+                        : `📍 ${room.lostPostInfo.location}`
                       }
                     </span>
                     <span
