@@ -35,22 +35,50 @@ const showAuthModal = () => {
 
 // 응답 인터셉터
 client.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
+    // 성공적인 응답 처리
+    response => ({
+        status: response.status,
+        data: response.data
+      }),
+    // 에러 응답 처리
+    error => {
+        const { response, config: originalRequest } = err
+        if (response?.status === 401) {
+            const code = response.data?.code
+            console.log(code)
+      
+            // 2-1) 토큰 만료
+            // if (!isRefreshing) {
+            //   isRefreshing = true
+            //   // 리프레시 토큰으로 재발급
+            //   return client
+            //     .post('/auth/refresh')
+            //     .then(refreshRes => {
+            //       isRefreshing = false
+            //       processQueue(null, refreshRes.data)  // 만약 새 토큰을 body로 받았다면
+            //       // 원래 요청 재시도
+            //       return client(originalRequest)
+            //     })
+            //     .catch(refreshErr => {
+            //       isRefreshing = false
+            //       processQueue(refreshErr, null)
+            //       // 재발급 실패 → 로그인 페이지로
+            //       window.location.href = '/login'
+            //       return Promise.reject(refreshErr)
+            //     })
+            // }
+      
+            // 이미 리프레시 중이면 큐에 대기
+            // return new Promise((resolve, reject) => {
+            //   failedQueue.push({ resolve, reject })
+            // }).then(() => client(originalRequest))
+      
+        }
+      
+    // 그 외는 그냥 reject
+    return Promise.reject(err)
+}
+)
 
-    // X-Skip-Auth-Error 헤더가 있는 경우 401 에러 처리를 건너뜁니다
-    if (error.response?.status === 401) {
-      if (!originalRequest.headers['X-Skip-Auth-Error']) {
-        console.log('401 에러 발생');
-        window.dispatchEvent(new Event('showAuthModal'));
-      }
-      return Promise.reject(error);
-    }
-    return Promise.reject(error);
-  }
-);
 
 export default client;

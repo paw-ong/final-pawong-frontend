@@ -94,7 +94,7 @@ function formatPetData(item) {
   };
 }
 
-function AdoptionRecommendList() {
+function AdoptionRecommendList({ user, onRequireAuth }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -163,7 +163,12 @@ function AdoptionRecommendList() {
         <Slider {...settings}>
           {pets.map(pet => (
               <div key={pet.adoptionId}>
-                <PetCard pet={formatPetData(pet)} type="adoptions"/>
+                <PetCard 
+                  user={user}
+                  onRequireAuth={onRequireAuth}
+                  pet={formatPetData(pet)} 
+                  type="adoptions"
+                />
               </div>
           ))}
         </Slider>
