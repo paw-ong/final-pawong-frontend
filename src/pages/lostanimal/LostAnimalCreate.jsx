@@ -161,7 +161,7 @@ export default function LostAnimalCreate() {
       });
       if (response.status === 201) {
         alert('게시글이 성공적으로 작성되었습니다.');
-        navigate('/lostAnimal');
+        navigate(`/lostAnimal/detail/${response.data.lostPostId}`);
       }
     } catch (error) {
       console.error('게시글 작성 중 오류 발생:', error);
