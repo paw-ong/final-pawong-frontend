@@ -60,9 +60,9 @@ class WebSocketService {
       this.stompClient = new Client({
         webSocketFactory: () => socket,
         connectHeaders: this.commonHeaders,
-        debug: (str) => {
-          console.log('[STOMP]', str);
-        },
+        // debug: (str) => {
+          // console.log('[STOMP]', str);
+        // },
         onWebSocketClose: () => {
           console.log('[WebSocket] Connection closed');
           this.connected = false;

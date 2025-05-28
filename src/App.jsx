@@ -132,6 +132,7 @@ function App() {
             />
             <Route path="signup/additional-info" element={<AdditionalInfo />} />
             <Route path="chat/:roomId" element={<ChatRoom />} />
+            <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
           </Route>
         </Routes>
 

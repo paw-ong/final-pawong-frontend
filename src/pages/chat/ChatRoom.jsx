@@ -3,6 +3,13 @@ import { useParams } from 'react-router-dom';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
+import client from '../../api/client';
+
+function formatDateWithDay(date) {
+  const d = new Date(Number(date));
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
+}
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -16,15 +23,100 @@ const ChatRoom = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    const connectAndSubscribe = async () => {
+      try {
+          await WebSocketService.connect();
+          WebSocketService.subscribe(`/user/queue/chat/${roomId}`, (message) => {
+            if (!isMounted) return;
+            const receivedMessage = JSON.parse(message.body);
+            setMessages(prev => [...prev, receivedMessage]);
+          });
+          WebSocketService.subscribe(`/user/queue/read-receipts/${roomId}`, (message) => {
+            if (!isMounted) return;
+            const readMessage = JSON.parse(message.body);
+            setMessages(prev => {
+              const updated = prev.map(msg =>
+                Number(msg.senderId) === Number(user?.userId) &&
+                msg.chatMessageId <= readMessage.lastReadMessageId
+                  ? { ...msg, status: 'READ' }
+                  : msg
+              );
+              return updated;
+            });
+          });
+          WebSocketService.send(`/app/chat.read/${roomId}`, {});
+      } catch (error) {
+        console.error('WebSocket 연결 실패:', error);
+      }
+    };
+    connectAndSubscribe();
+    return () => {
+      isMounted = false;
+      WebSocketService.unsubscribe(`/user/queue/read-receipts/${roomId}`);
+      WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
+      WebSocketService.disconnect();
+    };
+  }, [roomId]);
+
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await client.get(`/chat/${roomId}`);
+        setMessages(response.data.chatMessageDetails || []);
+        scrollToBottom();
+      } catch (error) {
+        console.error('메시지 가져오기 실패:', error);
+      }
+    };
+    fetchMessages();
     return () => {
       // 컴포넌트 언마운트 시 구독 해제
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
     };
   }, [roomId]);
+
+  // 읽음 요청 함수
+  const sendReadReceipt = () => {
+    WebSocketService.send(`/app/chat.read/${roomId}`, {});
+  };
+
+  // 채팅방 페이지에 진입했을 때, 그리고 포커스/가시성 복귀 시에만 읽음 요청
+  useEffect(() => {
+    const handleFocusOrVisible = () => {
+      if (document.visibilityState === 'visible') {
+        sendReadReceipt();
+      }
+    };
+
+    window.addEventListener('focus', handleFocusOrVisible);
+    document.addEventListener('visibilitychange', handleFocusOrVisible);
+
+    // 마운트 시에도 한 번 실행 (채팅방 진입)
+    handleFocusOrVisible();
+
+    return () => {
+      window.removeEventListener('focus', handleFocusOrVisible);
+      document.removeEventListener('visibilitychange', handleFocusOrVisible);
+    };
+  }, [roomId]);
+
+  // 3. 새 메시지 도착 시(상대방이 보낸 메시지일 때만)
+  useEffect(() => {
+    if (!messages.length) return;
+    if (document.visibilityState !== 'visible') return;
+    if (window.focus !== true) return;
+    
+    const lastMsg = messages[messages.length - 1];
+    if (Number(lastMsg.senderId) !== Number(user?.userId)) {
+      sendReadReceipt();
+    }
+  }, [messages, user, roomId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -33,23 +125,11 @@ const ChatRoom = () => {
 
     try {
       const chatMessage = {
-        type: 'CHAT',
         content: newMessage,
-        roomId: roomId,
-        sender: user?.nickname || 'Anonymous',
-        timestamp: new Date().toISOString()
+        createdAt: Date.now() // 에폭크 타임(밀리초)으로 전송
       };
 
-      await WebSocketService.connectAndSendMessage(
-        `/app/chat.send/${roomId}`,
-        chatMessage,
-        (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          setMessages(prev => [...prev, receivedMessage]);
-        },
-        `/user/queue/chat/${roomId}`
-      );
-
+      WebSocketService.send(`/app/chat.send/${roomId}`,chatMessage);
       setNewMessage('');
     } catch (error) {
       console.error('메시지 전송 실패:', error);
@@ -57,31 +137,69 @@ const ChatRoom = () => {
   };
 
   const renderMessage = (message) => {
-    const isSystemMessage = message.sender === 'System';
-    const isMyMessage = message.sender === user?.nickname;
+    const isMyMessage = Number(message.senderId) === Number(user?.userId);
+    const messageDate = new Date(Number(message.createdAt));
+    const timeString = isNaN(messageDate.getTime())
+      ? '시간 정보 없음'
+      : messageDate.toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+    // 읽음/안읽음 숫자 표시
+    let unreadCount = null;
+    if (isMyMessage && message.status === 'SENT') {
+      unreadCount = <span className={styles.unreadCount}>1</span>;
+    }
 
     return (
       <div
-        key={message.timestamp}
-        className={`${styles.message} ${
-          isSystemMessage 
-            ? styles.systemMessage 
-            : isMyMessage 
-              ? styles.myMessage 
-              : styles.otherMessage
+        key={message.chatMessageId}
+        className={`${styles.messageRow} ${
+          isMyMessage ? styles.myMessageRow : styles.otherMessageRow
         }`}
       >
-        <div className={styles.messageContent}>
-          {!isSystemMessage && (
-            <span className={styles.sender}>{message.sender}</span>
-          )}
-          <p>{message.content}</p>
-          <span className={styles.timestamp}>
-            {new Date(message.timestamp).toLocaleTimeString()}
-          </span>
+        {isMyMessage && (
+          <span className={styles.timestampLeft}>
+            {unreadCount && <span className={styles.unreadCountWrapper}>{unreadCount}</span>}
+            {timeString}
+            </span>
+        )}
+        <div
+          className={`${styles.message} ${
+            isMyMessage ? styles.myMessage : styles.otherMessage
+          }`}
+        >
+          <div className={styles.messageContent}>
+            <p>{message.content}</p>
+          </div>
         </div>
+        {!isMyMessage && (
+          <span className={styles.timestampRight}>{timeString}</span>
+        )}
       </div>
     );
+  };
+
+  const renderMessagesWithDateDivider = (messages) => {
+    let lastDate = null;
+    return messages.map((message, idx) => {
+      const messageDate = new Date(Number(message.createdAt));
+      const dateKey = `${messageDate.getFullYear()}-${messageDate.getMonth()}-${messageDate.getDate()}`;
+      const showDateDivider = lastDate !== dateKey;
+      lastDate = dateKey;
+
+      return (
+        <React.Fragment key={message.chatMessageId}>
+          {showDateDivider && (
+            <div className={styles.dateDivider}>
+              <span className={styles.dateText}>{formatDateWithDay(message.createdAt)}</span>
+            </div>
+          )}
+          {renderMessage(message)}
+        </React.Fragment>
+      );
+    });
   };
 
   return (
@@ -91,7 +209,7 @@ const ChatRoom = () => {
       </div>
       
       <div className={styles.messagesContainer}>
-        {messages.map(renderMessage)}
+        {renderMessagesWithDateDivider(messages)}
         <div ref={messagesEndRef} />
       </div>
 
