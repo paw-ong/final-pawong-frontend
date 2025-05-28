@@ -1,95 +1,80 @@
 // src/contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useCurrentUser } from '../hooks/useCurrentUser'
+import { useQueryClient } from '@tanstack/react-query'
+import AuthRequiredModal from '../components/auth/AuthRequiredModal'
 import client from '../api/client'
 
 export const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const [user, setUser] = useState(() => {
-    const userInfo = localStorage.getItem('userInfo')
-    return userInfo ? JSON.parse(userInfo) : null
-  })
-  // isRegistered 은 “추가 정보 입력까지 완료되어 백엔드에 ACTIVE 상태로 저장된 회원” 인지를 나타냄
-  const [isRegistered, setIsRegistered] = useState(() => {
-    return localStorage.getItem('status') === 'ACTIVE'
-  })
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const queryClient = useQueryClient();
 
+  // React Query 훅에서 user 데이터, 로딩/에러 상태 가져오기
+  const {
+    data: user,
+    isLoading: userLoading,
+    isError: userError,
+  } = useCurrentUser()
+
+  // 전역 이벤트 리스너 등록
   useEffect(() => {
-    // 앱 시작 시 토큰 있으면 로컬 스토리지에 저장
-    const token = localStorage.getItem('userToken')
-    const status = localStorage.getItem('status')
+    const handleShowAuthModal = () => {
+      setShowAuthModal(true);
+    };
 
-    // 가입 완료시 /auth/me 호출해서 user 초기화
-    if (token && status === 'ACTIVE') {
-      setLoading(true)
-      setIsRegistered(true)
-      client.get('/user/me')
-        .then(res => {
-          setUser(res.data)
-          setIsRegistered(true)
-          localStorage.setItem('userInfo', JSON.stringify(res.data))
-        })
-        .catch((err) => {
-          const { status, code } = err
-          if (status === 404 && code === 'USER_NOT_FOUND') {
-            alert('존재하지 않는 회원에 대한 접근입니다.')
-            navigate('/login')
-          }
-          localStorage.removeItem('userToken')
-          localStorage.removeItem('status')
-          localStorage.removeItem('userInfo')
-          setUser(null)
-          setIsRegistered(false)
-        })
-        .finally(() => setLoading(false))
-      } else {
-        setLoading(false)
-      }
-    }, [isRegistered])
+    window.addEventListener('showAuthModal', handleShowAuthModal);
 
-    // 로그인 핸들러: 토큰 받은 직후 status 가 ACTIVE 이면 바로 가입 완료
-    const login = async (token, statusFromQuery) => {
-        localStorage.setItem('userToken', token)
-        const status = statusFromQuery || (user && user.status)
-        localStorage.setItem('status', status)
-        if (token && status === 'ACTIVE') {
-          await client.get('/user/me')
-          .then(res => {
-            setUser(res.data)
-            setIsRegistered(true)
-          })
-          .catch(() => {
-            console.log('login 호출 오류')
-            localStorage.removeItem('userToken')
-            localStorage.removeItem('status')
-          })
-        }
+    return () => {
+      window.removeEventListener('showAuthModal', handleShowAuthModal);
+    };
+  }, []);
 
-        setLoading(true)
-      }
-    
-    // 로그아웃 핸들러
-    const logout = () => {
-        localStorage.removeItem('userToken')
-        localStorage.removeItem('status')
-        localStorage.removeItem('userInfo')
-        setUser(null)
-        setIsRegistered(false)
-        navigate('/login')
+  const handleCloseAuthModal = () => {
+    setShowAuthModal(false);
+  };
+
+  const handleShowAuthModal = () => {
+    setShowAuthModal(true);
+  };
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await client.post('/auth/logout');
+      // React Query 캐시 초기화
+      queryClient.clear();
+      // 로컬 스토리지의 토큰 제거
+      localStorage.removeItem('token');
+      navigate('/main');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+      // 에러가 발생해도 로컬 상태는 정리
+      queryClient.clear();
+      localStorage.removeItem('token');
+      navigate('/main');
     }
+  };
   
   return (
     <AuthContext.Provider value={{ 
       user, 
       isLoggedIn: Boolean(user),
-      login, 
-      logout 
-      }}>
+      showAuthModal,
+      setShowAuthModal,
+      handleShowAuthModal,
+      handleCloseAuthModal,
+      handleLogout
+    }}>
       {children}
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={handleCloseAuthModal} 
+      />
     </AuthContext.Provider>
   )
 }

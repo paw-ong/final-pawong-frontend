@@ -14,7 +14,6 @@ export default function AdditionalInfo() {
   const [user, setUser] = useState(null)
   const [registered, setRegistered] = useState(false)
   const navigate = useNavigate()
-  const { login } = useContext(AuthContext);
   const [ searchParams ] = useSearchParams();
   const token = searchParams.get('token');
   const status = searchParams.get('status');
@@ -22,16 +21,16 @@ export default function AdditionalInfo() {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [isSendingCode, setIsSendingCode] = useState(false)
-  useEffect(() => {
-    if (token) {
-      // AuthContext.login 으로 토큰 저장하고 /auth/me 호출해서 user 상태 세팅
-      login(token)
-      .catch(() => {
-        alert('카카오 로그인 실패: ' + (err.response?.data?.message || err.message))
-        navigate('/login')  
-      })
-    }
-  }, [searchParams, login, navigate]);
+  // useEffect(() => {
+  //   if (token) {
+  //     // AuthContext.login 으로 토큰 저장하고 /auth/me 호출해서 user 상태 세팅
+  //     login(token)
+  //     .catch(() => {
+  //       alert('카카오 로그인 실패: ' + (err.response?.data?.message || err.message))
+  //       navigate('/login')  
+  //     })
+  //   }
+  // }, [searchParams, login, navigate]);
 
   useEffect(() => {
     let timer;
@@ -232,8 +231,6 @@ export default function AdditionalInfo() {
       console.log('회원가입 응답:', res.data);
       
       if(res.data.status === 'ACTIVE') {
-        console.log('로그인 시도:', token);
-        await login(token, 'ACTIVE')
         console.log('로그인 성공, 메인 페이지로 이동');
         navigate('/main')
       } else {
