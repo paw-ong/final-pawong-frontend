@@ -174,47 +174,66 @@ function ChatRooms() {
             진행 중인 채팅이 없습니다.
           </div>
         ) : (
-          chatRooms.map((room) => (
-            <div
-              key={room.chatRoomId}
-              className={`chat-room-item ${room.status === 'INACTIVE' ? 'inactive' : ''}`}
-              onClick={() => handleChatRoomClick(room.chatRoomId)}
-            >
-              <div className="chat-room-image">
-                <img src={room.lostPostInfo.imageUrl} alt="분실동물" />
+          chatRooms.map((room) => {
+            const isAuthor = user?.userId === room.lostPostInfo.authorId;
+            const postTypeLabel = room.lostPostInfo.postType === 'LOST' ? '실종' : '발견';
+            
+            return (
+              <div
+                key={room.chatRoomId}
+                className={`chat-room-item ${room.status === 'INACTIVE' ? 'inactive' : ''}`}
+                onClick={() => handleChatRoomClick(room.chatRoomId)}
+              >
+                <div className="chat-room-image">
+                  <img src={room.lostPostInfo.imageUrl} alt="분실동물" />
+                </div>
+                <div className="chat-room-info">
+                  
+                  {/* ← 수정된 헤더 */}
+                  <div className="chat-room-header">
+                    <span className="chat-room-header-user">
+                      {isAuthor ? '나의 공고' : room.lostPostInfo.author}
+                    </span>
+                    <span className="chat-room-header-sep">|</span>
+                    <span className={`
+                      chat-room-header-type
+                      ${room.lostPostInfo.postType === 'LOST' ? 'lost' : 'found'}
+                      `}
+                    >
+                      {postTypeLabel}
+                    </span>
+                    <span className={`chat-room-status ${room.status.toLowerCase()}`}>
+                      {room.status === 'ACTIVE' ? '🟢' : '🔴'}
+                    </span>
+                  </div>
+                  
+                  {/* 메시지 영역은 그대로 */}
+                  <div className="chat-room-message">
+                    {room.latestMessageContent || "새로운 채팅을 시작해보세요!"}
+                  </div>
+                  
+                  {/* ← 수정된 푸터 */}
+                  <div className="chat-room-footer">
+                    <span className="chat-room-author">
+                      {isAuthor
+                        ? `${room.participantUserName}님`
+                        : room.lostPostInfo.location
+                      }
+                    </span>
+                    <span
+                      className="post-link"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}`);
+                      }}
+                    >
+                      공고로 이동 &gt;
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="chat-room-info">
-                <div className="chat-room-header">
-                  <span className="chat-room-kind">{room.lostPostInfo.kindNm}</span>
-                  <span className="chat-room-type">{room.lostPostInfo.postType}</span>
-                  <span className="chat-room-location">{room.lostPostInfo.location}</span>
-                  <span className={`chat-room-status ${room.status.toLowerCase()}`}>
-                    {room.status === 'ACTIVE' ? '🟢 진행중' : '🔴 종료됨'}
-                  </span>
-                </div>
-                <div className="chat-room-message">
-                  {room.latestMessageContent || "새로운 채팅을 시작해보세요!"}
-                </div>
-                <div className="chat-room-footer">
-                  <span className="chat-room-author">
-                    {user?.userId === room.lostPostInfo.authorId 
-                      ? `채팅 요청자: ${room.participantUserName}`
-                      : `공고 작성자: ${room.lostPostInfo.author}`
-                    }
-                  </span>
-                  <span 
-                    className="post-link"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}`);
-                    }}
-                  >
-                    공고로 이동 &gt;
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
