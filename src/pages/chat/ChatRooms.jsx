@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import { AuthContext } from '../../contexts/AuthContext';
 import './ChatRooms.css';
+import WebSocketService from '../../services/WebSocketService';
 
 function ChatRooms() {
   const [chatRooms, setChatRooms] = useState([]);
@@ -10,6 +11,10 @@ function ChatRooms() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { isLoggedIn, user } = useContext(AuthContext);
+  
+  // 구독 상태를 추적하기 위한 ref
+  const subscribedRoomsRef = useRef(new Set());
+  const isWebSocketConnectedRef = useRef(false);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -32,6 +37,126 @@ function ChatRooms() {
 
     fetchChatRooms();
   }, [isLoggedIn, navigate]);
+
+  // WebSocket 연결은 한 번만 수행
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const connectWebSocket = async () => {
+      try {
+        if (!isWebSocketConnectedRef.current) {
+          await WebSocketService.connect();
+          isWebSocketConnectedRef.current = true;
+          console.log('[ChatRooms] WebSocket connected');
+        }
+      } catch (error) {
+        console.error('WebSocket 연결 오류:', error);
+        isWebSocketConnectedRef.current = false;
+      }
+    };
+
+    connectWebSocket();
+
+    // 컴포넌트 언마운트 시 모든 구독 해지 및 연결 해제
+    return () => {
+      console.log('[ChatRooms] Cleaning up all subscriptions...');
+      
+      // 모든 구독 해지
+      subscribedRoomsRef.current.forEach(roomId => {
+        const destination = `/user/queue/chat/${roomId}`;
+        WebSocketService.unsubscribe(destination);
+      });
+      
+      subscribedRoomsRef.current.clear();
+      isWebSocketConnectedRef.current = false;
+      
+      // WebSocket 연결 해제
+      WebSocketService.disconnect();
+    };
+  }, [isLoggedIn]);
+
+  // 채팅방 목록이 변경될 때 구독 관리
+  useEffect(() => {
+    if (!isLoggedIn || chatRooms.length === 0 || !isWebSocketConnectedRef.current) return;
+
+    const manageSubscriptions = () => {
+      const activeRoomIds = new Set(
+        chatRooms
+          .filter(room => room.status === 'ACTIVE')
+          .map(room => room.chatRoomId)
+      );
+
+      // 더 이상 활성화되지 않은 방의 구독 해지
+      subscribedRoomsRef.current.forEach(roomId => {
+        if (!activeRoomIds.has(roomId)) {
+          const destination = `/user/queue/chat/${roomId}`;
+          WebSocketService.unsubscribe(destination);
+          subscribedRoomsRef.current.delete(roomId);
+          console.log(`[ChatRooms] Unsubscribed from room ${roomId}`);
+        }
+      });
+
+      // 새로운 활성 방에 구독
+      activeRoomIds.forEach(roomId => {
+        if (!subscribedRoomsRef.current.has(roomId)) {
+          const destination = `/user/queue/chat/${roomId}`;
+          const subscription = WebSocketService.subscribe(
+            destination,
+            (message) => {
+              const receivedMessage = JSON.parse(message.body);
+              setChatRooms(prevRooms =>
+                prevRooms.map(r =>
+                  r.chatRoomId === roomId
+                    ? { ...r, latestMessageContent: receivedMessage.content }
+                    : r
+                )
+              );
+            }
+          );
+          
+          if (subscription) {
+            subscribedRoomsRef.current.add(roomId);
+            console.log(`[ChatRooms] Subscribed to room ${roomId}`);
+          }
+        }
+      });
+    };
+
+    // WebSocket이 연결된 상태에서만 구독 관리
+    if (WebSocketService.isConnected()) {
+      manageSubscriptions();
+    } else {
+      // WebSocket이 연결되지 않은 경우 재연결 시도
+      const reconnectAndSubscribe = async () => {
+        try {
+          await WebSocketService.connect();
+          isWebSocketConnectedRef.current = true;
+          manageSubscriptions();
+        } catch (error) {
+          console.error('WebSocket 재연결 실패:', error);
+        }
+      };
+      reconnectAndSubscribe();
+    }
+  }, [chatRooms, isLoggedIn]);
+
+  // 페이지 언로드 시 정리
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      console.log('[ChatRooms] Page unloading, cleaning up...');
+      subscribedRoomsRef.current.forEach(roomId => {
+        const destination = `/user/queue/chat/${roomId}`;
+        WebSocketService.unsubscribe(destination);
+      });
+      WebSocketService.disconnect();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const handleChatRoomClick = (chatRoomId) => {
     navigate(`/chat/${chatRoomId}`);
@@ -61,6 +186,7 @@ function ChatRooms() {
               <div className="chat-room-info">
                 <div className="chat-room-header">
                   <span className="chat-room-kind">{room.lostPostInfo.kindNm}</span>
+                  <span className="chat-room-type">{room.lostPostInfo.postType}</span>
                   <span className="chat-room-location">{room.lostPostInfo.location}</span>
                   <span className={`chat-room-status ${room.status.toLowerCase()}`}>
                     {room.status === 'ACTIVE' ? '🟢 진행중' : '🔴 종료됨'}
@@ -95,4 +221,4 @@ function ChatRooms() {
   );
 }
 
-export default ChatRooms; 
+export default ChatRooms;

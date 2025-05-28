@@ -13,7 +13,9 @@ function ChatRoomsByPost() {
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await client.get(`chat/rooms/post/${postId}`);
+        const response = await client.get('chat/rooms', {
+          params: { postId }
+        });
         if (response.data && response.data.chatRoomsDetails) {
           setChatRooms(response.data.chatRoomsDetails);
         }
