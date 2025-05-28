@@ -13,6 +13,7 @@ function ChatRoomsByPost() {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newMessageRooms, setNewMessageRooms] = useState(new Set());
 
   // 구독 추적용 refs
   const subscribedRoomsRef = useRef(new Set());
@@ -100,6 +101,11 @@ function ChatRoomsByPost() {
                 : r
             )
           );
+          setNewMessageRooms(prev => {
+            const next = new Set(prev);
+            next.add(roomId);
+            return next;
+          });
         });
         subscribedRoomsRef.current.add(roomId);
       }
@@ -107,6 +113,11 @@ function ChatRoomsByPost() {
   }, [chatRooms]);
 
   const handleChatRoomClick = (chatRoomId) => {
+    setNewMessageRooms(prev => {
+      const next = new Set(prev);
+      next.delete(chatRoomId);
+      return next;
+    });
     navigate(`/chat/${chatRoomId}`);
   };
 
@@ -124,9 +135,13 @@ function ChatRoomsByPost() {
         ) : (
           chatRooms.map(room => (
             <div
-              key={room.chatRoomId}
-              className={`chat-room-item ${room.status === 'INACTIVE' ? 'inactive' : ''}`}
-              onClick={() => handleChatRoomClick(room.chatRoomId)}
+            key={room.chatRoomId}
+            className={[
+              'chat-room-item',
+              room.status === 'INACTIVE' ? 'inactive' : '',
+              newMessageRooms.has(room.chatRoomId) ? 'new-message' : ''
+            ].join(' ')}
+            onClick={() => handleChatRoomClick(room.chatRoomId)}
             >
               <div className="chat-room-image">
                 <img 
