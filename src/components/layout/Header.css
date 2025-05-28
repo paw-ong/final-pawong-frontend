@@ -27,6 +27,7 @@
 .desktop-menu {
   display: flex;
   align-items: center;
+  gap: 24px; /* 알림 버튼과 사용자 이미지 사이 간격 */
 }
 
 .main-nav {
@@ -67,7 +68,7 @@
 
 .user {
   cursor: pointer;
-  margin-left: 1rem;
+  margin-left: 0; /* gap으로 간격 처리하므로 margin 제거 */
   transition: transform 0.3s ease;
 }
 
@@ -87,7 +88,7 @@
   height: 52px;
   border-radius: 50%;
   overflow: hidden;
-  margin-left: auto;
+  margin-left: 0; /* gap으로 간격 처리 */
   margin-right: 30px;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -100,7 +101,7 @@
 .mobile-header-controls {
   display: none;
   align-items: center;
-  gap: 20px;
+  gap: 24px; /* 알림 버튼과 햄버거 메뉴 사이 간격 */
 }
 
 .mobile-header-notification {
@@ -425,6 +426,6 @@
 
 @media (max-width: 480px) {
   .mobile-header-controls {
-    gap: 16px; /* 작은 화면에서는 간격을 약간 줄임 */
+    gap: 20px; /* 작은 화면에서는 간격을 약간 줄임 */
   }
 }

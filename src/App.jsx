@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Adoption from "./pages/adoptionAnimal/Adoption.jsx";
@@ -15,108 +15,68 @@ import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
 import ChatRoom from "./pages/chat/ChatRoom.jsx";
 import InAppNotification from "./firebase/InAppNotification.jsx";
-import { getFcmToken } from "./firebase/fcm.jsx";
 import { createContext } from "react";
-import { onMessage } from "firebase/messaging";
-import { messaging } from "./firebase/config.jsx";
+import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
+import NotificationGuideModal from "./components/notification/NotificationGuideModal";
 
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
 
-function LostAnimalLost() {
-  return null;
-}
-
-function LostAnimalFound() {
-  return null;
-}
-
-function LostAnimalRescue() {
-  return null;
-}
-
 function App() {
   const [notification, setNotification] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [fcmToken, setFcmToken] = useState(null);
+  const [showGuideModal, setShowGuideModal] = useState(false);
   const { user } = useContext(AuthContext);
 
-  // FCM 토큰 요청 중복 방지를 위한 ref
-  const fcmInitialized = useRef(false);
-
-  // 로그인된 사용자가 있을 때만 FCM 토큰 요청 (한 번만)
+  // 로그인할 때마다 알림 권한 안내 모달 표시 (세션 기반)
   useEffect(() => {
-    const initializeFCMForLoggedInUser = async () => {
-      // 이미 초기화되었거나 로그인된 사용자가 없으면 리턴
-      if (fcmInitialized.current || !user) {
-        if (!user) {
-          console.log("로그인하지 않은 사용자 - FCM 토큰 요청 생략");
-          setFcmToken(null);
-          fcmInitialized.current = false; // 로그아웃 시 초기화 상태 리셋
-        }
-        return;
+    if (user) {
+      const permissionStatus = getNotificationPermissionStatus();
+      const sessionGuideShown = sessionStorage.getItem('notification-guide-shown');
+
+      // 권한이 설정되지 않고, 이번 세션에서 아직 안내를 보지 않은 경우
+      if (permissionStatus === 'default' && !sessionGuideShown) {
+        // 로그인 후 1.5초 뒤에 안내 모달 표시 (자연스러운 타이밍)
+        const timer = setTimeout(() => {
+          setShowGuideModal(true);
+          // 이번 세션에서 안내를 보여줬다는 표시를 sessionStorage에 저장
+          sessionStorage.setItem('notification-guide-shown', 'true');
+        }, 1500);
+
+        return () => clearTimeout(timer);
       }
-
-      try {
-        console.log("로그인된 사용자 감지 - FCM 토큰 요청 시작");
-        fcmInitialized.current = true; // 중복 실행 방지
-
-        const token = await getFcmToken();
-        if (token) {
-          console.log("FCM 토큰 획득 성공:", token);
-          setFcmToken(token);
-          console.log("FCM 토큰 서버 등록 성공");
-        }
-      } catch (error) {
-        console.error("FCM 토큰 처리 실패:", error);
-        fcmInitialized.current = false; // 실패 시 다시 시도할 수 있도록 리셋
-      }
-    };
-
-    initializeFCMForLoggedInUser();
+    } else {
+      // 로그아웃 시 세션 스토리지 클리어
+      sessionStorage.removeItem('notification-guide-shown');
+    }
   }, [user]); // user 상태 변화 감지
 
-  // FCM 메시지 수신 처리 (로그인 여부와 관계없이 설정)
+  // FCM 포그라운드 메시지 리스너 초기화
   useEffect(() => {
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log('포그라운드 메시지 수신:', payload);
-
-      // adoptionId가 있으면 actionUrl 구성
-      const adoptionId = payload.data?.adoptionId;
-      const actionUrl = adoptionId ? `/adoptions/${adoptionId}` : null;
-
-      // 새 알림 생성
-      const newNotification = {
-        id: Date.now(),
-        title: payload.notification?.title || '알림',
-        message: payload.notification?.body || '새로운 메시지가 있습니다',
-        actionUrl: actionUrl,
-        timestamp: new Date().toISOString(),
-        read: false
-      };
-
-      // 알림 목록에 추가
-      setNotifications(prev => [newNotification, ...prev].slice(0, 20));
-
-      // 현재 표시할 알림 설정
-      setNotification({
-        title: newNotification.title,
-        message: newNotification.message,
-        actionUrl: newNotification.actionUrl
-      });
-
-      // 2초 후 자동으로 알림 닫기
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
-    });
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    initializeForegroundMessaging();
   }, []);
+
+  // 사전 안내 모달 닫기
+  const handleGuideModalClose = () => {
+    setShowGuideModal(false);
+  };
+
+  // 사전 안내 모달에서 권한 요청 진행
+  const handleGuideModalProceed = async () => {
+    setShowGuideModal(false);
+
+    try {
+      const result = await requestNotificationPermission();
+
+      if (result.success) {
+        alert('알림이 활성화되었습니다! 🔔');
+      } else {
+        alert(`알림 활성화 실패: ${result.error}`);
+      }
+    } catch (error) {
+      alert('알림 설정 중 오류가 발생했습니다.');
+    }
+  };
 
   // 알림 관련 함수들
   const markAsRead = (id) => {
@@ -148,11 +108,11 @@ function App() {
         notification,
         setNotification,
         notifications,
+        setNotifications,
         markAsRead,
         markAllAsRead,
         deleteNotification,
         clearAllNotifications,
-        fcmToken
       }}>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -160,12 +120,7 @@ function App() {
             <Route path="main" element={<MainPage />} />
             <Route path="adoptions" element={<Adoption />} />
             <Route path="adoptions/:id" element={<AdoptionDetail />} />
-            <Route path="lostAnimal" element={<LostAnimal />}>
-              <Route index element={<Navigate to="lost" replace />} />
-              <Route path="lost" element={<LostAnimalLost />} />
-              <Route path="found" element={<LostAnimalFound />} />
-              <Route path="rescue" element={<LostAnimalRescue />} />
-            </Route>
+            <Route path="lostAnimal" element={<LostAnimal />} />
             <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
             <Route path="lostAnimal/create" element={<LostAnimalCreate />} />
             <Route path="lostAnimal/update/:postId" element={<LostAnimalUpdate />} />
@@ -189,6 +144,13 @@ function App() {
                 onClose={() => setNotification(null)}
             />
         )}
+
+        {/* 로그인할 때마다 자동 표시되는 사전 안내 모달 */}
+        <NotificationGuideModal
+            isOpen={showGuideModal}
+            onClose={handleGuideModalClose}
+            onProceed={handleGuideModalProceed}
+        />
       </NotificationContext.Provider>
   );
 }

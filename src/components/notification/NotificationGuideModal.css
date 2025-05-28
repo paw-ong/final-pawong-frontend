@@ -1,0 +1,272 @@
+/* src/components/notification/NotificationGuideModal.css */
+.notification-guide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.notification-guide-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-guide-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.guide-close-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.guide-close-button:hover {
+  color: #666;
+}
+
+.notification-guide-content {
+  padding: 24px;
+}
+
+.guide-intro {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.guide-intro p {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.guide-intro ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guide-intro li {
+  padding: 8px 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.guide-intro li::before {
+  content: '✓ ';
+  color: #4CAF50;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.guide-steps {
+  margin-bottom: 24px;
+}
+
+.guide-steps h4 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  color: #333;
+  text-align: center;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.step-number {
+  background: #E86831;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.step p {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.browser-preview {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.browser-mockup {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.browser-notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.notification-icon {
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+
+.notification-text {
+  flex: 1;
+  text-align: left;
+  color: #333;
+}
+
+.notification-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.block-btn, .allow-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.block-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.allow-btn {
+  background: #4CAF50;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+.guide-tip {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.notification-guide-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  justify-content: center;
+}
+
+.guide-cancel-btn, .guide-proceed-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.guide-cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.guide-cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.guide-proceed-btn {
+  background: #E86831;
+  color: white;
+}
+
+.guide-proceed-btn:hover {
+  background: #d96a1c;
+  transform: translateY(-1px);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .notification-guide-modal {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .notification-guide-content {
+    padding: 16px;
+  }
+
+  .notification-guide-footer {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .guide-cancel-btn, .guide-proceed-btn {
+    width: 100%;
+  }
+}
