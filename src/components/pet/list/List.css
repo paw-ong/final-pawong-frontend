@@ -1,6 +1,6 @@
 .section-title {
   font-size: 24px;
-  color: #3E3232;
+  color: var(--color-text);
   text-align: left;
   font-weight: bold;
   margin-top: 10px;
@@ -39,30 +39,87 @@
 
 .sub-title {
   font-size: 18px;
-  color: #3E3232;
+  color: var(--color-text);
   text-align: left;
   margin-bottom: 5px;
 }
 
 .slick-prev, .slick-next {
-  top: 50%;
-  transform: translateY(-50%);
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 44px !important;
+  height: 44px !important;
+  background: transparent !important;
+  border: 2px solid rgba(53, 129, 184, 0.3) !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+  z-index: 10 !important;
+  color: var(--color-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
 }
+
 .slick-prev { left: -30px !important; }
 .slick-next { right: -30px !important; }
+
 .slick-prev:focus, .slick-next:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #D1BB9E;
 }
+
 .slick-prev:hover, .slick-next:hover {
-  background: #D1BB9E !important;
-  color: #fff !important;
-  border-color: #D1BB9E !important;
+  background: transparent !important;
+  border-color: rgba(53, 129, 184, 0.5) !important;
+}
+
+.slick-prev svg, .slick-next svg {
+  width: 22px !important;
+  height: 22px !important;
+  color: var(--color-secondary) !important;
 }
 
 .slick-prev::before,
 .slick-next::before {
-  content: none !important;
+  content: '' !important;
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: solid var(--color-secondary);
+  border-width: 0 3px 3px 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  opacity: 0.8;
+}
+
+.slick-prev::before {
+  transform: translate(-25%, -50%) rotate(135deg);
+}
+
+.slick-next::before {
+  transform: translate(-75%, -50%) rotate(-45deg);
+}
+
+.slick-prev:hover::before,
+.slick-next:hover::before {
+  opacity: 1;
+}
+
+.slick-dots {
+  bottom: -30px;
+}
+
+.slick-dots li button:before {
+  font-size: 10px;
+  color: var(--color-background);
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.slick-dots li.slick-active button:before {
+  color: var(--color-secondary);
+  opacity: 1;
 }
 
 .slick-slide > div {
@@ -84,3 +141,8 @@
   }
 }
 
+/* Override any other color settings */
+.slick-arrow.slick-next,
+.slick-arrow.slick-prev {
+  color: transparent !important;
+}

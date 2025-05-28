@@ -19,7 +19,7 @@
 }
 
 .notification-guide-modal {
-  background: white;
+  background: var(--color-white);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 90%;
@@ -45,13 +45,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(53, 129, 184, 0.15);
+  background: none;
 }
 
 .notification-guide-header h3 {
   margin: 0;
   font-size: 1.4rem;
-  color: #333;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -59,7 +60,7 @@
   background: none;
   border: none;
   font-size: 1.8rem;
-  color: #999;
+  color: var(--color-text);
   cursor: pointer;
   padding: 4px;
   line-height: 1;
@@ -67,7 +68,7 @@
 }
 
 .guide-close-button:hover {
-  color: #666;
+  color: var(--color-primary);
 }
 
 .notification-guide-content {
@@ -81,7 +82,7 @@
 
 .guide-intro p {
   font-size: 1.1rem;
-  color: #333;
+  color: var(--color-text);
   margin-bottom: 16px;
   font-weight: 500;
 }
@@ -94,13 +95,13 @@
 
 .guide-intro li {
   padding: 8px 0;
-  color: #666;
+  color: var(--color-text);
   font-size: 0.95rem;
 }
 
 .guide-intro li::before {
   content: '✓ ';
-  color: #4CAF50;
+  color: var(--color-primary);
   font-weight: bold;
   margin-right: 8px;
 }
@@ -112,7 +113,7 @@
 .guide-steps h4 {
   margin: 0 0 16px 0;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--color-text);
   text-align: center;
 }
 
@@ -124,8 +125,8 @@
 }
 
 .step-number {
-  background: #E86831;
-  color: white;
+  background: var(--color-secondary);
+  color: var(--color-white);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -140,84 +141,103 @@
 
 .step p {
   margin: 0;
-  color: #555;
+  color: var(--color-text);
   line-height: 1.5;
 }
 
 .browser-preview {
-  background: #f8f9fa;
+  background: rgba(248, 106, 96, 0.08);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
+  border: none;
 }
 
 .browser-mockup {
-  background: white;
+  background: var(--color-white);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .browser-notification {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px;
-  background: #f0f0f0;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding: 12px 16px;
+  background: var(--color-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .notification-icon {
-  font-size: 1.2rem;
-  margin-right: 8px;
+  font-size: 1.3rem;
+  margin-right: 12px;
+  color: var(--color-text);
 }
 
 .notification-text {
   flex: 1;
   text-align: left;
-  color: #333;
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .notification-buttons {
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
 .block-btn, .allow-btn {
-  padding: 4px 12px;
+  padding: 6px 16px;
   border: none;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .block-btn {
-  background: #f5f5f5;
-  color: #666;
+  background: #f1f3f4;
+  color: var(--color-text);
+  border: none;
+}
+
+.block-btn:hover {
+  background: #e8eaed;
 }
 
 .allow-btn {
-  background: #4CAF50;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.allow-btn:hover {
+  background: #2d6d9e;
 }
 
 .guide-tip {
+  background: none;
+  border-radius: 8px;
+  padding: 0;
   margin: 0;
+  color: var(--color-text);
   font-size: 0.9rem;
-  color: #666;
-  line-height: 1.4;
+  line-height: 1.5;
+  border: none;
 }
 
 .notification-guide-footer {
   display: flex;
+  justify-content: flex-end;
   gap: 12px;
-  padding: 16px 24px 24px;
-  justify-content: center;
+  padding: 16px 24px;
+  border-top: none;
+  background: none;
 }
 
 .guide-cancel-btn, .guide-proceed-btn {
@@ -232,22 +252,33 @@
 }
 
 .guide-cancel-btn {
-  background: #f5f5f5;
-  color: #666;
+  background: rgba(248, 106, 96, 0.1);
+  color: var(--color-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .guide-cancel-btn:hover {
-  background: #e0e0e0;
+  background: rgba(248, 106, 96, 0.2);
 }
 
 .guide-proceed-btn {
-  background: #E86831;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .guide-proceed-btn:hover {
-  background: #d96a1c;
-  transform: translateY(-1px);
+  background: var(--color-accent);
 }
 
 /* 모바일 최적화 */

@@ -1,9 +1,11 @@
 .card {
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(167, 146, 119, 0.5);
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   padding-top: 20px;
@@ -12,13 +14,10 @@
   justify-content: center;
   align-items: center;
   margin: 0;
-  cursor: pointer;
-  position: relative;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px #A79277;
+  transform: translateY(-4px);
 }
 
 .card-img-container {
@@ -48,33 +47,38 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: rgba(255, 255, 255, 0.7);
+  background: #FFFFFF;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   padding: 0;
   outline: none;
-}
-
-.favorite-btn.active {
-  background-color: rgba(255, 245, 245, 0.95);
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
-  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .favorite-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.favorite-btn.active {
+  background: #FFFFFF;
+}
+
+.favorite-btn.active:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .favorite-btn:active {
-  background-color: rgba(255, 255, 255, 0.8);
+  transform: scale(0.95);
 }
 
 .favorite-btn:focus {
@@ -93,9 +97,13 @@
 }
 
 .favorite-icon {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.favorite-btn.active .favorite-icon {
+  transform: scale(1.1);
 }
 
 .card-content {
@@ -112,7 +120,7 @@
   font-size: 16px;
   font-weight: 600;
   margin: 4px 0;
-  color: #333;
+  color: var(--color-text);
 }
 
 .pet-info-row {
@@ -122,17 +130,20 @@
   gap: 8px;
   margin: 4px 0;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text);
+  opacity: 0.8;
 }
 
 .info-divider {
-  color: #999;
+  color: var(--color-text);
+  opacity: 0.4;
   font-size: 8px;
 }
 
 .pet-neuterYn {
   font-size: 13px;
-  color: #888;
+  color: var(--color-text);
+  opacity: 0.7;
   margin: 4px 0;
 }
 
@@ -149,5 +160,6 @@
 .card:hover .pet-upKindNm,
 .card:hover .pet-info-row,
 .card:hover .pet-neuterYn {
-  color: #A79277;
+  color: inherit;
+  opacity: inherit;
 }

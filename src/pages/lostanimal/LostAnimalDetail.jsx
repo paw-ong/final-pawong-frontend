@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
+import "./LostAnimalDetail.css";
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -122,8 +123,8 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
-  if (loading) return <div className="lost-animal-container">로딩 중...</div>;
-  if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
+  if (loading) return <div className="lost-animal-detail-loading">로딩 중...</div>;
+  if (error || !data) return <div className="lost-animal-detail-error">{error || '데이터 없음'}</div>;
 
   // 데이터 구조 확인을 위한 로깅
   const {
@@ -146,95 +147,73 @@ function LostAnimalDetail() {
   const sexText = sexCd === 'M' ? '수컷' : sexCd === 'F' ? '암컷' : '미상';
 
   return (
-    <div className="lost-animal-container" style={{ 
-      maxWidth: '800px', 
-      margin: '0 auto', 
-      padding: '32px',
-      border: '1px solid #e0e0e0',
-      borderRadius: '16px',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-      backgroundColor: 'white'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+    <div className="lost-animal-detail-container">
+      <div className="lost-animal-detail-image-container">
         <img 
           src={imageUrl || userImage} 
-          alt="분실동물" 
-          style={{ 
-            width: 400, 
-            height: 400, 
-            objectFit: 'cover', 
-            borderRadius: 12,
-            border: '1px solid #eee'
-          }}
+          alt="실종 동물"
+          className="lost-animal-detail-image"
           onError={(e) => {
-            e.target.onerror = null; // Prevent infinite loop
+            e.target.onerror = null;
             e.target.src = userImage;
           }}
         />
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
+      <table className="lost-animal-detail-table">
         <tbody>
-          <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 분실신고자 정보</th>
-            <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
+          <tr className="lost-animal-detail-header">
+            <th colSpan={2}>🐾 실종 신고자 정보</th>
+            <td colSpan={2}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
+          </tr>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">신고자</td>
+            <td>{author || '-'}</td>
+            <td className="lost-animal-detail-label">실종 일자</td>
+            <td>{date || '-'}</td>
+          </tr>
+          <tr className="lost-animal-detail-header">
+            <th colSpan={4}>🐾 실종 장소</th>
+          </tr>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">실종 장소</td>
+            <td colSpan={3}>{location || '-'}</td>
           </tr>
           <tr>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>신고자</td>
-            <td style={{ width: '25%', padding: 12 }}>{author || '-'}</td>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>분실일자</td>
-            <td style={{ width: '25%', padding: 12 }}>{date || '-'}</td>
-          </tr>
-          <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실장소</th>
-          </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>분실장소</td>
-            <td colSpan={3} style={{ padding: 12 }}>{location || '-'}</td>
-          </tr>
-          <tr>
-            <td colSpan={4} style={{ padding: 12 }}>
+            <td colSpan={4}>
               <div 
                 ref={mapContainerRef} 
-                style={{ 
-                  width: '100%', 
-                  height: '300px',
-                  borderRadius: '8px',
-                  border: '1px solid #eee'
-                }}
+                className="lost-animal-detail-map"
               />
             </td>
           </tr>
-          <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실동물 정보</th>
+          <tr className="lost-animal-detail-header">
+            <th colSpan={4}>🐾 동물 정보</th>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>동물종류</td>
-            <td style={{ padding: 12 }}>{upKindNm || '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>품종</td>
-            <td style={{ padding: 12 }}>{kindNm || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">품종</td>
+            <td>{upKindNm} {kindNm || '-'}</td>
+            <td className="lost-animal-detail-label">색상</td>
+            <td>{color || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>색상</td>
-            <td style={{ padding: 12 }}>{color || '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>성별</td>
-            <td style={{ padding: 12 }}>{sexText}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">성별</td>
+            <td>{sexText}</td>
+            <td className="lost-animal-detail-label">나이</td>
+            <td>{age || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>나이</td>
-            <td style={{ padding: 12 }}>{age ? `${age}살` : '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>RFID 번호</td>
-            <td style={{ padding: 12 }}>{rfidCd || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">특징</td>
+            <td colSpan={3}>{specialMark || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>특징</td>
-            <td colSpan={3} style={{ padding: 12 }}>{specialMark || '-'}</td>
-          </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>추가설명</td>
-            <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">RFID</td>
+            <td colSpan={3}>{rfidCd || '-'}</td>
           </tr>
         </tbody>
       </table>
+      <div className="lost-animal-detail-content">
+        {content || '-'}
+      </div>
     </div>
   );
 }

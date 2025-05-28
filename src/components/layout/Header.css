@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #fff;
+  background-color: var(--color-white);
   position: fixed;
   top: 0;
   left: 0;
@@ -58,11 +58,11 @@
 
 .tab-item a:hover {
   transform: scale(1.1);
-  color: #333;
+  color: var(--color-secondary);
 }
 
 .tab-item a.active {
-  color: #000;
+  color: var(--color-secondary);
   font-weight: 700;
 }
 
@@ -120,11 +120,9 @@
   justify-content: space-between;
   width: 30px;
   height: 21px;
-  background: transparent;
+  background: transparent !important;
   border: none;
   cursor: pointer;
-  padding: 15px;
-  margin: -15px;
   padding: 0;
   z-index: 1000;
   position: relative;
@@ -146,8 +144,13 @@
 .hamburger-menu span {
   width: 100%;
   height: 3px;
-  background-color: #333;
+  background-color: var(--color-text) !important;
   transition: all 0.3s ease;
+}
+
+.hamburger-menu:hover {
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
 .mobile-menu {
@@ -173,7 +176,7 @@
     right: -300px;
     width: 300px;
     height: 100vh;
-    background-color: #fff;
+    background-color: var(--color-white);
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
     padding: 80px 2rem 2rem;
     transition: right 0.3s ease;
@@ -236,19 +239,19 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%) perspective(1000px) rotateX(-5deg);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-white);
   backdrop-filter: blur(10px);
   border-radius: 10px;
   padding: 0.5rem 0;
   min-width: 180px;
   z-index: 1000;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   transform-origin: top;
   animation: dropdownAnimation 0.15s ease-out;
   display: flex;
   flex-direction: column;
   will-change: transform, opacity;
+  border: none;
 }
 
 @keyframes dropdownAnimation {
@@ -265,7 +268,7 @@
 .dropdown-item {
   display: block;
   padding: 0.8rem 1.2rem;
-  color: #999;
+  color: var(--color-text);
   text-decoration: none;
   transition: all 0.15s ease-out;
   font-size: 16px;
@@ -285,10 +288,10 @@
 }
 
 .dropdown-item.active {
-  color: #333;
+  color: var(--color-secondary);
   font-weight: 600;
-  border: 2px solid #EAD8C0;
-  background: #fff;
+  border: 2px solid var(--color-secondary);
+  background: var(--color-white);
 }
 
 .dropdown-item::after {
@@ -298,7 +301,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: rgba(234, 216, 192, 0.1);
+  background: rgba(53, 129, 184, 0.1);
   transition: left 0.15s ease-out;
   z-index: -1;
   will-change: left;
@@ -309,8 +312,8 @@
 }
 
 .dropdown-item:hover:not(.active) {
-  color: #333;
-  background-color: rgba(234, 216, 192, 0.1);
+  color: var(--color-secondary);
+  background-color: rgba(53, 129, 184, 0.05);
 }
 
 .dropdown-item:hover:not(.active)::after {
@@ -424,8 +427,76 @@
   pointer-events: auto !important;
 }
 
+.mobile-menu .tab-item.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.mobile-menu .dropdown-trigger {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  color: var(--color-text);
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.mobile-menu .dropdown-trigger:hover {
+  color: var(--color-secondary);
+}
+
+.mobile-dropdown {
+  display: none;
+  width: 100%;
+  background: var(--color-white);
+  padding: 0.5rem 0;
+  border: none;
+}
+
+.mobile-menu .tab-item.dropdown:hover .mobile-dropdown {
+  display: block;
+}
+
+.mobile-dropdown .dropdown-item {
+  display: block;
+  padding: 0.8rem 1.2rem;
+  color: var(--color-text);
+  text-decoration: none;
+  text-align: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.mobile-dropdown .dropdown-item:hover {
+  color: var(--color-secondary);
+  background-color: rgba(53, 129, 184, 0.05);
+}
+
+.mobile-dropdown .dropdown-item.active {
+  color: var(--color-secondary);
+  font-weight: 600;
+  border: 2px solid var(--color-secondary);
+  border-radius: 5px;
+  margin: 2px 10px;
+}
+
+@media (max-width: 900px) {
+  .mobile-menu .tab-item.dropdown {
+    display: block;
+  }
+  
+  .mobile-dropdown {
+    position: static;
+    box-shadow: none;
+  }
+}
+
 @media (max-width: 480px) {
   .mobile-header-controls {
     gap: 20px; /* 작은 화면에서는 간격을 약간 줄임 */
   }
+}
+
+.back-btn:hover {
+  color: var(--color-secondary);
 }

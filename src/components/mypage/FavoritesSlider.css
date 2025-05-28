@@ -2,7 +2,7 @@
   padding: 10px 10px;
   margin: 0;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--color-white);
   position: relative;
   overflow: visible;
 }
@@ -10,7 +10,7 @@
 .favorites-title {
   font-size: 24px;
   font-weight: 600;
-  color: #5D4037;
+  color: var(--color-text);
   margin-bottom: 20px;
   text-align: left;
   padding-left: 15px;
@@ -55,7 +55,7 @@
   height: 40px;
   z-index: 20;
   cursor: pointer;
-  background-color: rgba(220, 220, 220, 0.9);
+  background-color: var(--color-background);
   border-radius: 50%;
   padding: 0;
   display: flex;
@@ -92,12 +92,12 @@
 
 /* 페이지네이션 스타일 */
 .swiper-pagination-bullet {
-  background: #A79277;
+  background: var(--color-primary);
   opacity: 0.5;
 }
 
 .swiper-pagination-bullet-active {
-  background: #A79277;
+  background: var(--color-primary);
   opacity: 1;
 }
 
@@ -111,7 +111,7 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: #777;
+  color: var(--color-text);
   font-size: 16px;
 }
 
@@ -121,7 +121,7 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: #777;
+  color: var(--color-text);
   text-align: center;
   line-height: 1.6;
 }
@@ -134,7 +134,8 @@
 
 .favorites-empty p:last-child {
   font-size: 14px;
-  color: #999;
+  color: var(--color-text);
+  opacity: 0.7;
 }
 
 /* 반응형 조정 */

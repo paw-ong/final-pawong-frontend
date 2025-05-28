@@ -43,7 +43,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #EAD8C0;
+  border-color: var(--color-accent);
 }
 
 .form-group textarea {
@@ -82,7 +82,8 @@
 }
 
 .cancel-button:hover {
-  background-color: #e5e5e5;
+  background-color: var(--color-accent);
+  color: var(--color-white);
 }
 
 /* 반응형 디자인 */
@@ -477,6 +478,7 @@
   justify-content: space-between;
   background: #fff;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  border-top: 2px solid rgba(53, 129, 184, 0.3);
   border-radius: 0;
   padding: 1.2rem 2rem;
   margin: 0;
@@ -515,7 +517,7 @@
   transition: color 0.2s;
 }
 .back-btn:hover {
-  color: #007bff;
+  color: var(--color-accent);
 }
 
 .post-type-label {
@@ -538,8 +540,9 @@
 
 .section-divider {
   width: 100%;
-  height: 1px;
-  background: #e5e5e5;
+  height: 2px;
+  background: var(--color-secondary);
+  opacity: 0.25;
   margin: 0.5rem 0 0.5rem 0;
   border: none;
 }
@@ -566,6 +569,21 @@
   color: #333;
   text-align: left;
   margin: 2.5rem 0 1.5rem 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--color-secondary);
+  opacity: 0.9;
+  width: calc(100% - 4rem);
+}
+
+.lost-animal-title-top::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-secondary);
+  opacity: 0.25;
 }
 
 .main-form-fields {
@@ -907,7 +925,7 @@
 }
 
 .selected-location {
-  color: #007bff;
+  color: var(--color-accent);
   text-align: center;
   padding: 20px;
   font-weight: 500;

@@ -12,59 +12,25 @@ import Adoption from '../../../assets/images/main/Adoption.png';
 import LostAnimal from '../../../assets/images/main/LostAnimal.png';
 
 function SlickPrevArrow(props) {
-  const { className, style, onClick } = props;
+  const { className, onClick } = props;
   return (
       <button
           className={className}
-          style={{
-            ...style,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            left: "-30px",
-            zIndex: 2,
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.9)",
-            boxShadow: "0 2px 8px rgba(167,146,119,0.15)",
-            border: "2px solid #D1BB9E",
-            color: "#D1BB9E",
-            transition: "background 0.2s, color 0.2s",
-          }}
           onClick={onClick}
           aria-label="이전"
       >
-        <FaChevronLeft size={22}/>
       </button>
   );
 }
 
 function SlickNextArrow(props) {
-  const { className, style, onClick } = props;
+  const { className, onClick } = props;
   return (
       <button
           className={className}
-          style={{
-            ...style,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            right: "-30px",
-            zIndex: 2,
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.9)",
-            boxShadow: "0 2px 8px rgba(167,146,119,0.15)",
-            border: "2px solid #D1BB9E",
-            color: "#D1BB9E",
-            transition: "background 0.2s, color 0.2s",
-          }}
           onClick={onClick}
           aria-label="다음"
       >
-        <FaChevronRight size={22}/>
       </button>
   );
 }

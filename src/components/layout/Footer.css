@@ -1,6 +1,6 @@
 .footer {
-  background-color: #EAD8C0;
-  color: #3E3232;
+  background-color: var(--color-background);
+  color: var(--color-text);
   padding: 20px 0;
   width: 100%;
   margin: 0;
@@ -24,14 +24,14 @@
 }
 
 .footer-item a {
-  color: #3E3232;
+  color: var(--color-text);
   text-decoration: underline;
 }
 
 .footer-item a:hover {
-  color: #A79277;
+  color: var(--color-primary);
 }
 
 .footer-item a:active {
-  color: #A79277;
+  color: var(--color-primary);
 }

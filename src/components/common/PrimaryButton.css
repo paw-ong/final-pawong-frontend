@@ -1,6 +1,6 @@
 .primary-btn {
-  background: #E86831;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-white);
   border: none;
   border-radius: 10px;
   padding: 10px 24px;
@@ -10,5 +10,5 @@
   transition: background 0.2s;
 }
 .primary-btn:hover {
-  background: rgb(197, 92, 17);
+  background: var(--color-accent);
 } 

@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Link} from 'react-router-dom';
 import './PetCard.css';
-import likeImg from '../../../assets/images/like/like.png';
-import unlikeImg from '../../../assets/images/like/unlike.png';
 import PropTypes from 'prop-types';
 import client from "../../../api/client";
 
@@ -65,13 +63,14 @@ function PetCard({ pet, type }) {
             data-is-favorite={isFavorite}
           >
             <img 
-              src={isFavorite ? likeImg : unlikeImg}
+              src={isFavorite ? "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" : "https://cdn-icons-png.flaticon.com/512/2589/2589197.png"}
               alt={isFavorite ? "찜 해제" : "찜 하기"}
               className="favorite-icon"
               style={{ 
-                width: isFavorite ? '20px' : '18px',
-                height: isFavorite ? '20px' : '18px',
-                transition: 'all 0.3s ease'
+                width: '24px',
+                height: '24px',
+                transition: 'all 0.3s ease',
+                filter: 'invert(57%) sepia(75%) saturate(6027%) hue-rotate(335deg) brightness(99%) contrast(101%)'
               }}
             />
           </button>

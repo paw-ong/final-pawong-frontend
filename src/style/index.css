@@ -1,11 +1,19 @@
 :root {
+  /* Color Variables */
+  --color-primary: #F86A60;
+  --color-secondary: #3581B8;
+  --color-background: #FFD2C1;
+  --color-accent: #A71F24;
+  --color-text: #2F1C1D;
+  --color-white: #FFFFFF;
+  
   font-family: 'Pretendard', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: white;
+  color: var(--color-text);
+  background-color: var(--color-white);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,19 +35,19 @@ main {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-secondary);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: var(--color-primary);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--color-white);
 }
 
 h1 {
@@ -54,28 +62,32 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.25s;
 }
+
 button:hover {
-  border-color: #646cff;
+  background-color: var(--color-primary);
+  border-color: transparent;
 }
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 4px auto var(--color-secondary);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--color-text);
+    background-color: var(--color-white);
   }
   a:hover {
-    color: #747bff;
+    color: var(--color-accent);
   }
   button {
-    background-color: #f9f9f9;
+    background-color: var(--color-primary);
   }
 }
 
