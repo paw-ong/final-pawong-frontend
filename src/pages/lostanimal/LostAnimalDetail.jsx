@@ -12,7 +12,7 @@ function LostAnimalDetail() {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [similarAnimals, setSimilarAnimals] = useState([]);
-  const [isPolling, setIsPolling] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const hasCalledApi = useRef(false);
@@ -127,52 +127,60 @@ function LostAnimalDetail() {
   }, [id, currentLocation.state]);
 
   useEffect(() => {
-    let timeoutId = null;
+    let eventSource = null;
 
-    const fetchSimilarAnimals = async () => {
-      // LOST 타입이 아닐 경우 API 호출하지 않음
+    const setupSSE = () => {
+      // LOST 타입이 아닐 경우 SSE 연결하지 않음
       if (data?.postType !== 'LOST') {
         setSimilarAnimals([]);
-        setIsPolling(false);
+        setIsSearching(false);
         return;
       }
 
       try {
-        const response = await client.get(`/lost-animals/lost-posts/${id}/similar-animals`);
-        console.log('유사 동물 API 응답:', response);
-        
-        if (response.status === 200) {
-          const animals = response.data.lostAnimals || [];
-          console.log('유사 동물 데이터:', animals);
+        // SSE 연결 설정
+        const baseUrl = client.defaults.baseURL || '';
+        eventSource = new EventSource(`${baseUrl}/lost-animals/lost-posts/${id}/similar-animals/stream`);
+        setIsSearching(true);
+
+        // similar-animals 이벤트 리스너
+        eventSource.addEventListener('similar-animals', (event) => {
+          const animals = JSON.parse(event.data);
+          console.log('유사 동물 데이터 수신:', animals);
           setSimilarAnimals(animals);
-          setIsPolling(false);
-        } else if (response.status === 202) {
-          setIsPolling(true);
-          // 이전 타이머가 있다면 취소
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-          }
-          timeoutId = setTimeout(fetchSimilarAnimals, 2000);
-        }
+          setIsSearching(false);
+          eventSource.close(); // 데이터를 받으면 연결 종료
+        });
+
+        // 에러 처리
+        eventSource.onerror = (error) => {
+          console.error('SSE 연결 오류:', error);
+          setIsSearching(false);
+          eventSource.close();
+        };
+
       } catch (error) {
-        console.error('유사 동물 조회 중 오류 발생:', error);
-        setIsPolling(false);
+        console.error('SSE 설정 중 오류 발생:', error);
+        setIsSearching(false);
+        if (eventSource) {
+          eventSource.close();
+        }
       }
     };
 
-    // data가 로드되고 LOST 타입일 때만 API 호출
+    // data가 로드되고 LOST 타입일 때만 SSE 연결
     if (data && data.postType === 'LOST') {
-      console.log('유사 동물 API 호출 시작');
-      fetchSimilarAnimals();
+      console.log('SSE 연결 시작');
+      setupSSE();
     } else {
       setSimilarAnimals([]);
-      setIsPolling(false);
+      setIsSearching(false);
     }
 
     // cleanup 함수
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (eventSource) {
+        eventSource.close();
       }
     };
   }, [data, id]);
@@ -302,7 +310,7 @@ function LostAnimalDetail() {
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                   실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
                 </div>
-              ) : isPolling ? (
+              ) : isSearching ? (
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                   유사 동물을 찾는 중입니다...
                 </div>
