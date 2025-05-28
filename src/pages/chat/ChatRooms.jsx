@@ -222,7 +222,7 @@ function ChatRooms() {
                       {postTypeLabel}
                     </span>
                     <span className={`chat-room-status ${room.status.toLowerCase()}`}>
-                      {room.status === 'ACTIVE' ? '🟢' : '🔴'}
+                      {room.status === 'ACTIVE' ? '' : '종료된 채팅'}
                     </span>
                   </div>
                   
