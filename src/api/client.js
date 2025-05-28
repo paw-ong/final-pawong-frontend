@@ -11,16 +11,19 @@ const client = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true,
 });
 
-// token 있으면 요청 헤더에 추가
-client.interceptors.request.use(config => {
-    const token = localStorage.getItem('userToken');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-}, error => Promise.reject(error));
+// 토큰 재발급 중 플래그와 대기 큐
+let isRefreshing = false
+let failedQueue = []
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    error ? prom.reject(error) : prom.resolve(token)
+  })
+  failedQueue = []
+}
 
 // 응답 에러 처리
 client.interceptors.response.use(
@@ -31,21 +34,49 @@ client.interceptors.response.use(
       }),
     // 에러 응답 처리
     error => {
-        if (error.response && error.response.data) {
-            return Promise.reject({
-                status: error.response.status,
-                code: error.response.data.code,
-                message: error.response.data.message
-              });
+        const { response, config: originalRequest } = err
+        if (response?.status === 401) {
+            const code = response.data?.code
+      
+            // 2-1) 토큰 만료
+            if (code === 'ACCESS_TOKEN_EXPIRED') {
+              if (!isRefreshing) {
+                isRefreshing = true
+                // 리프레시 토큰으로 재발급
+                return client
+                  .post('/auth/refresh')
+                  .then(refreshRes => {
+                    isRefreshing = false
+                    processQueue(null, refreshRes.data)  // 만약 새 토큰을 body로 받았다면
+                    // 원래 요청 재시도
+                    return client(originalRequest)
+                  })
+                  .catch(refreshErr => {
+                    isRefreshing = false
+                    processQueue(refreshErr, null)
+                    // 재발급 실패 → 로그인 페이지로
+                    window.location.href = '/login'
+                    return Promise.reject(refreshErr)
+                  })
+              }
+      
+              // 이미 리프레시 중이면 큐에 대기
+              return new Promise((resolve, reject) => {
+                failedQueue.push({ resolve, reject })
+              }).then(() => client(originalRequest))
+            }
+      
+            // 2-2) 토큰이 잘못되었거나 서명이 틀림
+            if (code === 'ACCESS_TOKEN_INVALIDATE') {
+              window.location.href = '/login'
+              return Promise.reject(err)
+            }
         }
-        // 네트워크 오류 등
-        return Promise.reject({
-          status: null,
-          code: 'NETWORK_ERROR',
-          message: error.message
-        });
-      }
-);
+      
+    // 그 외는 그냥 reject
+    return Promise.reject(err)
+}
+)
 
 
 export default client;
