@@ -37,6 +37,13 @@
   background-color: #f5f5f5;
 }
 
+/* 새 메시지 도착 강조 */
+.chat-room-item.new-message {
+  border-color: #3B82F6;            /* 파란색 테두리 */
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
 .chat-room-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

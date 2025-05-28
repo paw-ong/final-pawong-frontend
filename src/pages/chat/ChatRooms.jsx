@@ -9,6 +9,7 @@ function ChatRooms() {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newMessageRooms, setNewMessageRooms] = useState(new Set());
   const navigate = useNavigate();
   const { isLoggedIn, user } = useContext(AuthContext);
   
@@ -111,6 +112,7 @@ function ChatRooms() {
                     : r
                 )
               );
+              setNewMessageRooms(prev => { const next = new Set(prev); next.add(roomId); return next; });
             }
           );
           
@@ -159,6 +161,11 @@ function ChatRooms() {
   }, []);
 
   const handleChatRoomClick = (chatRoomId) => {
+    setNewMessageRooms(prev => {
+      const next = new Set(prev);
+      next.delete(chatRoomId);
+      return next;
+    });
     navigate(`/chat/${chatRoomId}`);
   };
 
@@ -189,9 +196,13 @@ function ChatRooms() {
             return (
               <div
                 key={room.chatRoomId}
-                className={`chat-room-item ${room.status === 'INACTIVE' ? 'inactive' : ''}`}
+                className={[
+                  'chat-room-item',
+                  room.status === 'INACTIVE' ? 'inactive' : '',
+                  newMessageRooms.has(room.chatRoomId) ? 'new-message' : ''
+                ].join(' ')}
                 onClick={() => handleChatRoomClick(room.chatRoomId)}
-              >
+                >
                 <div className="chat-room-image">
                   <img src={room.lostPostInfo.imageUrl} alt="분실동물" />
                 </div>
