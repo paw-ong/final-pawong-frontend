@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/#40
 
 jobs:
   build-and-deploy:
@@ -19,6 +20,12 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set Firebase configuration
+        run: |
+          echo "${{ secrets.MAIN_FIREBASE_CONFIG }}" | base64 --decode > ./src/firebase/fireBaseConfig.js
+          echo "${{ secrets.SERVICE_WORKER_FIREBASE_CONFIG }}" | base64 --decode > ./public/firebaseConfig.js
+        shell: bash
 
       - name: Build Docker image
         run: |
