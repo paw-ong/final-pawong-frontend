@@ -3,35 +3,71 @@ import React, { createContext, useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useCurrentUser } from '../hooks/useCurrentUser'
 import { useQueryClient } from '@tanstack/react-query'
+import AuthRequiredModal from '../components/auth/AuthRequiredModal'
+import client from '../api/client'
 
 export const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
   const location = useLocation();
-  const navigate = useNavigate()
-// React Query 훅에서 user 데이터, 로딩/에러 상태 가져오기
+  const navigate = useNavigate();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const queryClient = useQueryClient();
+
+  // React Query 훅에서 user 데이터, 로딩/에러 상태 가져오기
   const {
     data: user,
     isLoading: userLoading,
     isError: userError,
   } = useCurrentUser()
 
-  const logout = () => {
-    // 서버에서 쿠키 삭제 API 호출 필요하면 클라이언트에서 요청
-    document.cookie = 'ACCESS_TOKEN=; Max-Age=0; path=/;'
-    // React Query 캐시 초기화
-    // (queryClient.invalidateQueries('currentUser') 할 수도 있지만,
-    // 간단히 새로고침 or navigate 처리)
-    navigate('/login')
-  }
+  // 전역 이벤트 리스너 등록
+  useEffect(() => {
+    const handleShowAuthModal = () => {
+      setShowAuthModal(true);
+    };
+
+    window.addEventListener('showAuthModal', handleShowAuthModal);
+
+    return () => {
+      window.removeEventListener('showAuthModal', handleShowAuthModal);
+    };
+  }, []);
+
+  const handleCloseAuthModal = () => {
+    setShowAuthModal(false);
+  };
+
+  const handleShowAuthModal = () => {
+    setShowAuthModal(true);
+  };
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await client.post('/auth/logout');
+      navigate('/main');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+      navigate('/main');
+    }
+  };
   
   return (
     <AuthContext.Provider value={{ 
       user, 
       isLoggedIn: Boolean(user),
-      logout 
-      }}>
+      showAuthModal,
+      setShowAuthModal,
+      handleShowAuthModal,
+      handleCloseAuthModal,
+      handleLogout
+    }}>
       {children}
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={handleCloseAuthModal} 
+      />
     </AuthContext.Provider>
   )
 }
