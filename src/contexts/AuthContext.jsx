@@ -46,9 +46,16 @@ export function AuthProvider({ children }) {
   const handleLogout = async () => {
     try {
       await client.post('/auth/logout');
+      // React Query 캐시 초기화
+      queryClient.clear();
+      // 로컬 스토리지의 토큰 제거
+      localStorage.removeItem('token');
       navigate('/main');
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
+      // 에러가 발생해도 로컬 상태는 정리
+      queryClient.clear();
+      localStorage.removeItem('token');
       navigate('/main');
     }
   };
