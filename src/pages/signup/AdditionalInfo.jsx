@@ -6,9 +6,11 @@ import { AuthContext } from '../../contexts/AuthContext'
 import nicknameIcon from '../../assets/images/info/user.png'
 import placeholderIcon from '../../assets/images/info/placeholder.png'
 import phoneIcon from '../../assets/images/info/phone.png'
+import emailIcon from '../../assets/images/info/email.svg'
 
 export default function AdditionalInfo() {
-  const [form, setForm] = useState({ nickname: '', region: '', tel: '' })
+  const [form, setForm] = useState({ nickname: '', region: '', tel: '', email: '' })
+  const [errors, setErrors] = useState({})
   const [user, setUser] = useState(null)
   const [registered, setRegistered] = useState(false)
   const navigate = useNavigate()
@@ -27,21 +29,83 @@ export default function AdditionalInfo() {
     }
   }, [searchParams, login, navigate]);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    // 010으로 시작하는 11자리 숫자 또는 하이픈(-)이 포함된 형식 검사
+    const phoneRegex = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
+    return phoneRegex.test(phone);
+  };
+
+  const formatPhoneNumber = (value) => {
+    // 숫자와 하이픈만 남기고 모두 제거
+    const numbers = value.replace(/[^\d-]/g, '');
+    
+    // 하이픈 제거
+    const cleanNumbers = numbers.replace(/-/g, '');
+    
+    // 11자리 숫자인 경우에만 포맷팅
+    if (cleanNumbers.length === 11) {
+      return `${cleanNumbers.slice(0, 3)}-${cleanNumbers.slice(3, 7)}-${cleanNumbers.slice(7)}`;
+    }
+    
+    return numbers;
+  };
+
   const handleChange = e => {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    
+    if (name === 'tel') {
+      // 전화번호 입력 시 자동 포맷팅
+      const formattedValue = formatPhoneNumber(value);
+      setForm(prev => ({ ...prev, [name]: formattedValue }));
+      
+      // 전화번호 유효성 검사
+      if (!formattedValue) {
+        setErrors(prev => ({ ...prev, tel: '전화번호를 입력해주세요.' }));
+      } else if (!validatePhone(formattedValue)) {
+        setErrors(prev => ({ ...prev, tel: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)' }));
+      } else {
+        setErrors(prev => ({ ...prev, tel: '' }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+      
+      // 이메일 유효성 검사
+      if (name === 'email') {
+        if (!value) {
+          setErrors(prev => ({ ...prev, email: '이메일을 입력해주세요.' }));
+        } else if (!validateEmail(value)) {
+          setErrors(prev => ({ ...prev, email: '올바른 이메일 형식이 아닙니다.' }));
+        } else {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      }
+    }
   }
 
   const handleSubmit = async e => {
     e.preventDefault()
+    
+    // 이메일 유효성 검사
+    if (!validateEmail(form.email)) {
+      setErrors(prev => ({ ...prev, email: '올바른 이메일 형식이 아닙니다.' }));
+      return;
+    }
+
+    // 전화번호 유효성 검사
+    if (!validatePhone(form.tel)) {
+      setErrors(prev => ({ ...prev, tel: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)' }));
+      return;
+    }
+
     try {
       const res = await client.post('/auth/signup', form)
       if(res.data.status === 'ACTIVE') {
         await login(token, 'ACTIVE')
-        // const userRes = await client.get('/user/me')
-        // localStorage.setItem('userInfo', JSON.stringify(userRes.data))
-        // setUser(userRes.data)
-        // setRegistered(true)
         navigate('/main')
       } else {
         alert('회원가입 실패: ' + (res.response?.data?.message || res.message))
@@ -89,14 +153,32 @@ export default function AdditionalInfo() {
             alt="전화번호" 
             style={styles.labelIcon} />
           <input
-            style={styles.input}
+            style={{...styles.input, borderColor: errors.tel ? '#ff4d4f' : '#ccc'}}
             name="tel"
             value={form.tel}
-            placeholder="전화번호를 입력해주세요."
+            placeholder="전화번호를 입력해주세요. (예: 010-1234-5678)"
             onChange={handleChange}
             required
           />
         </div>
+        {errors.tel && <div style={styles.errorText}>{errors.tel}</div>}
+
+        <div style={styles.formGroup}>
+          <img 
+            src={emailIcon}
+            alt="이메일" 
+            style={styles.labelIcon} />
+          <input
+            style={{...styles.input, borderColor: errors.email ? '#ff4d4f' : '#ccc'}}
+            name="email"
+            type="email"
+            value={form.email}
+            placeholder="이메일을 입력해주세요."
+            onChange={handleChange}
+            required
+          />
+        </div>
+        {errors.email && <div style={styles.errorText}>{errors.email}</div>}
 
         <button style={styles.button} type="submit">
           완료
@@ -159,5 +241,12 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
-  }
+  },
+  errorText: {
+    color: '#ff4d4f',
+    fontSize: '0.875rem',
+    marginTop: '-10px',
+    marginBottom: '10px',
+    marginLeft: '55px',
+  },
 }
