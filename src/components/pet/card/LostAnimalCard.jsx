@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import client from '../../../api/client';
+import { AuthContext } from '../../../contexts/AuthContext';
 import './LostAnimalCard.css';
 
 // 북마크 이미지 임포트
@@ -41,8 +42,12 @@ function LostAnimalCard({ post, type }) {
     e.preventDefault(); // 기본 동작 방지
     e.stopPropagation(); // 이벤트 전파 방지
     if (isLoading) return;
-    setIsLoading(true);
+    if (!isLoggedIn) {
+      handleShowAuthModal();
+      return;
+    }
 
+    setIsLoading(true);
     try {
       const endpoint = post.postType === 'LOST' || post.postType === 'FOUND'
         ? `/users/bookmarks/lost-animals/lost-posts/${post.postId}/toggle`
@@ -52,7 +57,7 @@ function LostAnimalCard({ post, type }) {
       setIsBookmarked(data.bookmarked);
     } catch (error) {
       if (error.status && error.status === 401) {
-        alert('로그인이 필요한 서비스입니다!');
+        handleShowAuthModal();
       } else {
         alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       }

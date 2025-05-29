@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {Link} from 'react-router-dom';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import AuthRequiredModal from '../../auth/AuthRequiredModal';
@@ -7,37 +7,36 @@ import likeImg from '../../../assets/images/like/like.png';
 import unlikeImg from '../../../assets/images/like/unlike.png';
 import PropTypes from 'prop-types';
 import client from "../../../api/client";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨
 
-function PetCard({ pet, type, onRequireAuth }) {
+function PetCard({ pet, type }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const { data: user } = useCurrentUser();
-
+  const isLoggedIn = !!user;
+  const { handleShowAuthModal } = useContext(AuthContext);
 
   useEffect(() => {
     // 로그인 상태에서만 초기 찜 상태 확인 API 호출
-    client.get(`/users/favorites/${pet.id}/status`, {
-      headers: {
-        'X-Skip-Auth-Error': true // 401 에러 무시를 위한 커스텀 헤더 추가
-      }
-    })
-    .then(response => {
-      setIsFavorite(response.data.isInFavorites);
-    })
-    .catch(error => {
-      // 401 에러는 무시하고 다른 에러만 로깅
-      if (error.response?.status !== 401) {
-        console.error('찜 상태 확인 실패: ', error);
-      }
-    });
-  }, [pet.id]);
+    if (isLoggedIn) {
+      client.get(`/users/favorites/${pet.id}/status`, {
+        headers: {
+          'X-Skip-Auth-Error': 'true'
+        }
+      })
+      .then(response => {
+        setIsFavorite(response.data.isInFavorites);
+      })
+      .catch(error => console.error('찜 상태 확인 실패: ', error));
+    }
+  }, [pet.id, isLoggedIn]);
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();
-    if (!user) {
-      onRequireAuth();
+    if (!isLoggedIn) {
+      handleShowAuthModal();
       return;
     }
     
