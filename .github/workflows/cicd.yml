@@ -29,6 +29,13 @@ jobs:
           echo "${{ secrets.SERVICE_WORKER_FIREBASE_CONFIG }}" | base64 --decode > ./public/firebaseConfig.js
         shell: bash
 
+      - name: List files in Firebase directory
+        run: |
+          echo "TEST: Files in ./src/firebase directory:"
+          ls -1 ./src/firebase/
+          echo "TEST: Files in ./public directory:"
+          ls -1 ./public/
+
       - name: Build Docker image
         run: |
           docker build -t pawong/frontend:latest .
