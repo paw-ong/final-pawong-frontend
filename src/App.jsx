@@ -27,34 +27,47 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const { user } = useContext(AuthContext);
+  const [hasRequestedToken, setHasRequestedToken] = useState(false);
 
-  // 로그인할 때마다 알림 권한 안내 모달 표시 (세션 기반)
+  // FCM 토큰 요청 및 알림 권한 처리 (로그인 시 한 번만)
   useEffect(() => {
-    if (user) {
+    const requestToken = async () => {
+      if (!user || hasRequestedToken) return;
+
       const permissionStatus = getNotificationPermissionStatus();
-      const sessionGuideShown = sessionStorage.getItem('notification-guide-shown');
 
-      // 권한이 설정되지 않고, 이번 세션에서 아직 안내를 보지 않은 경우
-      if (permissionStatus === 'default' && !sessionGuideShown) {
-        // 로그인 후 1.5초 뒤에 안내 모달 표시 (자연스러운 타이밍)
-        const timer = setTimeout(() => {
-          setShowGuideModal(true);
-          // 이번 세션에서 안내를 보여줬다는 표시를 sessionStorage에 저장
-          sessionStorage.setItem('notification-guide-shown', 'true');
-        }, 1500);
-
-        return () => clearTimeout(timer);
+      if (permissionStatus === 'granted') {
+        try {
+          const result = await requestNotificationPermission();
+          if (result.success) {
+            setHasRequestedToken(true);
+          }
+        } catch (error) {
+          console.error('토큰 요청 실패:', error);
+        }
+      } else if (permissionStatus === 'default' && !sessionStorage.getItem('notification-guide-shown')) {
+        setShowGuideModal(true);
+        sessionStorage.setItem('notification-guide-shown', 'true');
       }
-    } else {
-      // 로그아웃 시 세션 스토리지 클리어
+    };
+
+    requestToken();
+  }, [user]);
+
+  // 로그아웃 시 상태 초기화
+  useEffect(() => {
+    if (!user) {
+      setHasRequestedToken(false);
       sessionStorage.removeItem('notification-guide-shown');
     }
-  }, [user]); // user 상태 변화 감지
+  }, [user]);
 
-  // FCM 포그라운드 메시지 리스너 초기화
+  // FCM 포그라운드 메시지 리스너 초기화 (로그인 시 한 번만)
   useEffect(() => {
-    initializeForegroundMessaging();
-  }, []);
+    if (user) {
+      initializeForegroundMessaging();
+    }
+  }, [user]);
 
   // 사전 안내 모달 닫기
   const handleGuideModalClose = () => {
@@ -67,8 +80,8 @@ function App() {
 
     try {
       const result = await requestNotificationPermission();
-
       if (result.success) {
+        setHasRequestedToken(true);
         alert('알림이 활성화되었습니다! 🔔');
       } else {
         alert(`알림 활성화 실패: ${result.error}`);
@@ -146,7 +159,7 @@ function App() {
             />
         )}
 
-        {/* 로그인할 때마다 자동 표시되는 사전 안내 모달 */}
+        {/* 알림 권한 안내 모달 */}
         <NotificationGuideModal
             isOpen={showGuideModal}
             onClose={handleGuideModalClose}
