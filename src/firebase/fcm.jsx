@@ -1,12 +1,14 @@
 import { getToken } from "firebase/messaging";
 import { messaging } from "./config.jsx";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 
 // FCM 토큰 요청 함수 (로그인 상태 확인 추가)
 export async function getFcmToken() {
+  const { isLoggedIn } = useContext(AuthContext);
   try {
     // 로그인 상태 확인
-    const userToken = localStorage.getItem('userToken');
-    if (!userToken) {
+    if (!isLoggedIn) {
       console.log('로그인하지 않은 사용자 - FCM 토큰 요청 생략');
       return null;
     }
@@ -41,9 +43,7 @@ export async function getFcmToken() {
 // 토큰을 서버에 등록하는 함수 (인증 헤더 추가)
 async function registerTokenWithServer(token) {
   try {
-    const userToken = localStorage.getItem('userToken');
-
-    if (!userToken) {
+    if (!isLoggedIn) {
       console.warn('사용자 인증 토큰이 없습니다. FCM 토큰 등록을 건너뜁니다.');
       return;
     }
