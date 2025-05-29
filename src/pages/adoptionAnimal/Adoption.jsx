@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AdoptionSearchBar from "../../components/pet/search/AdoptionSearchBar";
 import AdoptionResultList from "../../components/pet/list/AdoptionResultList";
 import client from "../../api/client";
@@ -58,6 +58,7 @@ function Adoption() {
         isSearch={isSearch} 
         searchResults={searchResults} 
         loading={loading} 
+        onRequireAuth={() => setShowAuthModal(true)}
       />
     </div>
   );

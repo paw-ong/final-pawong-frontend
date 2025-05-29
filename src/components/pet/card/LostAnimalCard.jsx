@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../../api/client';
+import { AuthContext } from '../../../contexts/AuthContext';
 import './LostAnimalCard.css';
 
 // 북마크 이미지 임포트
@@ -9,6 +10,7 @@ import bookmarkFilled from '../../../assets/images/bookmark/bookmark.png';
 
 function LostAnimalCard({ post, type }) {
   const navigate = useNavigate();
+  const { isLoggedIn, handleShowAuthModal } = useContext(AuthContext);
   const [isBookmarked, setIsBookmarked] = useState(post.bookmarked);
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -42,8 +44,12 @@ function LostAnimalCard({ post, type }) {
   const handleBookmarkToggle = async (e) => {
     e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
     if (isLoading) return;
-    setIsLoading(true);
+    if (!isLoggedIn) {
+      handleShowAuthModal();
+      return;
+    }
 
+    setIsLoading(true);
     try {
       const endpoint = post.postType === 'LOST' || post.postType === 'FOUND'
         ? `/users/bookmarks/lost-animals/lost-posts/${post.postId}/toggle`
@@ -52,9 +58,8 @@ function LostAnimalCard({ post, type }) {
       const { data } = await client.post(endpoint);
       setIsBookmarked(data.bookmarked);
     } catch (error) {
-      // console.error('북마크 토글 중 오류 발생:', error);
       if (error.status && error.status === 401) {
-        alert('로그인이 필요한 서비스입니다!');
+        handleShowAuthModal();
       } else {
         alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       }

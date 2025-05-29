@@ -5,14 +5,13 @@ import './LostAnimalTab.css';
 
 function LostAnimalTab({ activeTab, onTabChange }) {
   const navigate = useNavigate();
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, handleShowAuthModal } = useContext(AuthContext);
 
   const handleWriteClick = () => {
     if (isLoggedIn) {
       navigate('/lostAnimal/create');
     } else {
-      alert('로그인이 필요한 서비스입니다.');
-      navigate('/login');
+      handleShowAuthModal();
     }
   };
 

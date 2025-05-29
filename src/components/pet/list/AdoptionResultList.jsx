@@ -8,12 +8,13 @@ import client from "../../../api/client";
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨
 
-function AdoptionResultList({ isSearch, searchResults, loading }) {
+function AdoptionResultList({ isSearch, searchResults, loading, onRequireAuth }) {
   const [pets, setPets] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [localLoading, setLocalLoading] = useState(false);
   const observer = useRef();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // 무한 스크롤을 위한 ref 콜백
   const lastPetElementRef = useCallback(node => {
@@ -84,7 +85,7 @@ function AdoptionResultList({ isSearch, searchResults, loading }) {
     const currentYear = new Date().getFullYear();
     const ageInYears = item.age ? currentYear - item.age : null;
     const ageString = ageInYears ? `${ageInYears}살` : '나이 미상';
-
+  
     return {
       id: item.adoptionId,  // 중요: adoptionId를 id로 매핑해야 PetCard의 API 호출이 정상 작동
       imgUrl: item.popfile1,
@@ -127,7 +128,11 @@ function AdoptionResultList({ isSearch, searchResults, loading }) {
             ref={index === pets.length - 1 ? lastPetElementRef : null}
             className="adoption-result-item"
           >
-            <PetCard pet={formatPetData(item)} type="adoptions" />
+            <PetCard 
+              pet={formatPetData(item)} 
+              type="adoptions" 
+              onRequireAuth={() => setShowAuthModal(true)}
+            />
           </div>
         ))}
       </div>

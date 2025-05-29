@@ -109,7 +109,11 @@ function FavoritesSlider() {
           {favorites.map(pet => (
             <SwiperSlide key={pet.adoptionCard.adoptionId}>
               <div className="favorites-slide">
-                <PetCard pet={formatPetData(pet)} type="adoptions" />
+                <PetCard 
+                pet={formatPetData(pet)} 
+                type="adoptions" 
+                onRequireAuth={() => setShowAuthModal(true)}
+                />
               </div>
             </SwiperSlide>
           ))}
