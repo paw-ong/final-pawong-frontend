@@ -1,0 +1,55 @@
+.lost-animal-result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  padding: 20px;
+}
+
+.lost-animal-result-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lost-animal-result-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
+}
+
+.lost-animal-result-empty {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.2em;
+  color: #666;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(167, 146, 119, 0.1);
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+@media (max-width: 1200px) {
+  .lost-animal-result-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lost-animal-result-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-animal-result-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+} 

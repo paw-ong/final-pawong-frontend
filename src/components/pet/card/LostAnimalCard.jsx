@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../../api/client';
 import './LostAnimalCard.css';
+import BookmarkButton from '../../common/BookmarkButton';
 
 // 북마크 이미지 임포트
 import bookmarkEmpty from '../../../assets/images/bookmark/unbookmark.png';
@@ -100,25 +101,32 @@ function LostAnimalCard({ post, type }) {
         <div className="card-header">
           <h3>{post.kindNm}</h3>
           <div className="bookmark-container">
-            <button 
-              className={`bookmark-button ${isBookmarked ? 'bookmarked' : ''}`}
+            <BookmarkButton
+              isBookmarked={isBookmarked}
               onClick={handleBookmarkToggle}
               disabled={isLoading}
-              data-is-bookmarked={isBookmarked}
-            >
-              <img 
-                src={isBookmarked ? bookmarkFilled : bookmarkEmpty} 
-                alt="북마크" 
-                className="bookmark-icon"
-              />
-            </button>
+            />
+            {showError && (
+              <div className="bookmark-error">
+                오류가 발생했습니다. 잠시 후 다시 시도해주세요.
+              </div>
+            )}
           </div>
         </div>
 
         <div className="card-info">
-          {renderInfoItem(getDateLabel(), post.happenedDate)}
-          {renderInfoItem(getPlaceLabel(), post.happenedPlace)}
-          {renderInfoItem('특징', post.feature)}
+          <div className="info-item">
+            <strong>{getDateLabel()}</strong>
+            <span>{post.happenedDate}</span>
+          </div>
+          <div className="info-item place-info">
+            <strong>{getPlaceLabel()}</strong>
+            <span>{post.happenedPlace}</span>
+          </div>
+          <div className="info-item">
+            <strong>특징</strong>
+            <span>{post.feature}</span>
+          </div>
         </div>
 
         <div className="card-footer">

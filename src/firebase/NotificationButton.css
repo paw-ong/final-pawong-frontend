@@ -7,7 +7,7 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #333; /* 기본 검정색 */
+  color: #666;
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
@@ -19,22 +19,22 @@
 }
 
 .notification-button:hover {
-  background-color: rgba(234, 216, 192, 0.3);
+  background-color: rgba(53, 129, 184, 0.1);
   transform: scale(1.05);
 }
 
 /* 권한 상태별 버튼 스타일 - 검정색 유지 */
 .notification-button.granted {
-  color: #333;
+  color: #666;
 }
 
 .notification-button.denied {
-  color: #333;
+  color: #666;
   opacity: 0.7;
 }
 
 .notification-button.default {
-  color: #333;
+  color: #666;
 }
 
 .notification-button:disabled {
@@ -43,7 +43,7 @@
 }
 
 .notification-button:focus {
-  outline: 2px solid #E86831;
+  outline: 2px solid #3581B8;
   outline-offset: 2px;
 }
 
@@ -79,7 +79,7 @@
   position: absolute;
   top: -2px;
   right: -2px;
-  background-color: #E86831;
+  background-color: #F86A60;
   color: white;
   font-size: 0.7rem;
   width: 18px;
@@ -135,7 +135,6 @@
 .notification-header h3 {
   margin: 0;
   font-size: 1rem;
-  color: #3E3232;
   font-weight: 600;
 }
 
@@ -158,12 +157,12 @@
 }
 
 .notification-actions button:hover {
-  color: #E86831;
-  background-color: rgba(232, 104, 49, 0.1);
+  color: #3581B8;
+  background-color: rgba(53, 129, 184, 0.1);
 }
 
 .permission-request-btn {
-  background-color: #E86831 !important;
+  background-color: #F86A60 !important;
   color: white !important;
   font-weight: 500;
   padding: 6px 12px !important;
@@ -171,7 +170,7 @@
 }
 
 .permission-request-btn:hover {
-  background-color: #d96a1c !important;
+  background-color: #e55a50 !important;
   color: white !important;
 }
 
@@ -192,6 +191,7 @@
 
 .permission-notice p {
   margin: 4px 0;
+  color: #3581B8;
 }
 
 .permission-notice.denied {
@@ -201,9 +201,9 @@
 }
 
 .permission-notice.default {
-  background-color: #e3f2fd;
-  color: #1565c0;
-  border-left: 4px solid #2196f3;
+  background-color: rgba(53, 129, 184, 0.1);
+  color: #3581B8;
+  border-left: 4px solid #3581B8;
 }
 
 /* 브라우저 설정 안내 */
@@ -222,7 +222,7 @@
 
 /* 인라인 설정 버튼 */
 .inline-setup-btn {
-  background: #E86831;
+  background: #F86A60;
   color: white;
   border: none;
   border-radius: 6px;
@@ -234,7 +234,7 @@
 }
 
 .inline-setup-btn:hover {
-  background: #d96a1c;
+  background: #e55a50;
 }
 
 .notification-list {
@@ -257,12 +257,12 @@
 }
 
 .notification-item.unread {
-  background-color: #FFF9F0;
-  border-left: 4px solid #E86831;
+  background-color: rgba(248, 106, 96, 0.1);
+  border-left: 4px solid #F86A60;
 }
 
 .notification-item.unread:hover {
-  background-color: #FDEDE8;
+  background-color: rgba(248, 106, 96, 0.15);
 }
 
 .notification-item.read {
@@ -276,7 +276,7 @@
 .notification-content h4 {
   margin: 0 0 4px 0;
   font-size: 0.9rem;
-  color: #3E3232;
+  color: #3581B8;
   font-weight: 600;
 }
 
@@ -310,8 +310,8 @@
 }
 
 .delete-notification:hover {
-  color: #E86831;
-  background-color: rgba(232, 104, 49, 0.1);
+  color: #F86A60;
+  background-color: rgba(248, 106, 96, 0.1);
 }
 
 .no-notifications {

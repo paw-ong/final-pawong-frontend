@@ -1,165 +1,113 @@
-.card {
+.pet-card {
   position: relative;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s;
+  height: 350px;
+  width: 220px;
   cursor: pointer;
+  margin: 8px;
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
-  flex: 0 0 calc(25% - 20px);
-  min-width: 180px;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
 }
 
-.card:hover {
+.pet-card:hover {
   transform: translateY(-4px);
 }
 
-.card-img-container {
-  position: relative;
-  width: 80%;
-  margin: 0 auto;
+.pet-card-img-container {
+  width: 100%;
+  height: 180px;
   overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 }
 
-.card-img-container::after {
-  content: "";
-  display: block;
-  padding-bottom: 100%;
-}
-
-.card-img {
-  position: absolute;
-  top: 0;
-  left: 0;
+.pet-card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
 }
 
-.favorite-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: #FFFFFF;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.2s ease;
-  padding: 0;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.favorite-btn:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.favorite-btn.active {
-  background: #FFFFFF;
-}
-
-.favorite-btn.active:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.favorite-btn:active {
-  transform: scale(0.95);
-}
-
-.favorite-btn:focus {
-  outline: none;
-  border: none;
-}
-
-.favorite-btn[data-is-favorite="true"] .favorite-icon {
-  animation: heartBeat 0.3s ease-in-out;
-}
-
-@keyframes heartBeat {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
-
-.favorite-icon {
-  width: 24px;
-  height: 24px;
-  transition: transform 0.2s ease;
-}
-
-.favorite-btn.active .favorite-icon {
-  transform: scale(1.1);
-}
-
-.card-content {
-  padding: 15px;
-  flex-grow: 1;
+.pet-card-content {
+  padding: 12px;
+  flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.pet-card-header {
+  display: flex;
   justify-content: space-between;
-  text-align: center;
-  width: 100%;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .pet-upKindNm {
-  font-size: 16px;
+  margin: 0;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin: 4px 0;
-  color: var(--color-text);
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
-.pet-info-row {
+.pet-favorite-container {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+}
+
+.pet-card-favorite-btn {
+  position: static !important;
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.pet-card-favorite-btn .favorite-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.pet-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin: 4px 0;
-  font-size: 14px;
-  color: var(--color-text);
-  opacity: 0.8;
+  margin-top: 8px;
 }
 
-.info-divider {
-  color: var(--color-text);
-  opacity: 0.4;
-  font-size: 8px;
+.pet-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
-.pet-neuterYn {
-  font-size: 13px;
-  color: var(--color-text);
-  opacity: 0.7;
-  margin: 4px 0;
+.pet-info-item strong {
+  color: #666;
+  font-weight: 600;
+  min-width: 70px;
 }
 
-.card-link {
+.pet-info-item span {
+  color: #333;
+  text-align: right;
+  font-weight: normal;
+}
+
+.pet-card-link {
   text-decoration: none;
   color: inherit;
   display: block;
+  height: 100%;
 }
 
-.card-link:hover {
+.pet-card-link:hover {
   color: inherit;
-}
-
-.card:hover .pet-upKindNm,
-.card:hover .pet-info-row,
-.card:hover .pet-neuterYn {
-  color: inherit;
-  opacity: inherit;
 }

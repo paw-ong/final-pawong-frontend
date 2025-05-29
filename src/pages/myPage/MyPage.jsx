@@ -36,17 +36,17 @@ export default function MyPage() {
         </div>
         
         {/* 찜 목록 슬라이더 */}
-        <div style={styles.favoritesContainer}>
+        <div style={styles.sliderContainer}>
           <FavoritesSlider />
         </div>
 
         {/* 실종/발견 게시글 슬라이더 */}
-        <div style={styles.favoritesContainer}>
+        <div style={styles.sliderContainer}>
           <LostPostsSlider />
         </div>
 
         {/* 북마크한 실종/발견 게시글 슬라이더 */}
-        <div style={styles.favoritesContainer}>
+        <div style={styles.sliderContainer}>
           <LostBookmarksSlider />
         </div>
       </div>
@@ -60,8 +60,9 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '40px 20px',
-    minHeight: 'calc(100vh - 200px)', // 헤더, 푸터를 제외한 최소 높이
+    minHeight: 'calc(100vh - 200px)',
     backgroundColor: '#f9f9f9',
+    width: '100%',
   },
   content: {
     display: 'flex',
@@ -69,6 +70,7 @@ const styles = {
     alignItems: 'center',
     width: '100%',
     maxWidth: '1200px',
+    gap: '30px',
   },
   profileCard: {
     backgroundColor: '#fff',
@@ -76,9 +78,8 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '1200px',
     boxSizing: 'border-box',
-    marginBottom: '30px',
   },
   profileHeader: {
     display: 'flex',
@@ -106,16 +107,13 @@ const styles = {
     margin: '6px 0',
     color: '#3E3232',
   },
-  favoritesContainer: {
+  sliderContainer: {
     width: '100%',
-    marginTop: '10px',
-    marginBottom: '20px',
+    maxWidth: '1200px',
     backgroundColor: '#fff',
     borderRadius: '10px',
     overflow: 'hidden',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    padding: '10px 0 10px',
-    minHeight: '450px', /* PetCard가 잘리지 않도록 충분한 높이 */
   },
   logoutBtnContainer: {
     display: 'flex',
@@ -128,7 +126,8 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.2s ease',
-    backgroundColor: '#EAD8C0',
     border: 'none',
+    backgroundColor: '#f0f0f0',
+    color: '#333',
   },
 }

@@ -124,7 +124,7 @@ function Header() {
                           onMouseEnter={() => setIsLostAnimalDropdownOpen(true)}
                           onMouseLeave={() => setIsLostAnimalDropdownOpen(false)}
                       >
-                        <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}>
+                        <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")} aria-current={location.pathname === '/lostAnimal' ? "page" : undefined}>
                           실종 동물
                         </NavLink>
                         {isLostAnimalDropdownOpen && (
@@ -193,44 +193,50 @@ function Header() {
               </li>
               <li className="tab-item mobile-dropdown-container">
                 {isMobile ? (
-                    <button
-                        className="mobile-dropdown-trigger"
-                        onClick={toggleMobileDropdown}
-                        style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
-                        type="button"
+                    <div
+                        className="mobile-dropdown-trigger-container"
+                        onMouseEnter={() => setIsMobileDropdownOpen(true)}
+                        onMouseLeave={() => setIsMobileDropdownOpen(false)}
                     >
-                      실종 동물
-                    </button>
+                        <button
+                            className="mobile-dropdown-trigger"
+                            style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                            type="button"
+                            aria-current={location.pathname === '/lostAnimal' ? "page" : undefined}
+                        >
+                          실종 동물
+                        </button>
+                        <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
+                          <button
+                              className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
+                              onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal'); }}
+                              type="button"
+                          >
+                            실종
+                          </button>
+                          <button
+                              className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
+                              onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOUND'); }}
+                              type="button"
+                          >
+                            발견/보호
+                          </button>
+                          <button
+                              className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
+                              onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOSTER'); }}
+                              type="button"
+                          >
+                            구조
+                          </button>
+                        </div>
+                    </div>
                 ) : (
                     <div className="mobile-dropdown-trigger">
-                      <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}>
+                      <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")} aria-current={location.pathname === '/lostAnimal' ? "page" : undefined}>
                         실종 동물
                       </NavLink>
                     </div>
                 )}
-                <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
-                  <button
-                      className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
-                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal'); }}
-                      type="button"
-                  >
-                    실종
-                  </button>
-                  <button
-                      className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
-                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOUND'); }}
-                      type="button"
-                  >
-                    발견/보호
-                  </button>
-                  <button
-                      className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
-                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOSTER'); }}
-                      type="button"
-                  >
-                    구조
-                  </button>
-                </div>
               </li>
             </ul>
           </nav>

@@ -1,5 +1,5 @@
 .footer {
-  background-color: var(--color-background);
+  background-color: transparent;
   color: var(--color-text);
   padding: 20px 0;
   width: 100%;
@@ -8,6 +8,9 @@
   right: 0;
   bottom: 0;
   position: relative;
+  margin-top: auto; /* 자동으로 하단에 배치 */
+  flex-shrink: 0; /* Footer 크기 고정 */
+  border-top: 3px solid rgba(53, 129, 184, 0.2);
 }
 
 .footer-content {

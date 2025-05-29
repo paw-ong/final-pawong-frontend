@@ -68,16 +68,6 @@ button {
   transition: all 0.25s;
 }
 
-button:hover {
-  background-color: var(--color-primary);
-  border-color: transparent;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto var(--color-secondary);
-}
-
 @media (prefers-color-scheme: light) {
   :root {
     color: var(--color-text);

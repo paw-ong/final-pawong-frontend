@@ -162,7 +162,7 @@ function LostAnimalDetail() {
       <table className="lost-animal-detail-table">
         <tbody>
           <tr className="lost-animal-detail-header">
-            <th colSpan={2}>🐾 실종 신고자 정보</th>
+            <th colSpan={2}>🐾  실종 신고자 정보</th>
             <td colSpan={2}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr className="lost-animal-detail-row">
@@ -172,7 +172,7 @@ function LostAnimalDetail() {
             <td>{date || '-'}</td>
           </tr>
           <tr className="lost-animal-detail-header">
-            <th colSpan={4}>🐾 실종 장소</th>
+            <th colSpan={4}>🐾  실종 장소</th>
           </tr>
           <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">실종 장소</td>
@@ -187,7 +187,7 @@ function LostAnimalDetail() {
             </td>
           </tr>
           <tr className="lost-animal-detail-header">
-            <th colSpan={4}>🐾 동물 정보</th>
+            <th colSpan={4}>🐾  실종 동물 정보</th>
           </tr>
           <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">품종</td>

@@ -91,7 +91,7 @@ function AdoptionResultList({ isSearch, searchResults, loading }) {
       kindNm: item.kindNm || '기타',
       sexCd: item.sexCd === 'M' ? '수컷' : item.sexCd === 'F' ? '암컷' : '미상',
       age: ageString,
-      neuterYn: item.neuterYn === 'Y' ? '중성화 O' : item.neuterYn === 'N' ? '중성화 X' : '중성화 미상'
+      neuterYn: item.neuterYn === 'Y' ? 'O' : item.neuterYn === 'N' ? 'X' : '미상'
     };
   };
 

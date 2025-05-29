@@ -25,11 +25,34 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 0;
+  margin-bottom: 20px;
 }
 
 .content-container {
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 10px;
   width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* 모바일에서 간격 조정 */
+@media (max-width: 768px) {
+  .main-content {
+    margin-bottom: 30px;
+  }
+
+  .content-container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-bottom: 20px;
+  }
+
+  .content-container {
+    padding: 0 10px;
+  }
 }

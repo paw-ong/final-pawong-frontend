@@ -152,7 +152,7 @@ function AddressModal({ onClose, onSelect }) {
             <h3>선택된 지역 ({selectedAddresses.length}/5)</h3>
             <div className="selected-addresses">
               {selectedAddresses.map((address) => (
-                <div key={address.id} className="address-tag">
+                <div key={address.id} className="modal-address-tag">
                   <span>{address.city} {address.district}</span>
                   <button 
                     onClick={() => handleRemoveAddress(address.id)}

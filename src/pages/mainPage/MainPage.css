@@ -22,7 +22,7 @@
   display: flex;
   gap: 16px;
   justify-content: center;
-  margin-top: 32px;
+  margin: 32px 0;
 }
 
 .move-btn-vertical {
