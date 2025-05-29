@@ -25,7 +25,7 @@ jobs:
         run: |
           mkdir -p ./src/firebase
           mkdir -p ./public
-          echo "${{ secrets.MAIN_FIREBASE_CONFIG }}" | base64 --decode > ./src/firebase/fireBaseConfig.js
+          echo "${{ secrets.MAIN_FIREBASE_CONFIG }}" | base64 --decode > ./src/firebase/firebaseConfig.js
           echo "${{ secrets.SERVICE_WORKER_FIREBASE_CONFIG }}" | base64 --decode > ./public/firebaseConfig.js
         shell: bash
 
