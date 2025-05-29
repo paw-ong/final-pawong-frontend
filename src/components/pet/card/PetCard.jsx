@@ -18,11 +18,20 @@ function PetCard({ pet, type, onRequireAuth }) {
 
   useEffect(() => {
     // 로그인 상태에서만 초기 찜 상태 확인 API 호출
-    client.get(`/users/favorites/${pet.id}/status`)
+    client.get(`/users/favorites/${pet.id}/status`, {
+      headers: {
+        'X-Skip-Auth-Error': true // 401 에러 무시를 위한 커스텀 헤더 추가
+      }
+    })
     .then(response => {
       setIsFavorite(response.data.isInFavorites);
     })
-    .catch(error => console.error('찜 상태 확인 실패: ', error));
+    .catch(error => {
+      // 401 에러는 무시하고 다른 에러만 로깅
+      if (error.response?.status !== 401) {
+        console.error('찜 상태 확인 실패: ', error);
+      }
+    });
   }, [pet.id]);
 
   const handleFavoriteClick = (e) => {
