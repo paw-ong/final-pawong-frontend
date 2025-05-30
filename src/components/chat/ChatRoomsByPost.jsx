@@ -118,7 +118,7 @@ function ChatRoomsByPost() {
       next.delete(chatRoomId);
       return next;
     });
-    navigate(`/chat/${chatRoomId}`);
+    navigate(`/lostAnimal/detail/${postId}/chat/${chatRoomId}`);
   };
 
   if (loading) return <div className="chat-rooms-container">로딩 중...</div>;
