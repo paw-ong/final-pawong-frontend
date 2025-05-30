@@ -163,7 +163,6 @@ function Header() {
               )}
             </ul>
           </nav>
-
           <NotificationButton />
           <div className="user" onClick={handleUserClick}>
             <img src={userImage} alt="user-img" className="user-img"/>

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Adoption from "./pages/adoptionAnimal/Adoption.jsx";
@@ -13,39 +13,64 @@ import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
+import ChatRoom from "./components/chat/ChatRoom.jsx";
+import InAppNotification from "./firebase/InAppNotification.jsx";
+import { getFcmToken } from "./firebase/fcm.jsx";
+import { createContext } from "react";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase/config.jsx";
+import ChatRoomPage from "./pages/chat/ChatRoomPage.jsx";
 import ChatRoom from "./pages/chat/ChatRoom.jsx";
 import ChatRooms from './pages/chat/ChatRooms';
 import ChatRoomsByPost from './pages/chat/ChatRoomsByPost';
-import InAppNotification from "./firebase/InAppNotification.jsx";
-import { createContext } from "react";
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
 import NotificationGuideModal from "./components/notification/NotificationGuideModal";
 
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
 
+function LostAnimalLost() {
+  return null;
+}
+
+function LostAnimalFound() {
+  return null;
+}
+
+function LostAnimalRescue() {
+  return null;
+}
+
 function App() {
   const [notification, setNotification] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [fcmToken, setFcmToken] = useState(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const { user } = useContext(AuthContext);
   const [hasRequestedToken, setHasRequestedToken] = useState(false);
+  const fcmInitialized = useRef(false);
 
-  // FCM 토큰 요청 및 알림 권한 처리 (로그인 시 한 번만)
+  // FCM 토큰 요청 및 알림 권한 처리
   useEffect(() => {
-    const requestToken = async () => {
+    const initializeFCMForLoggedInUser = async () => {
       if (!user || hasRequestedToken) return;
 
       const permissionStatus = getNotificationPermissionStatus();
 
       if (permissionStatus === 'granted') {
         try {
-          const result = await requestNotificationPermission();
-          if (result.success) {
+          console.log("로그인된 사용자 감지 - FCM 토큰 요청 시작");
+          fcmInitialized.current = true;
+
+          const token = await getFcmToken();
+          if (token) {
+            console.log("FCM 토큰 획득 성공:", token);
+            setFcmToken(token);
             setHasRequestedToken(true);
           }
         } catch (error) {
-          console.error('토큰 요청 실패:', error);
+          console.error("FCM 토큰 처리 실패:", error);
+          fcmInitialized.current = false;
         }
       } else if (permissionStatus === 'default' && !sessionStorage.getItem('notification-guide-shown')) {
         setShowGuideModal(true);
@@ -53,23 +78,79 @@ function App() {
       }
     };
 
-    requestToken();
-  }, [user]);
+    initializeFCMForLoggedInUser();
+  }, [user, hasRequestedToken]);
 
   // 로그아웃 시 상태 초기화
   useEffect(() => {
     if (!user) {
+      setFcmToken(null);
       setHasRequestedToken(false);
+      fcmInitialized.current = false;
       sessionStorage.removeItem('notification-guide-shown');
     }
   }, [user]);
 
-  // FCM 포그라운드 메시지 리스너 초기화 (로그인 시 한 번만)
+  // FCM 메시지 수신 처리
   useEffect(() => {
-    if (user) {
-      initializeForegroundMessaging();
-    }
-  }, [user]);
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log('포그라운드 메시지 수신:', payload);
+
+      const adoptionId = payload.data?.adoptionId;
+      const actionUrl = adoptionId ? `/adoptions/${adoptionId}` : null;
+
+      const newNotification = {
+        id: Date.now(),
+        title: payload.notification?.title || '알림',
+        message: payload.notification?.body || '새로운 메시지가 있습니다',
+        actionUrl: actionUrl,
+        timestamp: new Date().toISOString(),
+        read: false
+      };
+
+      setNotifications(prev => [newNotification, ...prev].slice(0, 20));
+      setNotification({
+        title: newNotification.title,
+        message: newNotification.message,
+        actionUrl: newNotification.actionUrl
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
+    });
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  // 알림 관련 함수들
+  const markAsRead = (id) => {
+    setNotifications(prev =>
+      prev.map(notif =>
+        notif.id === id ? {...notif, read: true} : notif
+      )
+    );
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev =>
+      prev.map(notif => ({...notif, read: true}))
+    );
+  };
+
+  const deleteNotification = (id) => {
+    setNotifications(prev =>
+      prev.filter(notif => notif.id !== id)
+    );
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
 
   // 사전 안내 모달 닫기
   const handleGuideModalClose = () => {
@@ -93,83 +174,64 @@ function App() {
     }
   };
 
-  // 알림 관련 함수들
-  const markAsRead = (id) => {
-    setNotifications(prev =>
-        prev.map(notif =>
-            notif.id === id ? {...notif, read: true} : notif
-        )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-        prev.map(notif => ({...notif, read: true}))
-    );
-  };
-
-  const deleteNotification = (id) => {
-    setNotifications(prev =>
-        prev.filter(notif => notif.id !== id)
-    );
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
-
   return (
-      <NotificationContext.Provider value={{
-        notification,
-        setNotification,
-        notifications,
-        setNotifications,
-        markAsRead,
-        markAllAsRead,
-        deleteNotification,
-        clearAllNotifications,
-      }}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/main" replace />} />
-            <Route path="main" element={<MainPage />} />
-            <Route path="adoptions" element={<Adoption />} />
-            <Route path="adoptions/:id" element={<AdoptionDetail />} />
-            <Route path="lostAnimal" element={<LostAnimal />} />
-            <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
-            <Route path="lostAnimal/create" element={<LostAnimalCreate />} />
-            <Route path="lostAnimal/update/:postId" element={<LostAnimalUpdate />} />
-            <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
-            <Route path="login" element={<Login />} />
-            <Route
-                path="myPage"
-                element={user ? <MyPage /> : <Navigate to="/login" replace />}
-            />
-            <Route path="signup/additional-info" element={<AdditionalInfo />} />
-            <Route path="chat/:roomId" element={<ChatRoom />} />
-            <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
-            <Route path="chatrooms" element={<ChatRooms />} />
-            <Route path="chatrooms/post/:postId" element={<ChatRoomsByPost />} />
+    <NotificationContext.Provider value={{
+      notification,
+      setNotification,
+      notifications,
+      setNotifications,
+      markAsRead,
+      markAllAsRead,
+      deleteNotification,
+      clearAllNotifications,
+      fcmToken
+    }}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Navigate to="/main" replace />} />
+          <Route path="main" element={<MainPage />} />
+          <Route path="adoptions" element={<Adoption />} />
+          <Route path="adoptions/:id" element={<AdoptionDetail />} />
+          <Route path="lostAnimal" element={<LostAnimal />}>
+            <Route index element={<Navigate to="lost" replace />} />
+            <Route path="lost" element={<LostAnimalLost />} />
+            <Route path="found" element={<LostAnimalFound />} />
+            <Route path="rescue" element={<LostAnimalRescue />} />
           </Route>
-        </Routes>
+          <Route path="lostAnimal/detail/:id" element={<LostAnimalDetail />} />
+          <Route path="lostAnimal/create" element={<LostAnimalCreate />} />
+          <Route path="lostAnimal/update/:postId" element={<LostAnimalUpdate />} />
+          <Route path="oauth2/redirect" element={<OAuthRedirectHandler />} />
+          <Route path="login" element={<Login />} />
+          <Route
+            path="myPage"
+            element={user ? <MyPage /> : <Navigate to="/login" replace />}
+          />
+          <Route path="signup/additional-info" element={<AdditionalInfo />} />
+          <Route path="chat/:roomId" element={<ChatRoom />} />
+          <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
+          <Route path="chatrooms" element={<ChatRooms />} />
+          <Route path="chatrooms/post/:postId" element={<ChatRoomsByPost />} />
+        </Route>
+      </Routes>
 
-        {/* 인앱 알림 컴포넌트 */}
-        {notification && (
-            <InAppNotification
-                title={notification.title}
-                message={notification.message}
-                actionUrl={notification.actionUrl}
-                onClose={() => setNotification(null)}
-            />
-        )}
-
-        {/* 알림 권한 안내 모달 */}
-        <NotificationGuideModal
-            isOpen={showGuideModal}
-            onClose={handleGuideModalClose}
-            onProceed={handleGuideModalProceed}
+      {/* 인앱 알림 컴포넌트 */}
+      {notification && (
+        <InAppNotification
+          title={notification.title}
+          message={notification.message}
+          actionUrl={notification.actionUrl}
+          onClose={() => setNotification(null)}
         />
-      </NotificationContext.Provider>
+      )}
+
+      {/* 알림 권한 안내 모달 */}
+      <NotificationGuideModal
+        isOpen={showGuideModal}
+        onClose={handleGuideModalClose}
+        onProceed={handleGuideModalProceed}
+      />
+    </NotificationContext.Provider>
   );
 }
 
