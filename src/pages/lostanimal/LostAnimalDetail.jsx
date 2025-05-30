@@ -1,17 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
 
 function LostAnimalDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const currentLocation = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+
+  // localStorage의 userInfo에서 userId 가져오기
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const { userId } = JSON.parse(userInfo);
+      setCurrentUserId(userId);
+    }
+  }, []);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -57,11 +68,19 @@ function LostAnimalDetail() {
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) return;
+    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) {
+      console.log('지도 초기화 조건이 충족되지 않음');
+      return;
+    }
     
     try {
       const { latitude, longitude } = data.geoPoint;
       
+      if (!latitude || !longitude) {
+        console.log('위도/경도 정보가 없음');
+        return;
+      }
+
       const options = {
         center: new window.kakao.maps.LatLng(latitude, longitude),
         level: 3
@@ -122,6 +141,29 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  const handleEdit = () => {
+    navigate(`/lostAnimal/update/${id}`, { 
+      state: { 
+        postData: data 
+      } 
+    });
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      try {
+        const response = await client.delete(`/lost-animals/lost-posts/${id}`);
+        if (response.status === 200) {
+          alert('게시글이 삭제되었습니다.');
+          navigate('/lostAnimal');
+        }
+      } catch (error) {
+        console.error('게시글 삭제 실패:', error);
+        alert('게시글 삭제에 실패했습니다.');
+      }
+    }
+  };
+
   if (loading) return <div className="lost-animal-container">로딩 중...</div>;
   if (error || !data) return <div className="lost-animal-container">{error || '데이터 없음'}</div>;
 
@@ -155,6 +197,44 @@ function LostAnimalDetail() {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       backgroundColor: 'white'
     }}>
+      {currentUserId && data?.authorId && currentUserId === data.authorId && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
+          <button 
+            onClick={handleEdit}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#4CAF50'}
+          >
+            수정
+          </button>
+          <button 
+            onClick={handleDelete}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#f44336',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#da190b'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
+          >
+            삭제
+          </button>
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
