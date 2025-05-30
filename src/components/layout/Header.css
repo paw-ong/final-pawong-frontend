@@ -27,7 +27,7 @@
 .desktop-menu {
   display: flex;
   align-items: center;
-  gap: 24px; /* 알림 버튼과 사용자 이미지 사이 간격 */
+  gap: 20px;
 }
 
 .main-nav {
