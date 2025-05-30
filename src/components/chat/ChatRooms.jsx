@@ -160,13 +160,13 @@ function ChatRooms() {
     };
   }, []);
 
-  const handleChatRoomClick = (chatRoomId) => {
+  const handleChatRoomClick = (chatRoomId, room) => {
     setNewMessageRooms(prev => {
       const next = new Set(prev);
       next.delete(chatRoomId);
       return next;
     });
-    navigate(`/chat/${chatRoomId}`);
+    navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}/chat/${chatRoomId}`);
   };
 
   const sortedRooms = useMemo(() => {
@@ -201,7 +201,7 @@ function ChatRooms() {
                   room.status === 'INACTIVE' ? 'inactive' : '',
                   newMessageRooms.has(room.chatRoomId) ? 'new-message' : ''
                 ].join(' ')}
-                onClick={() => handleChatRoomClick(room.chatRoomId)}
+                onClick={() => handleChatRoomClick(room.chatRoomId, room)}
                 >
                 <div className="chat-room-image">
                   <img src={room.lostPostInfo.imageUrl} alt="분실동물" />

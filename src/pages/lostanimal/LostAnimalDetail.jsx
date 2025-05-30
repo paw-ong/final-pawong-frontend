@@ -148,7 +148,7 @@ function LostAnimalDetail() {
       const response = await client.post('/chat/rooms', requestData);
       
       if (response && response.data && response.data.chatRoomId) {
-        window.location.href = `/chat/${response.data.chatRoomId}`;
+        window.location.href = `/lostAnimal/detail/${data.lostPostId}/chat/${response.data.chatRoomId}`;
       }
     } catch (error) {
       console.error('채팅방 생성 오류:', error);
