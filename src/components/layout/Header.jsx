@@ -196,17 +196,19 @@ function Header() {
                   입양 동물
                 </NavLink>
               </li>
-              <li className="tab-item">
-                <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
-                  채팅 목록
-                </NavLink>
-              </li>
               <li className="tab-item mobile-dropdown-container">
                 {isMobile ? (
                     <button
                         className="mobile-dropdown-trigger"
                         onClick={toggleMobileDropdown}
-                        style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          background: 'none', 
+                          border: 'none', 
+                          padding: 0, 
+                          font: 'inherit',
+                          fontSize: '1.2rem'
+                        }}
                         type="button"
                     >
                       실종 동물
@@ -241,6 +243,11 @@ function Header() {
                     구조
                   </button>
                 </div>
+              </li>
+              <li className="tab-item">
+                <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
+                  채팅 목록
+                </NavLink>
               </li>
             </ul>
           </nav>
