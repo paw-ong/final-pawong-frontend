@@ -206,7 +206,6 @@ function App() {
             element={user ? <MyPage /> : <Navigate to="/login" replace />}
           />
           <Route path="signup/additional-info" element={<AdditionalInfo />} />
-          <Route path="chat/:roomId" element={<ChatRoom />} />
           <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
           <Route path="chatrooms" element={<ChatRooms />} />
           <Route path="chatrooms/post/:postId" element={<ChatRoomsByPost />} />
