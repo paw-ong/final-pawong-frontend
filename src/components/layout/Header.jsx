@@ -5,6 +5,7 @@ import logo from '../../assets/images/logo/logo.png';
 import defaultUserImage from '../../assets/images/user.jpg'
 import { AuthContext } from '../../contexts/AuthContext.jsx';
 import { useLocation } from "react-router-dom";
+import NotificationButton from '../../firebase/NotificationButton.jsx';
 
 function Header() {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target) && 
+      if (menuRef.current && !menuRef.current.contains(event.target) &&
           hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
@@ -80,7 +81,7 @@ function Header() {
     if (user) {
       navigate('/mypage');
     } else {
-    navigate('/login');
+      navigate('/login');
     }
     setIsMenuOpen(false);
   };
@@ -99,142 +100,142 @@ function Header() {
   };
 
   return (
-    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="logo-container">
-        <Link to="/main">
-          <img src={logo} alt="pawong logo" className="logo"/>
-        </Link>
-      </div>
-      
-      {/* 데스크톱 메뉴 */}
-      <div className="desktop-menu">
-        <nav className="main-nav">
-          <ul className="nav-tabs">
-            {!isMainPage && (
-                <>
-            <li className="tab-item">
-              <NavLink to="/adoptions" className={({ isActive }) => (isActive ? "active" : "")}>
-                입양 동물
-              </NavLink>
-            </li>
-            <li className="tab-item dropdown" ref={dropdownRef}>
-              <div 
-                className="dropdown-trigger"
-                onMouseEnter={() => setIsLostAnimalDropdownOpen(true)}
-                onMouseLeave={() => setIsLostAnimalDropdownOpen(false)}
-              >
-                <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}>
-                  실종 동물
-                </NavLink>
-                {isLostAnimalDropdownOpen && (
-                  <div className="dropdown-menu">
-                    <a
-                      href="/lostAnimal"
-                      className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
-                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal'; }}
-                    >
-                      실종
-                    </a>
-                    <a
-                      href="/lostAnimal?type=FOUND"
-                      className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
-                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOUND'; }}
-                    >
-                      발견/보호
-                    </a>
-                    <a
-                      href="/lostAnimal?type=FOSTER"
-                      className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
-                      onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOSTER'; }}
-                    >
-                      구조
-                    </a>
-                  </div>
-                )}
-              </div>
-            </li>
-            <li className="tab-item">
-              <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")}>
-                채팅 목록
-              </NavLink>
-            </li>
-                </>
-                )}
-          </ul>
-        </nav>
-        <div className="user" onClick={handleUserClick}>
-          <img src={userImage} alt="user-img" className="user-img"/>
+      <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="logo-container">
+          <Link to="/main">
+            <img src={logo} alt="pawong logo" className="logo"/>
+          </Link>
         </div>
-      </div>
 
-      {/* 모바일 메뉴 버튼 */}
-      <button className="hamburger-menu" onClick={toggleMenu} ref={hamburgerRef}>
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      {/* 모바일 메뉴 */}
-      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
-        <div className="user" onClick={handleUserClick}>
-          <img src={userImage} alt="user-img" className="user-img"/>
-        </div>
-        <nav className="main-nav">
-          <ul className="nav-tabs">
-            <li className="tab-item">
-              <NavLink to="/adoptions" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
-                입양 동물
-              </NavLink>
-            </li>
-            <li className="tab-item mobile-dropdown-container"
-                onMouseEnter={() => setIsMobileDropdownOpen(true)}
-                onMouseLeave={() => setIsMobileDropdownOpen(false)}
-            >
-              {isMobile ? (
-                <button
-                  className="mobile-dropdown-trigger"
-                  onClick={toggleMobileDropdown}
-                  style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
-                  type="button"
-                >
-                  실종 동물
-                </button>
-              ) : (
-                <div className="mobile-dropdown-trigger">
-                  <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}
-                  >
-                    실종 동물
-                  </NavLink>
-                </div>
+        {/* 데스크톱 메뉴 */}
+        <div className="desktop-menu">
+          <nav className="main-nav">
+            <ul className="nav-tabs">
+              {!isMainPage && (
+                  <>
+                    <li className="tab-item">
+                      <NavLink to="/adoptions" className={({ isActive }) => (isActive ? "active" : "")}>
+                        입양 동물
+                      </NavLink>
+                    </li>
+                    <li className="tab-item dropdown" ref={dropdownRef}>
+                      <div
+                          className="dropdown-trigger"
+                          onMouseEnter={() => setIsLostAnimalDropdownOpen(true)}
+                          onMouseLeave={() => setIsLostAnimalDropdownOpen(false)}
+                      >
+                        <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}>
+                          실종 동물
+                        </NavLink>
+                        {isLostAnimalDropdownOpen && (
+                            <div className="dropdown-menu">
+                              <a
+                                  href="/lostAnimal"
+                                  className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
+                                  onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal'; }}
+                              >
+                                실종
+                              </a>
+                              <a
+                                  href="/lostAnimal?type=FOUND"
+                                  className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
+                                  onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOUND'; }}
+                              >
+                                발견/보호
+                              </a>
+                              <a
+                                  href="/lostAnimal?type=FOSTER"
+                                  className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
+                                  onClick={e => { e.preventDefault(); window.location.href = '/lostAnimal?type=FOSTER'; }}
+                              >
+                                구조
+                              </a>
+                            </div>
+                        )}
+                      </div>
+                    </li>
+                  </>
               )}
-              <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
-                <button
-                  className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
-                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal'); }}
-                  type="button"
-                >
-                  실종
-                </button>
-                <button
-                  className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
-                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOUND'); }}
-                  type="button"
-                >
-                  발견/보호
-                </button>
-                <button
-                  className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
-                  onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOSTER'); }}
-                  type="button"
-                >
-                  구조
-                </button>
-              </div>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+            </ul>
+          </nav>
+          <NotificationButton />
+          <div className="user" onClick={handleUserClick}>
+            <img src={userImage} alt="user-img" className="user-img"/>
+          </div>
+        </div>
+
+        {/* 모바일 헤더 우측 영역 - 알림 버튼과 햄버거 버튼 */}
+        <div className="mobile-header-controls">
+          {/* 모바일 알림 버튼 */}
+          <div className="mobile-header-notification">
+            <NotificationButton />
+          </div>
+
+          {/* 햄버거 메뉴 버튼 */}
+          <button className="hamburger-menu" onClick={toggleMenu} ref={hamburgerRef}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
+        {/* 모바일 메뉴 패널 */}
+        <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
+          <div className="user" onClick={handleUserClick}>
+            <img src={userImage} alt="user-img" className="user-img"/>
+          </div>
+          <nav className="main-nav">
+            <ul className="nav-tabs">
+              <li className="tab-item">
+                <NavLink to="/adoptions" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
+                  입양 동물
+                </NavLink>
+              </li>
+              <li className="tab-item mobile-dropdown-container">
+                {isMobile ? (
+                    <button
+                        className="mobile-dropdown-trigger"
+                        onClick={toggleMobileDropdown}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                        type="button"
+                    >
+                      실종 동물
+                    </button>
+                ) : (
+                    <div className="mobile-dropdown-trigger">
+                      <NavLink to="/lostAnimal" className={({ isActive }) => (isActive && !location.pathname.includes('/lostAnimal/') ? "active" : "")}>
+                        실종 동물
+                      </NavLink>
+                    </div>
+                )}
+                <div className={`mobile-dropdown ${isMobileDropdownOpen ? 'show' : ''}`}>
+                  <button
+                      className={`dropdown-item ${activeType === 'LOST' ? 'active' : ''}`}
+                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal'); }}
+                      type="button"
+                  >
+                    실종
+                  </button>
+                  <button
+                      className={`dropdown-item ${activeType === 'FOUND' ? 'active' : ''}`}
+                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOUND'); }}
+                      type="button"
+                  >
+                    발견/보호
+                  </button>
+                  <button
+                      className={`dropdown-item ${activeType === 'FOSTER' ? 'active' : ''}`}
+                      onClick={() => { setIsMobileDropdownOpen(false); handleMenuClick(); navigate('/lostAnimal?type=FOSTER'); }}
+                      type="button"
+                  >
+                    구조
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
   );
 }
 

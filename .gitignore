@@ -25,3 +25,8 @@ dist-ssr
 
 .cursorrules
 .clip-board.sh
+
+# Firebase config
+firebaseConfig.js
+
+.env

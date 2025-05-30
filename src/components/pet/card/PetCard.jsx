@@ -27,7 +27,7 @@ function PetCard({ pet, type }) {
       client.get(`/users/favorites/${pet.id}/status`)
       .then(response => {
         // console.log('찜 상태 응답:', response);
-        setIsFavorite(response.data.inFavorites);
+        setIsFavorite(response.data.isInFavorites);
       })
       .catch(error => console.error('찜 상태 확인 실패: ', error));
     }
@@ -47,7 +47,7 @@ function PetCard({ pet, type }) {
     client.post(`/users/favorites/${pet.id}/toggle`)
     .then(response => {
       console.log('찜 처리 응답222:', response);
-      setIsFavorite(response.data.inFavorites);
+      setIsFavorite(response.data.isInFavorites);
     })
     .catch(error => {
       console.error('찜 처리 실패: ', error);
