@@ -154,6 +154,11 @@ function Header() {
                         )}
                       </div>
                     </li>
+                    <li className="tab-item">
+                      <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")}>
+                        채팅 목록
+                      </NavLink>
+                    </li>
                   </>
               )}
             </ul>
@@ -189,6 +194,11 @@ function Header() {
               <li className="tab-item">
                 <NavLink to="/adoptions" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
                   입양 동물
+                </NavLink>
+              </li>
+              <li className="tab-item">
+                <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
+                  채팅 목록
                 </NavLink>
               </li>
               <li className="tab-item mobile-dropdown-container">

@@ -1,6 +1,5 @@
 import { getToken } from "firebase/messaging";
 import { messaging } from "./config.jsx";
-import client from "../api/client.js";
 
 // FCM 토큰 요청 함수 (로그인 상태 확인 추가)
 export async function getFcmToken() {
@@ -48,16 +47,6 @@ async function registerTokenWithServer(token) {
       console.warn('사용자 인증 토큰이 없습니다. FCM 토큰 등록을 건너뜁니다.');
       return;
     }
-
-    // 인증 헤더를 포함한 요청
-    await client.post('/fcm/token',
-        { token },
-        {
-          headers: {
-            'Authorization': `Bearer ${userToken}`
-          }
-        }
-    );
 
     console.log('FCM 토큰이 서버에 등록되었습니다.');
   } catch (error) {
