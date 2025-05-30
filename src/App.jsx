@@ -14,6 +14,8 @@ import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
 import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
 import ChatRoom from "./pages/chat/ChatRoom.jsx";
+import ChatRooms from './pages/chat/ChatRooms';
+import ChatRoomsByPost from './pages/chat/ChatRoomsByPost';
 import InAppNotification from "./firebase/InAppNotification.jsx";
 import { createContext } from "react";
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
@@ -146,6 +148,8 @@ function App() {
             <Route path="signup/additional-info" element={<AdditionalInfo />} />
             <Route path="chat/:roomId" element={<ChatRoom />} />
             <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
+            <Route path="chatrooms" element={<ChatRooms />} />
+            <Route path="chatrooms/post/:postId" element={<ChatRoomsByPost />} />
           </Route>
         </Routes>
 
