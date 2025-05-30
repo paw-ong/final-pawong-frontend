@@ -251,8 +251,8 @@ const ChatRoom = () => {
       <div className={styles.chatRoom}>
         <div className={styles.chatHeader}>
           <img
-            src={animalData?.imageUrl || '/default-animal.png'}
-            alt="동물 이미지"
+            src={animalData?.imageUrl || userImage}
+            alt="공고 이미지"
             className={styles.headerAnimalImage}
           />
           <span className={styles.headerNickname}>

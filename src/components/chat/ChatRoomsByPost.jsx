@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
+import userImage from '../../assets/images/user.jpg';
 import './ChatRoomsByPost.css';
 
 function ChatRoomsByPost() {
@@ -29,8 +30,10 @@ function ChatRoomsByPost() {
     const fetchChatRooms = async () => {
       setLoading(true);
       try {
+        console.log('postId', postId);
         const response = await client.get('/chat/rooms', { params: { postId } });
         setChatRooms(response.data.chatRoomsDetails || []);
+        console.log('chatRooms', chatRooms);
       } catch (e) {
         console.error('채팅방 목록 조회 실패:', e);
         setError('채팅방 목록을 불러오는데 실패했습니다.');
@@ -149,7 +152,7 @@ function ChatRoomsByPost() {
                   alt={room.lostPostInfo.kindNm}
                   onError={e => {
                     e.target.onerror = null;
-                    e.target.src = '/default-image.jpg';
+                    e.target.src = userImage;
                   }}
                 />
               </div>
