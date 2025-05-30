@@ -70,7 +70,7 @@ const ChatRoom = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await client.get(`/chat/${roomId}`);
+        const response = await client.get(`/chat/rooms/${roomId}/messages`);
         setMessages(response.data.chatMessageDetails || []);
         scrollToBottom();
       } catch (error) {
