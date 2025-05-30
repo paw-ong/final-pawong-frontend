@@ -19,10 +19,8 @@ import { getFcmToken } from "./firebase/fcm.jsx";
 import { createContext } from "react";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase/config.jsx";
-import ChatRoomPage from "./pages/chat/ChatRoomPage.jsx";
-import ChatRoom from "./pages/chat/ChatRoom.jsx";
-import ChatRooms from './pages/chat/ChatRooms';
-import ChatRoomsByPost from './pages/chat/ChatRoomsByPost';
+import ChatRooms from './components/chat/ChatRooms.jsx';
+import ChatRoomsByPost from './components/chat/ChatRoomsByPost.jsx';
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
 import NotificationGuideModal from "./components/notification/NotificationGuideModal";
 
