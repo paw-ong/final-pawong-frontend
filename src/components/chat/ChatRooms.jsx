@@ -166,7 +166,7 @@ function ChatRooms() {
       next.delete(chatRoomId);
       return next;
     });
-    navigate(`/chat/${chatRoomId}`);
+    navigate(`/lostAnimal/detail/${room.lostPostInfo.postId}/chat/${chatRoomId}`);
   };
 
   const sortedRooms = useMemo(() => {
