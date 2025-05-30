@@ -8,6 +8,8 @@
   right: 0;
   bottom: 0;
   position: relative;
+  margin-top: auto; /* 자동으로 하단에 배치 */
+  flex-shrink: 0; /* Footer 크기 고정 */
 }
 
 .footer-content {
