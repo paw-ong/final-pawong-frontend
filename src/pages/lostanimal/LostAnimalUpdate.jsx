@@ -53,7 +53,7 @@ export default function LostAnimalUpdate() {
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await client.get(`/lost-animals/${postId}?type=lost-posts`);
+        const response = await client.get(`/lost-animals/lost-posts/${postId}`);
         const postData = response.data.lostPostDetailDto;
         console.log('받아온 게시글 데이터:', postData);
         
@@ -70,8 +70,8 @@ export default function LostAnimalUpdate() {
           content: postData.content || '',
           rfidCd: postData.rfidCd || '',
           location: postData.location || '',
-          latitude: postData.latitude || null,
-          longitude: postData.longitude || null,
+          latitude: postData.geoPoint?.latitude || null,
+          longitude: postData.geoPoint?.longitude || null,
           address: postData.address || null
         });
 

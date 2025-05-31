@@ -7,14 +7,24 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 function LostAnimalDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const currentLocation = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const { user, isLoggedIn } = useContext(AuthContext);
-  const navigate = useNavigate();
+
+  // localStorage의 userInfo에서 userId 가져오기
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const { userId } = JSON.parse(userInfo);
+      setCurrentUserId(userId);
+    }
+  }, []);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -143,22 +153,45 @@ function LostAnimalDetail() {
       postId: Number(data.lostPostId),
       authorId: Number(data.authorId)
     };
-    
+
     try {
       const response = await client.post('/chat/rooms', requestData);
-      
+
       if (response && response.data && response.data.chatRoomId) {
         window.location.href = `/lostAnimal/detail/${data.lostPostId}/chat/${response.data.chatRoomId}`;
       }
     } catch (error) {
       console.error('채팅방 생성 오류:', error);
-      
+
       if (error.status === 401 || error.status === 403) {
         alert('로그인이 필요하거나 권한이 없습니다.');
       } else if (error.code === 'CHATROOM_POST_ERROR') {
         alert('채팅방을 생성할 수 없습니다');
       } else {
         alert('채팅방 생성 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/lostAnimal/update/${id}`, {
+      state: {
+        postData: data
+      }
+    });
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      try {
+        const response = await client.delete(`/lost-animals/lost-posts/${id}`);
+        if (response.status === 200) {
+          alert('게시글이 삭제되었습니다.');
+          navigate('/lostAnimal');
+        }
+      } catch (error) {
+        console.error('게시글 삭제 실패:', error);
+        alert('게시글 삭제에 실패했습니다.');
       }
     }
   };
@@ -198,6 +231,44 @@ function LostAnimalDetail() {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       backgroundColor: 'white'
     }}>
+      {currentUserId && data?.authorId && currentUserId === data.authorId && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
+          <button
+            onClick={handleEdit}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#4CAF50'}
+          >
+            수정
+          </button>
+          <button
+            onClick={handleDelete}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#f44336',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#da190b'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
+          >
+            삭제
+          </button>
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
@@ -218,7 +289,7 @@ function LostAnimalDetail() {
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 실종 신고자 정보</th>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 신고자 정보</th>
             <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr>
@@ -278,11 +349,11 @@ function LostAnimalDetail() {
           </tr>
           </tbody>
         </table>
-      
+
       {/* 채팅하기 버튼 */}
       <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
         {isLoggedIn && user?.userId === data.authorId ? (
-          <button 
+          <button
             onClick={handleChatButtonClick}
             style={{
               backgroundColor: '#4CAF50',
@@ -298,7 +369,7 @@ function LostAnimalDetail() {
             요청된 채팅으로 이동
           </button>
         ) : (
-          <button 
+          <button
             onClick={handleChatButtonClick}
             style={{
               backgroundColor: '#FF8A3D',
