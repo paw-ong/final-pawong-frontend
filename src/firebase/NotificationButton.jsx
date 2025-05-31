@@ -114,7 +114,7 @@ const NotificationButton = () => {
 
   return (
       <>
-        <div className="notification-button-container" ref={dropdownRef}>
+        <div className={`notification-button-container ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
           <button
               className={getButtonClass()}
               onClick={() => setIsOpen(!isOpen)}

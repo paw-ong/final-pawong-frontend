@@ -160,7 +160,7 @@ function Header() {
                 </li>
                 <li className="tab-item">
                   <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")}>
-                    채팅 목록
+                    채팅
                   </NavLink>
                 </li>
               </>
@@ -257,7 +257,7 @@ function Header() {
             </li>
             <li className="tab-item">
               <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
-                채팅 목록
+                채팅
               </NavLink>
             </li>
           </ul>

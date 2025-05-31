@@ -77,14 +77,14 @@
 }
 
 .myMessage .messageContent {
-  background-color: #3E3232;
-  color: white;
+  background-color: rgba(248, 106, 96, 0.2);
+  color: #2F1C1D;
   border-bottom-right-radius: 0.2rem;
 }
 
 .otherMessage .messageContent {
-  background-color: var(--color-white);
-  color: var(--color-text);
+  background-color: rgba(53, 129, 184, 0.2);
+  color: #2F1C1D;
   border-bottom-left-radius: 0.2rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -148,7 +148,7 @@
 
 .sendButton {
   padding: 0.8rem 1.5rem;
-  background-color: #3E3232;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -158,7 +158,7 @@
 }
 
 .sendButton:hover {
-  background-color: #3E3232;
+  background-color: var(--color-accent);
 }
 
 .sendButton:disabled {
@@ -179,16 +179,16 @@
   content: '';
   flex: 1;
   height: 1px;
-  background-color: var(--color-background);
+  background-color: var(--color-secondary);
   margin: 0 1rem;
 }
 
 .dateText {
-  background-color: var(--color-background);
+  background-color: var(--color-secondary);
   padding: 0.5rem 1rem;
   border-radius: 1rem;
   font-size: 0.9rem;
-  color: var(--color-text);
+  color: var(--color-white);
   font-weight: 500;
 }
 
@@ -201,7 +201,6 @@
   color: var(--color-accent);
   font-size: 0.8rem;
   font-weight: bold;
-  background: var(--color-background);
   border-radius: 50%;
   padding: 0.1em 0.1rem 0.1rem 0.6em;
   vertical-align: middle;

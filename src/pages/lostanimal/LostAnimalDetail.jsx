@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
-import "./LostAnimal.css";
+import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
 
 function LostAnimalDetail() {
@@ -260,7 +260,11 @@ function LostAnimalDetail() {
           <button 
             onClick={handleChatButtonClick}
             style={{
-              backgroundColor: '#4CAF50',
+              // backgroundColor: '#4CAF50',
+              backgroundColor: 'var(--color-primary)',
+              '&:hover': {
+                backgroundColor: 'var(--color-accent)',
+              },
               color: 'white',
               border: 'none',
               borderRadius: '5px',
@@ -276,7 +280,11 @@ function LostAnimalDetail() {
           <button 
             onClick={handleChatButtonClick}
             style={{
-              backgroundColor: '#FF8A3D',
+              // backgroundColor: '#FF8A3D',
+              backgroundColor: 'var(--color-primary)',
+              '&:hover': {
+                backgroundColor: 'var(--color-accent)',
+              },
               color: 'white',
               border: 'none',
               borderRadius: '5px',
