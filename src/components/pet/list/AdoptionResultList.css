@@ -3,6 +3,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  padding-bottom: 20px; /* Footer와의 간격 추가 */
 }
 
 .adoption-result-grid {
@@ -54,4 +55,14 @@
   .adoption-result-grid {
     grid-template-columns: 1fr;
   }
-} 
+
+  .adoption-result-container {
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adoption-result-container {
+    padding-bottom: 20px;
+  }
+}

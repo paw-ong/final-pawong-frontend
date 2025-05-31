@@ -7,7 +7,7 @@ import './Layout.css';
 function Layout() {
   const location = useLocation();
   const isLostAnimalCreate = location.pathname.startsWith("/lostAnimal/create");
-  const isChatRoom = location.pathname.startsWith("/chat");
+  const isChatRoomPage = location.pathname.includes("/chat");
 
   return (
     <div className="layout">
@@ -17,7 +17,7 @@ function Layout() {
           <Outlet />
         </div>
       </main>
-      {!isLostAnimalCreate && !isChatRoom && <Footer />}
+      {!isLostAnimalCreate && !isChatRoomPage && <Footer />}
     </div>
   );
 }
