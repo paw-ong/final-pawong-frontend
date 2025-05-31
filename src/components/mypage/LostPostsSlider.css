@@ -1,0 +1,124 @@
+.lost-posts-slider-container {
+  position: relative;
+  padding: 10px 0;
+  margin: 10px 12px;
+}
+
+.lost-posts-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.lost-posts-swiper {
+  position: relative;
+  width: 100%;
+  padding: 0 10px;
+  margin-right: 5px;
+}
+
+.lost-posts-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 3px;
+  width: 220px;
+  margin: 0 auto;
+}
+
+/* 커스텀 네비게이션 버튼 스타일 */
+.swiper-button-prev-custom,
+.swiper-button-next-custom {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.swiper-button-prev-custom {
+  left: -15px;
+}
+
+.swiper-button-next-custom {
+  right: -15px;
+}
+
+.swiper-button-prev-custom:hover,
+.swiper-button-next-custom:hover {
+  background-color: #3581B8;
+}
+
+.swiper-button-prev-custom img,
+.swiper-button-next-custom img {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-prev-custom:hover img,
+.swiper-button-next-custom:hover img {
+  filter: brightness(0) invert(1);
+}
+
+.lost-posts-loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.lost-posts-empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.lost-posts-empty p {
+  margin: 5px 0;
+  font-size: 1.1rem;
+}
+
+.swiper-slide {
+  margin-right: 17px !important;
+}
+
+@media (max-width: 768px) {
+  .lost-posts-slider-container {
+    padding: 10px 0;
+    margin: 20px 20px;
+  }
+
+  .lost-posts-slide {
+    width: 100%;
+  }
+
+  .swiper-button-prev-custom,
+  .swiper-button-next-custom {
+    width: 30px;
+    height: 30px;
+  }
+
+  .swiper-button-prev-custom img,
+  .swiper-button-next-custom img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .swiper-button-prev-custom {
+    left: -20px;
+  }
+
+  .swiper-button-next-custom {
+    right: -20px;
+  }
+} 
