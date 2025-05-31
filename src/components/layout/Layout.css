@@ -25,6 +25,7 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 0;
+  margin-bottom: 20px; /* Footer와의 간격 추가 */
 }
 
 .content-container {
@@ -32,4 +33,26 @@ html, body {
   margin: 0 auto;
   border-radius: 10px;
   width: 100%;
+  padding-bottom: 40px; /* 하단 여백 추가 */
+}
+
+/* 모바일에서 간격 조정 */
+@media (max-width: 768px) {
+  .main-content {
+    margin-bottom: 30px;
+  }
+
+  .content-container {
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-bottom: 20px;
+  }
+
+  .content-container {
+    padding-bottom: 20px;
+  }
 }

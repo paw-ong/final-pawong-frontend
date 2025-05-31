@@ -139,6 +139,11 @@ class WebSocketService {
     }
   }
 
+    // 연결 여부 확인
+    isConnected() {
+      return this.stompClient && this.connected;
+    }
+  
   // 웹소켓 메시지 전송
   send(destination, body) {
     if (!this.connected) {

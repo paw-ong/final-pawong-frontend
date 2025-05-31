@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimal.css";
+import { AuthContext } from "../../contexts/AuthContext";
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ function LostAnimalDetail() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const { user, isLoggedIn } = useContext(AuthContext);
 
   // localStorage의 userInfo에서 userId 가져오기
   useEffect(() => {
@@ -68,19 +70,11 @@ function LostAnimalDetail() {
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) {
-      console.log('지도 초기화 조건이 충족되지 않음');
-      return;
-    }
+    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) return;
     
     try {
       const { latitude, longitude } = data.geoPoint;
       
-      if (!latitude || !longitude) {
-        console.log('위도/경도 정보가 없음');
-        return;
-      }
-
       const options = {
         center: new window.kakao.maps.LatLng(latitude, longitude),
         level: 3
@@ -141,11 +135,49 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  // 채팅 버튼 클릭 핸들러
+  const handleChatButtonClick = async () => {
+    if (!data || !isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
+    // 작성자인 경우 채팅방 목록 페이지로 이동
+    if (isLoggedIn && user?.userId === data.authorId) {
+      navigate(`/chatrooms/post/${data.lostPostId}`);
+      return;
+    }
+
+    // 작성자가 아닌 경우 기존 로직 실행
+    const requestData = {
+      postId: Number(data.lostPostId),
+      authorId: Number(data.authorId)
+    };
+
+    try {
+      const response = await client.post('/chat/rooms', requestData);
+
+      if (response && response.data && response.data.chatRoomId) {
+        window.location.href = `/lostAnimal/detail/${data.lostPostId}/chat/${response.data.chatRoomId}`;
+      }
+    } catch (error) {
+      console.error('채팅방 생성 오류:', error);
+
+      if (error.status === 401 || error.status === 403) {
+        alert('로그인이 필요하거나 권한이 없습니다.');
+      } else if (error.code === 'CHATROOM_POST_ERROR') {
+        alert('채팅방을 생성할 수 없습니다');
+      } else {
+        alert('채팅방 생성 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
   const handleEdit = () => {
-    navigate(`/lostAnimal/update/${id}`, { 
-      state: { 
-        postData: data 
-      } 
+    navigate(`/lostAnimal/update/${id}`, {
+      state: {
+        postData: data
+      }
     });
   };
 
@@ -169,6 +201,7 @@ function LostAnimalDetail() {
 
   // 데이터 구조 확인을 위한 로깅
   const {
+    lostPostId,
     date,
     upKindNm,
     kindNm,
@@ -181,6 +214,7 @@ function LostAnimalDetail() {
     rfidCd,
     location,
     author,
+    authorId,
     createdAt
   } = data;
 
@@ -199,7 +233,7 @@ function LostAnimalDetail() {
     }}>
       {currentUserId && data?.authorId && currentUserId === data.authorId && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
-          <button 
+          <button
             onClick={handleEdit}
             style={{
               padding: '8px 16px',
@@ -216,7 +250,7 @@ function LostAnimalDetail() {
           >
             수정
           </button>
-          <button 
+          <button
             onClick={handleDelete}
             style={{
               padding: '8px 16px',
@@ -238,7 +272,7 @@ function LostAnimalDetail() {
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
-          alt="분실동물" 
+          alt="실종 동물"
           style={{ 
             width: 400, 
             height: 400, 
@@ -261,14 +295,14 @@ function LostAnimalDetail() {
           <tr>
             <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>신고자</td>
             <td style={{ width: '25%', padding: 12 }}>{author || '-'}</td>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>분실일자</td>
+            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>실종 일자</td>
             <td style={{ width: '25%', padding: 12 }}>{date || '-'}</td>
           </tr>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실장소</th>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 장소</th>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>분실장소</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>실종 장소</td>
             <td colSpan={3} style={{ padding: 12 }}>{location || '-'}</td>
           </tr>
           <tr>
@@ -285,10 +319,10 @@ function LostAnimalDetail() {
             </td>
           </tr>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 분실동물 정보</th>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 동물 정보</th>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>동물종류</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>동물 종류</td>
             <td style={{ padding: 12 }}>{upKindNm || '-'}</td>
             <td style={{ fontWeight: 600, padding: 12 }}>품종</td>
             <td style={{ padding: 12 }}>{kindNm || '-'}</td>
@@ -310,11 +344,48 @@ function LostAnimalDetail() {
             <td colSpan={3} style={{ padding: 12 }}>{specialMark || '-'}</td>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>추가설명</td>
+            <td style={{ fontWeight: 600, padding: 12 }}>추가 설명</td>
             <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
           </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+
+      {/* 채팅하기 버튼 */}
+      <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+        {isLoggedIn && user?.userId === data.authorId ? (
+          <button
+            onClick={handleChatButtonClick}
+            style={{
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            요청된 채팅으로 이동
+          </button>
+        ) : (
+          <button
+            onClick={handleChatButtonClick}
+            style={{
+              backgroundColor: '#FF8A3D',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            채팅하기
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
 import client from '../../api/client';
+import userImage from '../../assets/images/user.jpg';
 
 function formatDateWithDay(date) {
   const d = new Date(Number(date));
@@ -12,15 +13,17 @@ function formatDateWithDay(date) {
 }
 
 const ChatRoom = () => {
-  const { roomId } = useParams();
+  const { id, roomId } = useParams();
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const [animalData, setAnimalData] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
 
   useEffect(() => {
     let isMounted = true;
@@ -67,7 +70,7 @@ const ChatRoom = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await client.get(`/chat/${roomId}`);
+        const response = await client.get(`/chat/rooms/${roomId}/messages`);
         setMessages(response.data.chatMessageDetails || []);
         scrollToBottom();
       } catch (error) {
@@ -80,6 +83,32 @@ const ChatRoom = () => {
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
     };
   }, [roomId]);
+
+  useEffect(() => {
+    client.get(`/lost-animals/lost-posts/${id}`).then(res => setAnimalData(res.data.lostPostDetailDto));
+  }, [id]);
+
+  const getOtherProfileImage = (message) => {
+    if (!animalData || !user) return userImage;
+  
+    // 내 userId와 authorId가 같으면 상대방은 profileImage
+    if (animalData.authorId === user.userId) {
+      return message.senderProfileImage || userImage;
+    }
+    // 다르면 상대방 프로필 이미지는 공고의 imageUrl
+    return animalData.imageUrl || userImage;
+  };
+  const getOtherNickname = (animalData, user, messages) => {
+    if (!animalData || !user) return '';
+    // 내가 공고 작성자가 아니면 공고 작성자가 상대방
+    if (animalData.authorId !== user.userId) {
+      return animalData.author; // 공고 작성자 닉네임
+    }
+    // 내가 공고 작성자라면, 상대방은 채팅 메시지의 senderName
+    // 가장 최근 메시지에서 내 메시지가 아닌 첫 메시지의 senderName을 찾음
+    const otherMsg = messages.find(msg => Number(msg.senderId) !== Number(user.userId));
+    return otherMsg ? otherMsg.senderName : '';
+  };
 
   // 읽음 요청 함수
   const sendReadReceipt = () => {
@@ -159,6 +188,13 @@ const ChatRoom = () => {
           isMyMessage ? styles.myMessageRow : styles.otherMessageRow
         }`}
       >
+        {!isMyMessage && (
+        <img
+          src={getOtherProfileImage(message)}
+          alt="프로필"
+          className={styles.profileImage}
+          />
+        )}
         {isMyMessage && (
           <span className={styles.timestampLeft}>
             {unreadCount && <span className={styles.unreadCountWrapper}>{unreadCount}</span>}
@@ -176,6 +212,14 @@ const ChatRoom = () => {
         </div>
         {!isMyMessage && (
           <span className={styles.timestampRight}>{timeString}</span>
+        )}
+        {/* 내 메시지: 말풍선 → 프로필 */}
+        {isMyMessage && (
+          <img
+            src={user?.profileImage || userImage}
+            alt="프로필"
+            className={styles.profileImage}
+          />
         )}
       </div>
     );
@@ -203,31 +247,40 @@ const ChatRoom = () => {
   };
 
   return (
-    <div className={styles.chatRoom}>
-      <div className={styles.chatHeader}>
-        <h2>채팅방 {roomId}</h2>
-      </div>
-      
-      <div className={styles.messagesContainer}>
-        {renderMessagesWithDateDivider(messages)}
-        <div ref={messagesEndRef} />
-      </div>
+    <div className="main-content">
+      <div className={styles.chatRoom}>
+        <div className={styles.chatHeader}>
+          <img
+            src={animalData?.imageUrl || userImage}
+            alt="공고 이미지"
+            className={styles.headerAnimalImage}
+          />
+          <span className={styles.headerNickname}>
+            {getOtherNickname(animalData, user, messages)}
+          </span>
+        </div>
+        
+        <div className={styles.messagesContainer}>
+          {renderMessagesWithDateDivider(messages)}
+          <div ref={messagesEndRef} />
+        </div>
 
-      <form onSubmit={handleSendMessage} className={styles.inputForm}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="메시지를 입력하세요..."
-          className={styles.messageInput}
-        />
-        <button 
-          type="submit" 
-          className={styles.sendButton}
-        >
-          전송
-        </button>
-      </form>
+        <form onSubmit={handleSendMessage} className={styles.inputForm}>
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="메시지를 입력하세요..."
+            className={styles.messageInput}
+          />
+          <button 
+            type="submit" 
+            className={styles.sendButton}
+          >
+            전송
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

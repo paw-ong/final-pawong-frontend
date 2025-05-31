@@ -20,6 +20,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set Firebase configuration
+        run: |
+          mkdir -p ./src/firebase
+          mkdir -p ./public
+          echo "${{ secrets.MAIN_FIREBASE_CONFIG }}" | base64 --decode > ./src/firebase/firebaseConfig.js
+          echo "${{ secrets.SERVICE_WORKER_FIREBASE_CONFIG }}" | base64 --decode > ./public/firebaseConfig.js
+        shell: bash
+
       - name: Build Docker image
         run: |
           docker build -t pawong/frontend:latest .
