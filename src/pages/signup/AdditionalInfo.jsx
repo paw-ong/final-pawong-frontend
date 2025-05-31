@@ -135,7 +135,10 @@ export default function AdditionalInfo() {
 
     try {
       console.log('인증코드 검증 요청:', form.verificationCode);
-      const response = await client.get(`/mail/verifications?email=${encodeURIComponent(form.email)}&code=${form.verificationCode}`);
+      const response = await client.post('/mail/verifications', {
+        email: form.email,
+        authCode: form.verificationCode
+      });
       console.log('인증코드 검증 응답:', response.data);
       
       if (response.data) {
