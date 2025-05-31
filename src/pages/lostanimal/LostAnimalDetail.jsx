@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
+import LostAnimalCard from "../../components/pet/card/LostAnimalCard";
 import "./LostAnimal.css";
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -12,9 +13,11 @@ function LostAnimalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [similarAnimals, setSimilarAnimals] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const hasCalledApi = useRef(false);
   const { user, isLoggedIn } = useContext(AuthContext);
 
   // localStorage의 userInfo에서 userId 가져오기
@@ -135,6 +138,65 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  useEffect(() => {
+    let eventSource = null;
+
+    const setupSSE = () => {
+      // LOST 타입이 아닐 경우 SSE 연결하지 않음
+      if (data?.postType !== 'LOST') {
+        setSimilarAnimals([]);
+        setIsSearching(false);
+        return;
+      }
+
+      try {
+        // SSE 연결 설정
+        const baseUrl = client.defaults.baseURL || '';
+        eventSource = new EventSource(`${baseUrl}/lost-animals/lost-posts/${id}/similar-animals/stream`);
+        setIsSearching(true);
+
+        // similar-animals 이벤트 리스너
+        eventSource.addEventListener('similar-animals', (event) => {
+          const animals = JSON.parse(event.data);
+          console.log('유사 동물 데이터 수신:', animals);
+          setSimilarAnimals(animals);
+          setIsSearching(false);
+          eventSource.close(); // 데이터를 받으면 연결 종료
+        });
+
+        // 에러 처리
+        eventSource.onerror = (error) => {
+          console.error('SSE 연결 오류:', error);
+          setIsSearching(false);
+          eventSource.close();
+        };
+
+      } catch (error) {
+        console.error('SSE 설정 중 오류 발생:', error);
+        setIsSearching(false);
+        if (eventSource) {
+          eventSource.close();
+        }
+      }
+    };
+
+    // data가 로드되고 LOST 타입일 때만 SSE 연결
+    if (data && data.postType === 'LOST') {
+      console.log('SSE 연결 시작');
+      setupSSE();
+    } else {
+      setSimilarAnimals([]);
+      setIsSearching(false);
+    }
+
+    // cleanup 함수
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, [data, id]);
+  
   // 채팅 버튼 클릭 핸들러
   const handleChatButtonClick = async () => {
     if (!data || !isLoggedIn) {
@@ -286,7 +348,12 @@ function LostAnimalDetail() {
           }}
         />
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
+      <table style={{ 
+        width: '100%', 
+        borderCollapse: 'collapse', 
+        marginBottom: 32,
+        tableLayout: 'fixed'
+      }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
             <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 신고자 정보</th>
@@ -347,9 +414,59 @@ function LostAnimalDetail() {
             <td style={{ fontWeight: 600, padding: 12 }}>추가 설명</td>
             <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
           </tr>
-          </tbody>
-        </table>
-
+          <tr style={{ background: '#f7f7f7' }}>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 유사 동물</th>
+          </tr>
+          <tr>
+            <td colSpan={4} style={{ padding: 12 }}>
+              {data?.postType !== 'LOST' ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
+                </div>
+              ) : isSearching ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사 동물을 찾는 중입니다...
+                </div>
+              ) : similarAnimals.length > 0 ? (
+                <div style={{ 
+                  display: 'flex', 
+                  overflowX: 'auto', 
+                  gap: '16px',
+                  padding: '16px 0',
+                  width: '100%',
+                  scrollbarWidth: 'thin',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': {
+                    height: '6px'
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: '#f1f1f1',
+                    borderRadius: '3px'
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: '#888',
+                    borderRadius: '3px'
+                  }
+                }}>
+                  {similarAnimals.map((animal, index) => (
+                    <div key={index} style={{ 
+                      minWidth: '300px',
+                      flex: '0 0 auto',
+                      maxWidth: '300px'
+                    }}>
+                      <LostAnimalCard post={animal} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사한 동물이 없습니다.
+                </div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
       {/* 채팅하기 버튼 */}
       <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
         {isLoggedIn && user?.userId === data.authorId ? (
