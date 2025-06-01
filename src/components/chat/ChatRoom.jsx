@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
@@ -14,6 +14,7 @@ function formatDateWithDay(date) {
 
 const ChatRoom = () => {
   const { id, roomId } = useParams();
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -24,6 +25,23 @@ const ChatRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // 채팅방 접근 권한 확인
+  useEffect(() => {
+    const checkChatRoomAccess = async () => {
+      try {
+        const response = await client.get(`/chat/rooms/${roomId}`);
+        if (!response.data.exists) {
+          alert('해당 채팅방에 들어갈 수 없습니다.');
+          navigate('/chatrooms');
+        }
+      } catch (error) {
+        alert('해당 채팅방에 들어갈 수 없습니다.');
+        navigate('/chatrooms');
+      }
+    };
+
+    checkChatRoomAccess();
+  }, [roomId, navigate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,7 +79,6 @@ const ChatRoom = () => {
       WebSocketService.disconnect();
     };
   }, [roomId]);
-
 
   useEffect(() => {
     scrollToBottom();
