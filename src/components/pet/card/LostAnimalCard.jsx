@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import client from '../../../api/client';
 import './LostAnimalCard.css';
 
@@ -7,9 +7,26 @@ import bookmarkEmpty from '../../../assets/images/bookmark/unbookmark.png';
 import bookmarkFilled from '../../../assets/images/bookmark/bookmark.png';
 
 function LostAnimalCard({ post, type }) {
-  const [isBookmarked, setIsBookmarked] = useState(post.bookmarked);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      try {
+        const endpoint = post.postType === 'FOSTER'
+          ? `/users/bookmarks/lost-animals/lost-adoptions/${post.postId}/status`
+          : `/users/bookmarks/lost-animals/lost-posts/${post.postId}/status`;
+
+        const { data } = await client.get(endpoint);
+        setIsBookmarked(data.bookmarked);
+      } catch (error) {
+        console.error('북마크 상태 조회 실패:', error);
+      }
+    };
+
+    fetchBookmarkStatus();
+  }, [post.postId, post.postType]);
 
   const getPostTypeColor = (type) => {
     switch (type) {
