@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/#53
 
 jobs:
   build-and-deploy:
@@ -28,16 +29,13 @@ jobs:
           echo "${{ secrets.SERVICE_WORKER_FIREBASE_CONFIG }}" | base64 --decode > ./public/firebaseConfig.js
         shell: bash
 
-      - name: Build Docker image
+      - name: Build & Tag Docker image
         run: |
           docker build -t pawong/frontend:latest .
-
-      - name: Push Docker image
-        run: |
           docker push pawong/frontend:latest
 
       - name: Deploy to remote server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ubuntu
@@ -45,6 +43,10 @@ jobs:
           script: |
             cd /home/ubuntu/deploy
             sudo docker compose stop frontend
-            sudo docker rmi pawong/frontend:latest || true
             sudo docker pull pawong/frontend:latest
-            sudo docker compose up -d --no-deps --build frontend
+
+            # dangling 이미지들 한번에 제거
+            sudo docker image prune -f
+
+            # --no-build 추가해 로컬 빌드 안하고, pull한 이미지로 서비스 실행
+            sudo docker compose up -d --no-deps --no-build frontend
