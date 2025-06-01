@@ -13,6 +13,7 @@ function LostAnimalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [similarAnimals, setSimilarAnimals] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchingError, setIsSearchingError] = useState(false);
