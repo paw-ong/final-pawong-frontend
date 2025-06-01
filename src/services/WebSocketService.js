@@ -31,6 +31,12 @@ class WebSocketService {
     console.log('웹소켓 연결 시도');
     const csrfToken = Cookies.get('XSRF-TOKEN');
     
+    // 이미 연결되어 있다면 재연결하지 않음
+    if (this.connected && this.stompClient?.connected) {
+      console.log('[STOMP] Already connected');
+      return Promise.resolve();
+    }
+
     const socket = new SockJS('/ws', null, {
       withCredentials: true,
       timeout: 5000
@@ -38,8 +44,10 @@ class WebSocketService {
 
     this.stompClient = new Client({
       webSocketFactory: () => socket,
-      debug: this.debug,
-      reconnectDelay: 0,
+      debug: (str) => {
+        console.log('[STOMP]', str);
+      },
+      reconnectDelay: 5000,  // 5초 후 재연결 시도
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       connectHeaders: {
@@ -58,6 +66,12 @@ class WebSocketService {
     this.stompClient.onWebSocketClose = (event) => {
       console.log('[WebSocket] Connection closed:', event);
       this.connected = false;
+      // 연결이 끊어지면 자동으로 재연결 시도
+      setTimeout(() => {
+        if (!this.connected) {
+          this.connect();
+        }
+      }, 5000);
     };
 
     this.stompClient.onWebSocketError = (event) => {

@@ -22,10 +22,6 @@ function ChatRoomsByPost() {
 
   // 1) 서버에서 방 목록 불러오기
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
 
     const fetchChatRooms = async () => {
       setLoading(true);
@@ -46,7 +42,6 @@ function ChatRoomsByPost() {
 
   // 2) 최초 마운트 시 WebSocket 연결, 언마운트 시 정리
   useEffect(() => {
-    if (!isLoggedIn) return;
 
     const connect = async () => {
       if (!isWebSocketConnectedRef.current) {
@@ -96,7 +91,7 @@ function ChatRoomsByPost() {
       if (!subscribedRoomsRef.current.has(roomId)) {
         const dest = `/user/queue/chat/${roomId}`;
         WebSocketService.subscribe(dest, message => {
-          const payload = JSON.parse(message.body);
+          const payload = message;
           setChatRooms(prev =>
             prev.map(r =>
               r.chatRoomId === roomId
