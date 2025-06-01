@@ -7,7 +7,7 @@ import LostBookmarksSlider from '../../components/mypage/LostBookmarksSlider'
 import defaultUserImage from '../../assets/images/user.jpg'
 
 export default function MyPage() {
-  const { user, handleLogout } = useContext(AuthContext)
+  const { user, handleLogout } = useContext(AuthContext);
 
   return (
     <div style={styles.myPageContainer}>
