@@ -434,7 +434,7 @@ function LostAnimalDetail() {
                 </div>
               ) : isSearchingError ? (
                 <div style={{ textAlign: 'center', padding: '20px', color: 'brown' }}>
-                  받아오는데 실패했습니다.
+                  유사 동물을 받아오는데 실패했습니다. 😿
                 </div>
               ) : similarAnimals.length > 0 ? (
                 <div style={{ 
