@@ -7,6 +7,7 @@ import nicknameIcon from '../../assets/images/info/user.png'
 import placeholderIcon from '../../assets/images/info/placeholder.png'
 import phoneIcon from '../../assets/images/info/phone.png'
 import emailIcon from '../../assets/images/info/email.svg'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function AdditionalInfo() {
   const [form, setForm] = useState({ nickname: '', region: '', tel: '', email: '', verificationCode: '' })
@@ -21,6 +22,7 @@ export default function AdditionalInfo() {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [isSendingCode, setIsSendingCode] = useState(false)
+  const queryClient = useQueryClient();
   // useEffect(() => {
   //   if (token) {
   //     // AuthContext.login 으로 토큰 저장하고 /auth/me 호출해서 user 상태 세팅
@@ -218,7 +220,6 @@ export default function AdditionalInfo() {
     }
 
     try {
-      // verificationCode를 제외한 데이터만 전송
       const { verificationCode, ...signupData } = form;
       
       console.log('회원가입 요청 데이터:', {
@@ -231,6 +232,8 @@ export default function AdditionalInfo() {
       console.log('회원가입 응답:', res.data);
       
       if(res.data.status === 'ACTIVE') {
+        // 사용자 정보 캐시 무효화 및 갱신
+        await queryClient.invalidateQueries(['currentUser']);
         console.log('로그인 성공, 메인 페이지로 이동');
         navigate('/main')
       } else {
