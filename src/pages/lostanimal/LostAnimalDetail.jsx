@@ -20,6 +20,14 @@ function LostAnimalDetail() {
   const hasCalledApi = useRef(false);
   const { user, isLoggedIn } = useContext(AuthContext);
 
+  // localStorage의 userInfo에서 userId 가져오기
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const { userId } = JSON.parse(userInfo);
+      setCurrentUserId(userId);
+    }
+  }, []);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -285,7 +293,7 @@ function LostAnimalDetail() {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       backgroundColor: 'white'
     }}>
-      {user?.userId === data.authorId && (
+      {currentUserId && data?.authorId && currentUserId === data.authorId && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
           <button
             onClick={handleEdit}
