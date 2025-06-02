@@ -23,6 +23,7 @@ import ChatRooms from './components/chat/ChatRooms.jsx';
 import ChatRoomsByPost from './components/chat/ChatRoomsByPost.jsx';
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
 import NotificationGuideModal from "./components/notification/NotificationGuideModal";
+
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
 

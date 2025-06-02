@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - hotfix/#58
 
 jobs:
   build-and-deploy:
