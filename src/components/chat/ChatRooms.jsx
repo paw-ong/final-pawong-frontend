@@ -18,11 +18,6 @@ function ChatRooms() {
   const isWebSocketConnectedRef = useRef(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      navigate('/login');
-      return;
-    }
 
     const fetchChatRooms = async () => {
       try {
@@ -41,15 +36,11 @@ function ChatRooms() {
 
   // WebSocket 연결은 한 번만 수행
   useEffect(() => {
-    if (!isLoggedIn) return;
-
     const connectWebSocket = async () => {
       try {
-        if (!isWebSocketConnectedRef.current) {
-          await WebSocketService.connect();
-          isWebSocketConnectedRef.current = true;
-          console.log('[ChatRooms] WebSocket connected');
-        }
+        await WebSocketService.connect();
+        isWebSocketConnectedRef.current = true;
+        console.log('[ChatRooms] WebSocket connected');
       } catch (error) {
         console.error('WebSocket 연결 오류:', error);
         isWebSocketConnectedRef.current = false;
@@ -58,9 +49,9 @@ function ChatRooms() {
 
     connectWebSocket();
 
-    // 컴포넌트 언마운트 시 모든 구독 해지 및 연결 해제
+    // 컴포넌트 언마운트 시 구독만 해제하고 연결은 유지
     return () => {
-      console.log('[ChatRooms] Cleaning up all subscriptions...');
+      console.log('[ChatRooms] Cleaning up subscriptions...');
       
       // 모든 구독 해지
       subscribedRoomsRef.current.forEach(roomId => {
@@ -70,15 +61,12 @@ function ChatRooms() {
       
       subscribedRoomsRef.current.clear();
       isWebSocketConnectedRef.current = false;
-      
-      // WebSocket 연결 해제
-      WebSocketService.disconnect();
     };
   }, [isLoggedIn]);
 
   // 채팅방 목록이 변경될 때 구독 관리
   useEffect(() => {
-    if (!isLoggedIn || chatRooms.length === 0 || !isWebSocketConnectedRef.current) return;
+    if (!isLoggedIn || chatRooms.length === 0) return;
 
     const manageSubscriptions = () => {
       const activeRoomIds = new Set(
@@ -104,11 +92,11 @@ function ChatRooms() {
           const subscription = WebSocketService.subscribe(
             destination,
             (message) => {
-              const receivedMessage = JSON.parse(message.body);
+              // message가 이미 파싱된 객체이므로 바로 사용
               setChatRooms(prevRooms =>
                 prevRooms.map(r =>
                   r.chatRoomId === roomId
-                    ? { ...r, latestMessageContent: receivedMessage.content }
+                    ? { ...r, latestMessageContent: message.content }
                     : r
                 )
               );
@@ -142,7 +130,7 @@ function ChatRooms() {
     }
   }, [chatRooms, isLoggedIn]);
 
-  // 페이지 언로드 시 정리
+  // 페이지 언로드 시에만 연결 해제
   useEffect(() => {
     const handleBeforeUnload = () => {
       console.log('[ChatRooms] Page unloading, cleaning up...');

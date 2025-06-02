@@ -13,21 +13,20 @@ function LostAnimalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [similarAnimals, setSimilarAnimals] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isSearchingError, setIsSearchingError] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const hasCalledApi = useRef(false);
   const { user, isLoggedIn } = useContext(AuthContext);
 
-  // localStorage의 userInfo에서 userId 가져오기
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const { userId } = JSON.parse(userInfo);
-      setCurrentUserId(userId);
+    if (user) {
+      setCurrentUserId(user.userId);
     }
-  }, []);
+  }, [user]);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -154,6 +153,7 @@ function LostAnimalDetail() {
         const baseUrl = client.defaults.baseURL || '';
         eventSource = new EventSource(`${baseUrl}/lost-animals/lost-posts/${id}/similar-animals/stream`);
         setIsSearching(true);
+        setIsSearchingError(false);
 
         // similar-animals 이벤트 리스너
         eventSource.addEventListener('similar-animals', (event) => {
@@ -168,12 +168,14 @@ function LostAnimalDetail() {
         eventSource.onerror = (error) => {
           console.error('SSE 연결 오류:', error);
           setIsSearching(false);
+          setIsSearchingError(true);
           eventSource.close();
         };
 
       } catch (error) {
         console.error('SSE 설정 중 오류 발생:', error);
         setIsSearching(false);
+        setIsSearchingError(true);
         if (eventSource) {
           eventSource.close();
         }
@@ -187,6 +189,7 @@ function LostAnimalDetail() {
     } else {
       setSimilarAnimals([]);
       setIsSearching(false);
+      setIsSearchingError(false);
     }
 
     // cleanup 함수
@@ -426,6 +429,10 @@ function LostAnimalDetail() {
               ) : isSearching ? (
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                   유사 동물을 찾는 중입니다...
+                </div>
+              ) : isSearchingError ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: 'brown' }}>
+                  유사 동물을 받아오는데 실패했습니다. 😿
                 </div>
               ) : similarAnimals.length > 0 ? (
                 <div style={{ 

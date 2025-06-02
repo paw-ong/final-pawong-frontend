@@ -7,6 +7,7 @@ import client from "../../../api/client";
 function LostAnimalList() {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const fetchLostAnimals = async () => {
@@ -63,7 +64,11 @@ function LostAnimalList() {
       <div className="lost-animal-list-grid">
         {pets.map((item, index) => (
           <div key={`${item.lostAnimalId}-${index}`} className="lost-animal-list-item">
-            <PetCard pet={formatPetData(item)} type="lost-animals" />
+            <PetCard 
+              pet={formatPetData(item)} 
+              type="lost-animals" 
+              onRequireAuth={() => setShowAuthModal(true)}
+            />
           </div>
         ))}
       </div>

@@ -50,19 +50,17 @@ const ChatRoom = () => {
           await WebSocketService.connect();
           WebSocketService.subscribe(`/user/queue/chat/${roomId}`, (message) => {
             if (!isMounted) return;
-            const receivedMessage = JSON.parse(message.body);
-            setMessages(prev => [...prev, receivedMessage]);
+            setMessages(prev => [...prev, message]);
           });
           WebSocketService.subscribe(`/user/queue/read-receipts/${roomId}`, (message) => {
             if (!isMounted) return;
-            const readMessage = JSON.parse(message.body);
+            
             setMessages(prev => {
-              const updated = prev.map(msg =>
-                Number(msg.senderId) === Number(user?.userId) &&
-                msg.chatMessageId <= readMessage.lastReadMessageId
-                  ? { ...msg, status: 'READ' }
-                  : msg
-              );
+              const updated = prev.map(msg => {
+                const isMyMessage = Number(msg.senderId) === Number(user?.userId);
+                const shouldUpdate = isMyMessage && msg.chatMessageId <= message.lastReadMessageId;
+                return shouldUpdate ? { ...msg, status: 'READ' } : msg;
+              });
               return updated;
             });
           });
@@ -76,7 +74,7 @@ const ChatRoom = () => {
       isMounted = false;
       WebSocketService.unsubscribe(`/user/queue/read-receipts/${roomId}`);
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
-      WebSocketService.disconnect();
+      // WebSocketService.disconnect();  // 언마운트되도 연결 끊지 않기
     };
   }, [roomId]);
 

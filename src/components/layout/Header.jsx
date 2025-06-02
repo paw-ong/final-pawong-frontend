@@ -9,8 +9,6 @@ import NotificationButton from '../../firebase/NotificationButton.jsx';
 
 function Header() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userImage, setUserImage] = useState(defaultUserImage);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,11 +21,9 @@ function Header() {
   const isMainPage = location.pathname === '/main';
   const [activeType, setActiveType] = useState('LOST');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+  const { user, isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-
     // URL에서 type 파라미터 확인
     const searchParams = new URLSearchParams(location.search);
     const type = searchParams.get('type') || 'LOST';

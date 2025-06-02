@@ -2,17 +2,17 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Adoption from "./pages/adoptionAnimal/Adoption.jsx";
-import LostAnimal from "./pages/lostanimal/LostAnimal.jsx";
+import LostAnimal from "./pages/lostAnimal/LostAnimal.jsx";
 import MainPage from "./pages/mainPage/MainPage.jsx";
 import Login from "./pages/signup/Login.jsx";
 import MyPage from "./pages/myPage/MyPage.jsx";
 import AdoptionDetail from "./pages/adoptionAnimal/AdoptionDetail.jsx";
-import LostAnimalDetail from "./pages/lostanimal/LostAnimalDetail.jsx";
-import LostAnimalCreate from "./pages/lostanimal/LostAnimalCreate.jsx";
+import LostAnimalDetail from "./pages/lostAnimal/LostAnimalDetail.jsx";
+import LostAnimalCreate from "./pages/lostAnimal/LostAnimalCreate.jsx";
 import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
-import LostAnimalUpdate from "./pages/lostanimal/LostAnimalUpdate.jsx";
+import LostAnimalUpdate from "./pages/lostAnimal/LostAnimalUpdate.jsx";
 import ChatRoom from "./components/chat/ChatRoom.jsx";
 import InAppNotification from "./firebase/InAppNotification.jsx";
 import { getFcmToken } from "./firebase/fcm.jsx";
@@ -23,7 +23,6 @@ import ChatRooms from './components/chat/ChatRooms.jsx';
 import ChatRoomsByPost from './components/chat/ChatRoomsByPost.jsx';
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
 import NotificationGuideModal from "./components/notification/NotificationGuideModal";
-
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
 
@@ -44,7 +43,7 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [fcmToken, setFcmToken] = useState(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const { user } = useContext(AuthContext);
+  const { user, isLoading, isLoggedIn } = useContext(AuthContext);
   const [hasRequestedToken, setHasRequestedToken] = useState(false);
   const fcmInitialized = useRef(false);
 
@@ -203,7 +202,13 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route
             path="myPage"
-            element={user ? <MyPage /> : <Navigate to="/login" replace />}
+            element={isLoading ? (
+              <div>Loading...</div>
+            ) : isLoggedIn ? (
+              <MyPage />
+            ) : (
+              <Navigate to="/login" replace />
+            )}
           />
           <Route path="signup/additional-info" element={<AdditionalInfo />} />
           <Route path="lostAnimal/detail/:id/chat/:roomId" element={<ChatRoom />} />
