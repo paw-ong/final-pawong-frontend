@@ -5,6 +5,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
 import client from '../../api/client';
 import userImage from '../../assets/images/user.jpg';
+import backArrow from '../../assets/images/icons/back-arrow.svg';
+import kebabMenu from '../../assets/images/icons/kebab-menu.svg';
 
 function formatDateWithDay(date) {
   const d = new Date(Number(date));
@@ -22,6 +24,9 @@ const ChatRoom = () => {
   const [animalData, setAnimalData] = useState(null);
   const [isChatActive, setIsChatActive] = useState(true);
   const [chatRoomInfo, setChatRoomInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -36,6 +41,11 @@ const ChatRoom = () => {
         const chatRoomDetail = chatRoomResponse.data.chatRoomDetail;
         setChatRoomInfo(chatRoomDetail);
         setIsChatActive(chatRoomDetail.status === 'ACTIVE');
+
+        // 첫 접속 시 모달 표시
+        if (chatRoomDetail.latestMessageContent === "") {
+          setIsWelcomeModalOpen(true);
+        }
 
         // 게시글 정보 조회
         const postResponse = await client.get(`/lost-animals/lost-posts/${id}`);
@@ -191,6 +201,29 @@ const ChatRoom = () => {
     }
   };
 
+  const handleDeactivateChat = async () => {
+    if (!isChatActive) {
+      alert("이미 비활성화된 채팅입니다!");
+      setIsModalOpen(false);
+      return;
+    }
+
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmDeactivation = async () => {
+    try {
+      await client.patch(`/chat/rooms/${roomId}`);
+      alert("채팅방이 비활성화 됐습니다!");
+      setIsChatActive(false);
+    } catch (error) {
+      console.error('채팅방 비활성화 실패:', error);
+      alert('채팅방 비활성화에 실패했습니다.');
+    }
+    setIsConfirmModalOpen(false);
+    setIsModalOpen(false);
+  };
+
   const renderMessage = (message) => {
     const isMyMessage = Number(message.senderId) === Number(user?.userId);
     const messageDate = new Date(Number(message.createdAt));
@@ -277,6 +310,12 @@ const ChatRoom = () => {
       <div className={styles.chatRoom}>
         <div className={styles.chatHeader}>
           <img
+            src={backArrow}
+            alt="뒤로 가기"
+            className={styles.backButton}
+            onClick={() => navigate('/chatrooms')}
+          />
+          <img
             src={animalData?.imageUrl || userImage}
             alt="공고 이미지"
             className={styles.headerAnimalImage}
@@ -297,8 +336,79 @@ const ChatRoom = () => {
           >
             공고로 이동
           </button>
+          <img
+            src={kebabMenu}
+            alt="메뉴"
+            className={styles.kebabMenu}
+            onClick={() => setIsModalOpen(true)}
+          />
         </div>
         
+        {/* 메뉴 모달 */}
+        {isModalOpen && (
+          <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+              <button 
+                className={styles.modalButton}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  navigate('/lostAnimal');
+                }}
+              >
+                다른 실종 공고 찾기
+              </button>
+              <button 
+                className={styles.modalButton}
+                onClick={handleDeactivateChat}
+              >
+                채팅 비활성화
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 확인 모달 */}
+        {isConfirmModalOpen && (
+          <div className={styles.modalOverlay} onClick={() => setIsConfirmModalOpen(false)}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+              <p>더 이상 상대와 채팅하지 않으실 예정인가요? 채팅방이 즉시 비활성화 됩니다!</p>
+              <div className={styles.modalButtons}>
+                <button 
+                  className={styles.confirmButton}
+                  onClick={confirmDeactivation}
+                >
+                  예
+                </button>
+                <button 
+                  className={styles.cancelButton}
+                  onClick={() => setIsConfirmModalOpen(false)}
+                >
+                  아니요
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 환영 모달 */}
+        {isWelcomeModalOpen && (
+          <div className={styles.modalOverlay} onClick={() => setIsWelcomeModalOpen(false)}>
+            <div className={`${styles.modal} ${styles.welcomeModal}`} onClick={e => e.stopPropagation()}>
+              <div className={styles.welcomeContent}>
+                <p>💬 자유롭게 채팅을 시작하세요! 언제든 준비될 때 메시지를 보내보세요.</p>
+                <p>🐾 반려동물이 주인을 잘 찾아갈 수 있도록 기여하는 여러분이 있어 세상이 한층 아름다워집니다.</p>
+                <p>🚫 모종의 이유로 공고가 마감되거나 더 이상 채팅을 진행할 의향이 없는 경우, 채팅방을 비활성화 할 수 있습니다.</p>
+              </div>
+              <button 
+                className={styles.welcomeCloseButton}
+                onClick={() => setIsWelcomeModalOpen(false)}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className={styles.messagesContainer}>
           {renderMessagesWithDateDivider(messages)}
           <div ref={messagesEndRef} />
