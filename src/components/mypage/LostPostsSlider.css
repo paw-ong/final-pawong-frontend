@@ -30,44 +30,39 @@
 .swiper-button-prev-custom,
 .swiper-button-next-custom {
   position: absolute;
-  top: 50%;
+  top: 35%;
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 20;
   cursor: pointer;
-  z-index: 2000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background-color: var(--color-background);
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
 .swiper-button-prev-custom {
-  left: -15px;
+  left: 5px;
 }
 
 .swiper-button-next-custom {
-  right: -15px;
-}
-
-.swiper-button-prev-custom:hover,
-.swiper-button-next-custom:hover {
-  background-color: #3581B8;
+  right: 5px;
 }
 
 .swiper-button-prev-custom img,
 .swiper-button-next-custom img {
-  width: 24px;
-  height: 24px;
-  transition: all 0.3s ease;
+  width: 35px;
+  height: 35px;
+  transition: transform 0.3s ease;
 }
 
 .swiper-button-prev-custom:hover img,
 .swiper-button-next-custom:hover img {
-  filter: brightness(0) invert(1);
+  transform: scale(1.1);
 }
 
 .lost-posts-loading {

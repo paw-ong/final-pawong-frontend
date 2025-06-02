@@ -1,10 +1,11 @@
 .favorites-slider-container {
-  padding: 10px 10px;
+  padding: 20px 40px;
   margin: 0;
   border-radius: 8px;
   background-color: var(--color-white);
   position: relative;
-  overflow: visible;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 .favorites-title {
@@ -16,94 +17,96 @@
   padding-left: 15px;
 }
 
-.favorites-navigation-container {
+.favorites-slider-container .slider-wrapper {
   position: relative;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-}
-
-.favorites-swiper {
+  margin: 0 auto;
+  padding-bottom: 50px;
   width: 100%;
-  height: 100%;
-  padding: 0 45px 45px; /* 좌우 패딩 약간 더 늘려 화살표 공간 추가 확보 */
 }
 
-.favorites-slide {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 10px 8px 30px; /* 좌우 패딩 줄임 */
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-/* 슬라이드 내 컨텐츠가 넘치지 않도록 */
-.favorites-slide > div {
-  max-width: 100%;
-  box-sizing: border-box;
-  transform: scale(0.92); /* 약간 더 축소하여 4개가 잘 보이도록 */
-}
-
-/* 네비게이션 버튼 위치 및 크기 조정 - 슬라이더 영역 안으로 이동 */
-.swiper-button-prev-custom,
-.swiper-button-next-custom {
-  position: absolute;
-  top: 35%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  z-index: 20;
-  cursor: pointer;
-  background-color: var(--color-background);
-  border-radius: 50%;
+/* 슬라이더 아이템 스타일 */
+.favorites-slider-container .slider-item {
   padding: 0;
-  display: flex;
+  box-sizing: border-box;
+  height: 100%;
+  width: 220px !important;
+  margin-bottom: 15px;
+}
+
+.favorites-slider-container .slider-item > div {
+  height: 100%;
+  width: 100%;
+}
+
+/* 슬라이더 트랙 스타일 */
+.favorites-slider-container .slick-track {
+  display: flex !important;
+  align-items: stretch;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: 5px;
+  width: auto !important;
+}
+
+.favorites-slider-container .slick-slider {
+  overflow: visible;
+  padding: 0 10px;
+}
+
+.favorites-slider-container .slick-slide {
+  height: inherit !important;
+  display: flex !important;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  width: 220px !important;
 }
 
-.swiper-button-prev-custom {
-  left: 5px;
+.favorites-slider-container .slick-slide > div {
+  width: 100% !important;
+  height: 100%;
 }
 
-.swiper-button-next-custom {
-  right: 5px;
+.favorites-slider-container .slick-list {
+  margin: 0 !important;
+  overflow: hidden !important;
 }
 
-.swiper-button-prev-custom img,
-.swiper-button-next-custom img {
-  width: 35px;
-  height: 35px;
-  transition: transform 0.3s ease;
+/* PetCard 스타일 재정의 */
+.favorites-slider-container .slider-item .pet-card {
+  margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.swiper-button-prev-custom:hover img,
-.swiper-button-next-custom:hover img {
-  transform: scale(1.1);
-}
-
-/* 기존 화살표 버튼 숨기기 */
-.swiper-button-next,
-.swiper-button-prev {
-  display: none;
+.favorites-slider-container .pet-card {
+  width: 100% !important;
+  margin: 0 !important;
 }
 
 /* 페이지네이션 스타일 */
-.swiper-pagination-bullet {
-  background: var(--color-primary);
-  opacity: 0.5;
+.favorites-slider-container .slick-dots {
+  bottom: -40px !important;
+  z-index: 99 !important;
 }
 
-.swiper-pagination-bullet-active {
-  background: var(--color-primary);
-  opacity: 1;
+.favorites-slider-container .slick-dots li {
+  margin: 0 6px !important;
 }
 
-/* 페이지네이션 위치 조정 */
-.swiper-pagination {
-  bottom: 10px !important;
+.favorites-slider-container .slick-dots li button {
+  padding: 0 !important;
+}
+
+.favorites-slider-container .slick-dots li button:before {
+  font-size: 12px !important;
+  color: var(--color-secondary) !important;
+  opacity: 0.3 !important;
+  transition: all 0.2s ease !important;
+}
+
+.favorites-slider-container .slick-dots li.slick-active button:before {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
 }
 
 .favorites-loading {
@@ -141,10 +144,18 @@
 /* 반응형 조정 */
 @media screen and (max-width: 768px) {
   .favorites-slider-container {
-    padding: 15px 5px;
+    padding: 15px 20px;
   }
   
   .favorites-title {
     font-size: 20px;
+  }
+
+  .favorites-slider-container .slider-wrapper {
+    padding-bottom: 40px;
+  }
+
+  .favorites-slider-container .slick-slider {
+    padding: 0 10px;
   }
 } 

@@ -1,124 +1,164 @@
 .post-bookmarks-slider-container {
+  padding: 20px 40px;
+  margin: 0;
+  border-radius: 8px;
+  background-color: var(--color-white);
   position: relative;
-  padding: 10px 0;
-  margin: 10px 12px;
-}
-
-.post-bookmarks-title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.post-bookmarks-swiper {
-  position: relative;
-  width: 100%;
-  padding: 0 10px;
-  margin-right: 5px;
-}
-
-.post-bookmarks-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 5px 3px;
-  width: 220px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
-/* 커스텀 네비게이션 버튼 스타일 */
-.swiper-button-prev-custom,
-.swiper-button-next-custom {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
+.post-bookmarks-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.post-bookmarks-slider-container .slider-wrapper {
+  position: relative;
+  margin: 0 auto;
+  padding-bottom: 50px;
+  width: 100%;
+}
+
+/* 슬라이더 아이템 스타일 */
+.post-bookmarks-slider-container .slider-item {
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  width: 220px !important;
+  margin-bottom: 15px;
+}
+
+.post-bookmarks-slider-container .slider-item > div {
+  height: 100%;
+  width: 100%;
+}
+
+/* 슬라이더 트랙 스타일 */
+.post-bookmarks-slider-container .slick-track {
+  display: flex !important;
+  align-items: stretch;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: 5px;
+}
+
+.post-bookmarks-slider-container .slick-slider {
+  overflow: visible;
+  padding: 0 10px;
+}
+
+.post-bookmarks-slider-container .slick-slide {
+  height: inherit !important;
+  display: flex !important;
   justify-content: center;
-  cursor: pointer;
-  z-index: 2000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  align-items: center;
+  width: 220px !important;
 }
 
-.swiper-button-prev-custom {
-  left: -15px;
+.post-bookmarks-slider-container .slick-slide > div {
+  width: 220px !important;
+  height: 100%;
 }
 
-.swiper-button-next-custom {
-  right: -15px;
+.post-bookmarks-slider-container .slick-list {
+  margin: 0 !important;
+  overflow: hidden !important;
 }
 
-.swiper-button-prev-custom:hover,
-.swiper-button-next-custom:hover {
-  background-color: #3581B8;
+/* PostCard 스타일 재정의 */
+.post-bookmarks-slider-container .slider-item .post-card {
+  margin: 0;
+  width: 220px;
 }
 
-.swiper-button-prev-custom img,
-.swiper-button-next-custom img {
-  width: 24px;
-  height: 24px;
-  transition: all 0.3s ease;
+/* 페이지네이션 스타일 */
+.post-bookmarks-slider-container .slick-dots {
+  bottom: -40px !important;
+  z-index: 99 !important;
 }
 
-.swiper-button-prev-custom:hover img,
-.swiper-button-next-custom:hover img {
-  filter: brightness(0) invert(1);
+.post-bookmarks-slider-container .slick-dots li {
+  margin: 0 6px !important;
+}
+
+.post-bookmarks-slider-container .slick-dots li button {
+  padding: 0 !important;
+}
+
+.post-bookmarks-slider-container .slick-dots li button:before {
+  font-size: 12px !important;
+  color: var(--color-secondary) !important;
+  opacity: 0.3 !important;
+  transition: all 0.2s ease !important;
+}
+
+.post-bookmarks-slider-container .slick-dots li.slick-active button:before {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
 }
 
 .post-bookmarks-loading {
-  text-align: center;
-  padding: 20px;
-  font-size: 1.1rem;
-  color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--color-text);
+  font-size: 16px;
 }
 
 .post-bookmarks-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--color-text);
   text-align: center;
-  padding: 40px;
-  color: #666;
+  line-height: 1.6;
 }
 
-.post-bookmarks-empty p {
-  margin: 5px 0;
-  font-size: 1.1rem;
+.post-bookmarks-empty p:first-child {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
-.swiper-slide {
-  margin-right: 17px !important;
+.post-bookmarks-empty p:last-child {
+  font-size: 14px;
+  color: var(--color-text);
+  opacity: 0.7;
 }
 
-@media (max-width: 768px) {
+/* 반응형 조정 */
+@media screen and (max-width: 768px) {
   .post-bookmarks-slider-container {
-    padding: 0;
-    margin: 20px 20px;
+    padding: 15px 20px;
+  }
+  
+  .post-bookmarks-title {
+    font-size: 20px;
   }
 
-  .post-bookmarks-slide {
-    width: 100%;
+  .post-bookmarks-slider-container .slider-wrapper {
+    padding-bottom: 40px;
   }
 
-  .swiper-button-prev-custom,
-  .swiper-button-next-custom {
-    width: 30px;
-    height: 30px;
+  .post-bookmarks-slider-container .slick-slider {
+    padding: 0 10px;
   }
+}
 
-  .swiper-button-prev-custom img,
-  .swiper-button-next-custom img {
-    width: 20px;
-    height: 20px;
-  }
+.post-bookmarks-slider-container .swiper-slide {
+  width: 220px !important;
+  margin-right: 0 !important;
+}
 
-  .swiper-button-prev-custom {
-    left: -20px;
-  }
-
-  .swiper-button-next-custom {
-    right: -20px;
-  }
+.post-bookmarks-slider-container .swiper-slide > div {
+  width: 220px !important;
+  height: 100%;
 } 

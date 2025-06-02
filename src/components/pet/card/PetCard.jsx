@@ -42,10 +42,6 @@ function PetCard({ pet, type }) {
     }
   }, [pet.id, isLoggedIn]);
 
-  useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
-  }, []);
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();

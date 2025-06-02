@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import Slider from 'react-slick';
 import LostAnimalCard from '../pet/card/LostAnimalCard';
 import client from '../../api/client';
 import './PostBookmarksSlider.css';
 
-// 화살표 이미지 임포트
-import arrowLeft from '../../assets/images/icons/arrow-left.svg';
-import arrowRight from '../../assets/images/icons/arrow-right.svg';
-
-// Swiper 스타일 임포트
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+// Slick 스타일 임포트
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 function PostBookmarksSlider() {
   const [bookmarks, setBookmarks] = useState([]);
@@ -41,6 +35,42 @@ function PostBookmarksSlider() {
     fetchBookmarks();
   }, []);
 
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    variableWidth: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          variableWidth: true,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          variableWidth: true,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          variableWidth: true,
+        },
+      },
+    ],
+  };
+
   if (loading) {
     return <div className="post-bookmarks-loading">북마크를 불러오는 중...</div>;
   }
@@ -57,48 +87,14 @@ function PostBookmarksSlider() {
   return (
     <div className="post-bookmarks-slider-container">
       <h2 className="post-bookmarks-title">북마크한 실종/발견 게시글</h2>
-      
-      <div className="post-bookmarks-navigation-container">
-        <Swiper
-          modules={[Navigation, Pagination]}
-          spaceBetween={10}
-          slidesPerView={1}
-          navigation={{
-            prevEl: '.swiper-button-prev-custom',
-            nextEl: '.swiper-button-next-custom',
-          }}
-          pagination={{ clickable: true }}
-          breakpoints={{
-            500: {
-              slidesPerView: 2,
-              spaceBetween: 10,
-            },
-            768: {
-              slidesPerView: 3,
-              spaceBetween: 15,
-            },
-            1024: {
-              slidesPerView: 4,
-              spaceBetween: 20,
-            }
-          }}
-          className="post-bookmarks-swiper"
-        >
-          {bookmarks.map(post => (
-            <SwiperSlide key={post.postId}>
-              <div className="post-bookmarks-slide">
-                <LostAnimalCard post={post} />
-              </div>
-            </SwiperSlide>
+      <div className="slider-wrapper">
+        <Slider {...settings}>
+          {bookmarks.map((post) => (
+            <div key={post.postId} className="slider-item" style={{ width: 220 }}>
+              <LostAnimalCard post={post} />
+            </div>
           ))}
-          
-          <div className="swiper-button-prev-custom">
-            <img src={arrowLeft} alt="이전" />
-          </div>
-          <div className="swiper-button-next-custom">
-            <img src={arrowRight} alt="다음" />
-          </div>
-        </Swiper>
+        </Slider>
       </div>
     </div>
   );

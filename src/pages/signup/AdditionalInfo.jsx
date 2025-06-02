@@ -1,4 +1,3 @@
-// src/pages/AdditionalInfo.jsx
 import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import client from '../../api/client'
@@ -6,9 +5,9 @@ import { AuthContext } from '../../contexts/AuthContext'
 import nicknameIcon from '../../assets/images/info/user.png'
 import placeholderIcon from '../../assets/images/info/placeholder.png'
 import phoneIcon from '../../assets/images/info/phone.png'
-import styles from './AdditionalInfo.module.css'
 import emailIcon from '../../assets/images/info/email.svg'
 import { useQueryClient } from '@tanstack/react-query'
+import styles from './AdditionalInfo.module.css'
 
 export default function AdditionalInfo() {
   const [form, setForm] = useState({ nickname: '', region: '', tel: '', email: '', verificationCode: '' })
@@ -24,51 +23,61 @@ export default function AdditionalInfo() {
   const [countdown, setCountdown] = useState(0)
   const [isSendingCode, setIsSendingCode] = useState(false)
   const queryClient = useQueryClient();
-  // useEffect(() => {
-  //   if (token) {
-  //     // AuthContext.login 으로 토큰 저장하고 /auth/me 호출해서 user 상태 세팅
-  //     login(token)
-  //     .catch(() => {
-  //       alert('카카오 로그인 실패: ' + (err.response?.data?.message || err.message))
-  //       navigate('/login')  
-  //     })
-  //   }
-  // }, [searchParams, login, navigate]);
 
   useEffect(() => {
     let timer;
     if (countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown(prev => prev - 1);
-      }, 1000);
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     }
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, [countdown]);
 
   const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
   const validatePhone = (phone) => {
-    // 010으로 시작하는 11자리 숫자 또는 하이픈(-)이 포함된 형식 검사
-    const phoneRegex = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
     return phoneRegex.test(phone);
   };
 
   const formatPhoneNumber = (value) => {
-    // 숫자와 하이픈만 남기고 모두 제거
-    const numbers = value.replace(/[^\d-]/g, '');
-    
-    // 하이픈 제거
-    const cleanNumbers = numbers.replace(/-/g, '');
-    
-    // 11자리 숫자인 경우에만 포맷팅
-    if (cleanNumbers.length === 11) {
-      return `${cleanNumbers.slice(0, 3)}-${cleanNumbers.slice(3, 7)}-${cleanNumbers.slice(7)}`;
+    const numbers = value.replace(/[^\d]/g, '');
+    if (numbers.length <= 3) {
+      return numbers;
+    } else if (numbers.length <= 7) {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    } else {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
     }
+  };
+
+  const handleChange = e => {
+    const { name, value } = e.target;
     
-    return numbers;
+    if (name === 'tel') {
+      const formattedValue = formatPhoneNumber(value);
+      setForm(prev => ({ ...prev, [name]: formattedValue }));
+      
+      if (errors.tel) {
+        setErrors(prev => ({ ...prev, tel: '' }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+      
+      if (name === 'email') {
+        setIsEmailChecked(false);
+        setIsEmailVerified(false);
+        if (errors.email) {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      }
+      
+      if (name === 'verificationCode' && errors.verificationCode) {
+        setErrors(prev => ({ ...prev, verificationCode: '' }));
+      }
+    }
   };
 
   const checkEmailDuplicate = async () => {
@@ -78,22 +87,62 @@ export default function AdditionalInfo() {
     }
 
     try {
-      console.log('이메일 중복 확인 요청:', form.email);
-      const response = await client.get(`/mail/is-email-exist?email=${form.email}`);
-      console.log('이메일 중복 확인 응답:', response.data);
-      
-      if (response.data.exists) {
-        setErrors(prev => ({ ...prev, email: '이미 사용 중인 이메일입니다.' }));
-        setIsEmailChecked(false);
-      } else {
-        setErrors(prev => ({ ...prev, email: '' }));
+      const response = await client.post('/auth/check-email', { email: form.email });
+      if (response.data.available) {
         setIsEmailChecked(true);
+        setErrors(prev => ({ ...prev, email: '' }));
         alert('사용 가능한 이메일입니다.');
+      } else {
+        setErrors(prev => ({ ...prev, email: '이미 사용 중인 이메일입니다.' }));
       }
-    } catch (err) {
-      console.error('이메일 중복 확인 에러:', err.response?.data || err);
-      setErrors(prev => ({ ...prev, email: '이메일 중복 확인 중 오류가 발생했습니다.' }));
-      setIsEmailChecked(false);
+    } catch (error) {
+      console.error('이메일 중복 확인 실패:', error);
+      setErrors(prev => ({ ...prev, email: '이메일 중복 확인에 실패했습니다.' }));
+    }
+  };
+
+  const sendVerificationCode = async () => {
+    if (!isEmailChecked) {
+      setErrors(prev => ({ ...prev, email: '이메일 중복 확인을 먼저 해주세요.' }));
+      return;
+    }
+
+    setIsSendingCode(true);
+    try {
+      await client.post('/auth/send-verification', { email: form.email });
+      setCountdown(300); // 5분
+      alert('인증코드가 발송되었습니다.');
+    } catch (error) {
+      console.error('인증코드 발송 실패:', error);
+      alert('인증코드 발송에 실패했습니다.');
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    if (!form.verificationCode || form.verificationCode.length !== 6) {
+      setErrors(prev => ({ ...prev, verificationCode: '6자리 인증코드를 입력해주세요.' }));
+      return;
+    }
+
+    try {
+      const response = await client.post('/auth/verify-code', {
+        email: form.email,
+        code: form.verificationCode
+      });
+      
+      if (response.data.verified) {
+        setIsEmailVerified(true);
+        setCountdown(0);
+        setErrors(prev => ({ ...prev, verificationCode: '' }));
+        alert('이메일 인증이 완료되었습니다.');
+      } else {
+        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 올바르지 않습니다.' }));
+      }
+    } catch (error) {
+      console.error('인증코드 확인 실패:', error);
+      setErrors(prev => ({ ...prev, verificationCode: '인증코드 확인에 실패했습니다.' }));
     }
   };
 
@@ -102,96 +151,6 @@ export default function AdditionalInfo() {
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-
-  const sendVerificationCode = async () => {
-    if (!isEmailChecked) {
-      setErrors(prev => ({ ...prev, email: '이메일 중복 확인이 필요합니다.' }));
-      return;
-    }
-
-    setIsSendingCode(true);
-    try {
-      console.log('인증코드 발송 요청:', form.email);
-      const response = await client.post(`/mail/six?email=${encodeURIComponent(form.email)}`);
-      console.log('인증코드 발송 응답:', response.data);
-      
-      setCountdown(1800); // 30분 = 1800초
-      alert('인증코드가 이메일로 발송되었습니다.');
-    } catch (err) {
-      console.error('인증코드 발송 에러:', err.response?.data || err);
-      if (err.response?.data?.message) {
-        setErrors(prev => ({ ...prev, email: err.response.data.message }));
-      } else {
-        setErrors(prev => ({ ...prev, email: '인증코드 발송 중 오류가 발생했습니다.' }));
-      }
-    } finally {
-      setIsSendingCode(false);
-    }
-  };
-
-  const verifyCode = async () => {
-    if (!form.verificationCode) {
-      setErrors(prev => ({ ...prev, verificationCode: '인증코드를 입력해주세요.' }));
-      return;
-    }
-
-    try {
-      console.log('인증코드 검증 요청:', form.verificationCode);
-      const response = await client.post('/mail/verifications', {
-        email: form.email,
-        authCode: form.verificationCode
-      });
-      console.log('인증코드 검증 응답:', response.data);
-      
-      if (response.data) {
-        setIsEmailVerified(true);
-        setCountdown(0);
-        alert('이메일 인증이 완료되었습니다.');
-      } else {
-        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 일치하지 않습니다.' }));
-      }
-    } catch (err) {
-      console.error('인증코드 검증 에러:', err.response?.data || err);
-      if (err.response?.data?.message) {
-        setErrors(prev => ({ ...prev, verificationCode: err.response.data.message }));
-      } else {
-        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 일치하지 않습니다.' }));
-      }
-    }
-  };
-
-  const handleChange = e => {
-    const { name, value } = e.target
-    
-    if (name === 'tel') {
-      // 전화번호 입력 시 자동 포맷팅
-      const formattedValue = formatPhoneNumber(value);
-      setForm(prev => ({ ...prev, [name]: formattedValue }));
-      
-      // 전화번호 유효성 검사
-      if (!formattedValue) {
-        setErrors(prev => ({ ...prev, tel: '전화번호를 입력해주세요.' }));
-      } else if (!validatePhone(formattedValue)) {
-        setErrors(prev => ({ ...prev, tel: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)' }));
-      } else {
-        setErrors(prev => ({ ...prev, tel: '' }));
-      }
-    } else {
-      setForm(prev => ({ ...prev, [name]: value }));
-      
-      // 이메일이 변경되면 중복 확인 상태 초기화
-      if (name === 'email') {
-        setIsEmailChecked(false);
-        if (!value) {
-          setErrors(prev => ({ ...prev, email: '이메일을 입력해주세요.' }));
-        } else if (!validateEmail(value)) {
-          setErrors(prev => ({ ...prev, email: '올바른 이메일 형식이 아닙니다.' }));
-        } else {
-          setErrors(prev => ({ ...prev, email: '' }));
-        }
-      }
-    }
-  }
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -233,7 +192,6 @@ export default function AdditionalInfo() {
       console.log('회원가입 응답:', res.data);
       
       if(res.data.status === 'ACTIVE') {
-        // 사용자 정보 캐시 무효화 및 갱신
         await queryClient.invalidateQueries(['currentUser']);
         console.log('로그인 성공, 메인 페이지로 이동');
         navigate('/main')
@@ -244,8 +202,6 @@ export default function AdditionalInfo() {
     } catch (err) {
       console.error('회원가입 에러:', err.response?.data || err);
       alert('회원가입 실패: ' + (err.response?.data?.message || err.message))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -287,7 +243,8 @@ export default function AdditionalInfo() {
             alt="전화번호" 
             className={styles.labelIcon} />
           <input
-            style={{...styles.input, borderColor: errors.tel ? '#ff4d4f' : '#ccc'}}
+            className={styles.input}
+            style={{borderColor: errors.tel ? '#ff4d4f' : '#ccc'}}
             name="tel"
             value={form.tel}
             placeholder="전화번호를 입력해주세요. (예: 010-1234-5678)"
@@ -295,16 +252,17 @@ export default function AdditionalInfo() {
             required
           />
         </div>
-        {errors.tel && <div style={styles.errorText}>{errors.tel}</div>}
+        {errors.tel && <div className={styles.errorText}>{errors.tel}</div>}
 
-        <div style={styles.formGroup}>
+        <div className={styles.formGroup}>
           <img 
             src={emailIcon}
             alt="이메일" 
-            style={styles.labelIcon} />
-          <div style={styles.emailContainer}>
+            className={styles.labelIcon} />
+          <div className={styles.emailContainer}>
             <input
-              style={{...styles.input, borderColor: errors.email ? '#ff4d4f' : '#ccc'}}
+              className={styles.input}
+              style={{borderColor: errors.email ? '#ff4d4f' : '#ccc'}}
               name="email"
               type="email"
               value={form.email}
@@ -315,20 +273,21 @@ export default function AdditionalInfo() {
             <button
               type="button"
               onClick={checkEmailDuplicate}
-              style={styles.checkButton}
+              className={styles.checkButton}
               disabled={!form.email || !validateEmail(form.email)}
             >
               중복확인
             </button>
           </div>
         </div>
-        {errors.email && <div style={styles.errorText}>{errors.email}</div>}
+        {errors.email && <div className={styles.errorText}>{errors.email}</div>}
 
         {isEmailChecked && !isEmailVerified && (
-          <div style={styles.verificationContainer}>
-            <div style={styles.verificationInputContainer}>
+          <div className={styles.verificationContainer}>
+            <div className={styles.verificationInputContainer}>
               <input
-                style={{...styles.input, borderColor: errors.verificationCode ? '#ff4d4f' : '#ccc'}}
+                className={styles.input}
+                style={{borderColor: errors.verificationCode ? '#ff4d4f' : '#ccc'}}
                 name="verificationCode"
                 value={form.verificationCode}
                 placeholder="인증코드 6자리"
@@ -338,7 +297,7 @@ export default function AdditionalInfo() {
               <button
                 type="button"
                 onClick={sendVerificationCode}
-                style={styles.checkButton}
+                className={styles.checkButton}
                 disabled={isSendingCode || countdown > 0}
               >
                 {countdown > 0 ? `재발송 (${formatTime(countdown)})` : '인증코드 발송'}
@@ -346,145 +305,30 @@ export default function AdditionalInfo() {
             </div>
             {countdown > 0 && (
               <>
-                <div style={styles.verificationActions}>
+                <div className={styles.verificationActions}>
                   <button
                     type="button"
                     onClick={verifyCode}
-                    style={styles.verifyButton}
+                    className={styles.verifyButton}
                   >
                     인증하기
                   </button>
-                  <span style={styles.countdownText}>
+                  <span className={styles.countdownText}>
                     남은 시간: {formatTime(countdown)}
                   </span>
                 </div>
                 {errors.verificationCode && (
-                  <div style={{...styles.errorText, marginLeft: 0, marginTop: 8}}>{errors.verificationCode}</div>
+                  <div className={styles.errorText} style={{marginLeft: 0, marginTop: 8}}>{errors.verificationCode}</div>
                 )}
               </>
             )}
           </div>
         )}
 
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? '처리중...' : '완료'}
+        <button className={styles.button} type="submit">
+          완료
         </button>
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-  },
-  title: {
-    marginBottom: '20px',
-    fontSize: '1.5rem',
-    color: '#3E3232',
-  },
-  form: {
-    width: '100%',
-    maxWidth: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  formGroup: {
-    display: 'flex',          // 가로 배치
-    alignItems: 'center',     // 수직 중앙 정렬
-    marginBottom: '15px',
-  },
-  label: {
-    width: '90px',            // 라벨 고정 너비 (원하는 만큼 조절)
-    marginRight: '10px',      // 라벨과 input 사이 간격
-    fontSize: '1rem',
-    color: '#3E3232',
-    marginBottom: 0,          // flex row 에서 아래 여백 제거
-  },
-  labelIcon: {
-    width: '25px',
-    height: '25px',
-    marginRight: '30px',
-  },
-  input: {
-    flex: 1,                  // 남은 공간 모두 차지
-    padding: '8px',
-    fontSize: '1rem',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    marginTop: '24px',
-    padding: '10px 20px',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  errorText: {
-    color: '#ff4d4f',
-    fontSize: '0.875rem',
-    marginTop: '-10px',
-    marginBottom: '10px',
-    marginLeft: '55px',
-  },
-  emailContainer: {
-    display: 'flex',
-    gap: '10px',
-    flex: 1,
-  },
-  checkButton: {
-    padding: '8px 16px',
-    fontSize: '0.875rem',
-    borderRadius: '4px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition: 'background-color 0.3s ease',
-    '&:disabled': {
-      backgroundColor: '#ccc',
-      cursor: 'not-allowed',
-    },
-  },
-  verificationContainer: {
-    marginLeft: '55px',
-    marginBottom: '15px',
-  },
-  verificationInputContainer: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '10px',
-  },
-  verificationActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  verifyButton: {
-    padding: '8px 16px',
-    fontSize: '0.875rem',
-    borderRadius: '4px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  countdownText: {
-    fontSize: '0.875rem',
-    color: '#666',
-  },
 }
