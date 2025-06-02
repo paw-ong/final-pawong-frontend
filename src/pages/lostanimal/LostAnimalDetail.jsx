@@ -33,6 +33,7 @@ function LostAnimalDetail() {
     let isMounted = true;
 
     const loadKakaoMap = () => {
+      console.log('Loading Kakao Map SDK...');
       if (!window.kakao || !window.kakao.maps) {
         const script = document.createElement('script');
         script.id = 'kakao-map-sdk';
@@ -40,21 +41,34 @@ function LostAnimalDetail() {
         script.async = true;
         
         script.onload = () => {
+          console.log('Kakao Map SDK script loaded');
           if (!isMounted) return;
           window.kakao.maps.load(() => {
+            console.log('Kakao Map SDK initialized');
             if (!isMounted) return;
-            if (data?.geoPoint && mapContainerRef.current) {
+            if (data?.lostGeoPoint && mapContainerRef.current) {
+              console.log('Initializing map with data:', data.lostGeoPoint);
               setTimeout(() => {
                 if (isMounted) {
                   initMap();
                 }
               }, 100);
+            } else {
+              console.log('Missing required data for map initialization:', {
+                hasGeoPoint: !!data?.lostGeoPoint,
+                hasMapContainer: !!mapContainerRef.current
+              });
             }
           });
         };
 
+        script.onerror = (error) => {
+          console.error('Failed to load Kakao Map SDK:', error);
+        };
+
         document.head.appendChild(script);
-      } else if (data?.geoPoint && mapContainerRef.current) {
+      } else if (data?.lostGeoPoint && mapContainerRef.current) {
+        console.log('Kakao Map SDK already loaded, initializing map');
         setTimeout(() => {
           if (isMounted) {
             initMap();
@@ -72,10 +86,21 @@ function LostAnimalDetail() {
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) return;
+    console.log('Initializing map with data:', data);
+    if (!window.kakao || !window.kakao.maps || !data?.lostGeoPoint || !mapContainerRef.current) {
+      console.error('Failed to initialize map:', {
+        hasKakao: !!window.kakao,
+        hasMaps: !!(window.kakao && window.kakao.maps),
+        hasGeoPoint: !!data?.lostGeoPoint,
+        geoPoint: data?.lostGeoPoint,
+        hasMapContainer: !!mapContainerRef.current
+      });
+      return;
+    }
     
     try {
-      const { latitude, longitude } = data.geoPoint;
+      const { latitude, longitude } = data.lostGeoPoint;
+      console.log('Creating map with coordinates:', { latitude, longitude });
       
       const options = {
         center: new window.kakao.maps.LatLng(latitude, longitude),
@@ -100,14 +125,16 @@ function LostAnimalDetail() {
 
       // 인포윈도우를 마커 위에 표시
       infowindow.open(map, marker);
+      
+      console.log('Map initialized successfully');
     } catch (error) {
-      console.error('지도 초기화 중 오류 발생:', error);
+      console.error('Error initializing map:', error);
     }
   };
 
   // 데이터가 변경될 때마다 지도 업데이트
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && data?.geoPoint && mapContainerRef.current) {
+    if (window.kakao && window.kakao.maps && data?.lostGeoPoint && mapContainerRef.current) {
       setTimeout(() => {
         initMap();
       }, 100);
@@ -123,8 +150,10 @@ function LostAnimalDetail() {
         const response = await client.get(url);
         
         if (response && response.data && response.data.lostPostDetailDto) {
+          console.log('Received data:', response.data.lostPostDetailDto);
           setData(response.data.lostPostDetailDto);
         } else {
+          console.error('Invalid data format:', response);
           setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (error) {
@@ -331,6 +360,17 @@ function LostAnimalDetail() {
               <div 
                 ref={mapContainerRef} 
                 className="lost-animal-detail-map"
+                style={{
+                  width: '100%',
+                  height: '400px',
+                  marginTop: '10px',
+                  marginBottom: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundColor: '#f8f8f8'
+                }}
               />
             </td>
           </tr>
