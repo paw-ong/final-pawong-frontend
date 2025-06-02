@@ -156,14 +156,14 @@ function Header() {
                 </li>
                 <li className="tab-item">
                   <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")}>
-                    채팅
+                    채팅 목록
                   </NavLink>
                 </li>
               </>
             )}
           </ul>
         </nav>
-        <NotificationButton />
+        {isLoggedIn && <NotificationButton />}
         <div className="user" onClick={handleUserClick}>
           <img src={userImage} alt="user-img" className="user-img"/>
         </div>
@@ -173,7 +173,7 @@ function Header() {
       <div className="mobile-header-controls">
         {/* 모바일 알림 버튼 */}
         <div className="mobile-header-notification">
-          <NotificationButton />
+          {isLoggedIn && <NotificationButton />}
         </div>
 
         {/* 햄버거 메뉴 버튼 */}
@@ -253,7 +253,7 @@ function Header() {
             </li>
             <li className="tab-item">
               <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? "active" : "")} onClick={handleMenuClick}>
-                채팅
+                채팅 목록
               </NavLink>
             </li>
           </ul>
