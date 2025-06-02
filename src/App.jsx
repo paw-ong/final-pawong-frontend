@@ -47,47 +47,6 @@ function App() {
   const [hasRequestedToken, setHasRequestedToken] = useState(false);
   const fcmInitialized = useRef(false);
 
-  // FCM 토큰 요청 및 알림 권한 처리
-  useEffect(() => {
-    const initializeFCMForLoggedInUser = async () => {
-      if (!user || hasRequestedToken) return;
-
-      const permissionStatus = getNotificationPermissionStatus();
-
-      if (permissionStatus === 'granted') {
-        try {
-          console.log("로그인된 사용자 감지 - FCM 토큰 요청 시작");
-          fcmInitialized.current = true;
-
-          const token = await getFcmToken();
-          if (token) {
-            console.log("FCM 토큰 획득 성공:", token);
-            setFcmToken(token);
-            setHasRequestedToken(true);
-          }
-        } catch (error) {
-          console.error("FCM 토큰 처리 실패:", error);
-          fcmInitialized.current = false;
-        }
-      } else if (permissionStatus === 'default' && !sessionStorage.getItem('notification-guide-shown')) {
-        setShowGuideModal(true);
-        sessionStorage.setItem('notification-guide-shown', 'true');
-      }
-    };
-
-    initializeFCMForLoggedInUser();
-  }, [user, hasRequestedToken]);
-
-  // 로그아웃 시 상태 초기화
-  useEffect(() => {
-    if (!user) {
-      setFcmToken(null);
-      setHasRequestedToken(false);
-      fcmInitialized.current = false;
-      sessionStorage.removeItem('notification-guide-shown');
-    }
-  }, [user]);
-
   // FCM 메시지 수신 처리
   useEffect(() => {
     const unsubscribe = onMessage(messaging, (payload) => {
@@ -123,6 +82,16 @@ function App() {
       }
     };
   }, []);
+
+  // 로그아웃 시 상태 초기화
+  useEffect(() => {
+    if (!user) {
+      setFcmToken(null);
+      setHasRequestedToken(false);
+      fcmInitialized.current = false;
+      sessionStorage.removeItem('notification-guide-shown');
+    }
+  }, [user]);
 
   // 알림 관련 함수들
   const markAsRead = (id) => {
@@ -181,7 +150,8 @@ function App() {
       markAllAsRead,
       deleteNotification,
       clearAllNotifications,
-      fcmToken
+      fcmToken,
+      setFcmToken
     }}>
       <Routes>
         <Route path="/" element={<Layout />}>

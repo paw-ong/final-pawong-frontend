@@ -17,7 +17,8 @@ const NotificationButton = () => {
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    clearAllNotifications
+    clearAllNotifications,
+    setFcmToken,
   } = useContext(NotificationContext);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -27,7 +28,18 @@ const NotificationButton = () => {
 
   // 컴포넌트 마운트 시 권한 상태 확인
   useEffect(() => {
-    setPermissionStatus(getNotificationPermissionStatus());
+    const currentStatus = getNotificationPermissionStatus();
+    const existingToken = localStorage.getItem('fcm_token');
+    console.log('현재 알림 권한 상태:', currentStatus);
+    
+    if (currentStatus === 'granted' && existingToken) {
+      console.log('기존 FCM 토큰 발견!');
+      setFcmToken(existingToken);
+    } else {
+      console.log('저장된 FCM 토큰 없음');
+    }
+    
+    setPermissionStatus(currentStatus);
   }, []);
 
   // 드롭다운 외부 클릭 감지
@@ -48,21 +60,30 @@ const NotificationButton = () => {
   const handlePermissionRequest = async () => {
     if (isRequestingPermission) return;
 
+    console.log('NotificationButton: 알림 권한 요청 시작');
     setIsRequestingPermission(true);
     setShowGuideModal(false);
 
     try {
+      console.log('NotificationButton: requestNotificationPermission 호출 전');
       const result = await requestNotificationPermission();
+      console.log('NotificationButton: requestNotificationPermission 결과:', result);
 
       if (result.success) {
         setPermissionStatus('granted');
+        setFcmToken(result.token);
+        console.log('NotificationButton: FCM 토큰 설정 완료:', result.token);
         alert('알림이 활성화되었습니다! 🔔');
+        window.location.reload();
       } else {
         setPermissionStatus('denied');
+        console.log('NotificationButton: 알림 활성화 실패:', result.error);
         alert(`알림 활성화 실패: ${result.error}`);
       }
     } catch (error) {
+      console.error('NotificationButton: 알림 설정 중 오류:', error);
       alert('알림 설정 중 오류가 발생했습니다.');
+      setPermissionStatus('denied');
     } finally {
       setIsRequestingPermission(false);
     }

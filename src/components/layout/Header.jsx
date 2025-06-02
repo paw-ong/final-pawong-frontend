@@ -163,7 +163,7 @@ function Header() {
             )}
           </ul>
         </nav>
-        {isLoggedIn && <NotificationButton />}
+        {!isMobile && isLoggedIn && <NotificationButton />}
         <div className="user" onClick={handleUserClick}>
           <img src={userImage} alt="user-img" className="user-img"/>
         </div>
@@ -173,7 +173,7 @@ function Header() {
       <div className="mobile-header-controls">
         {/* 모바일 알림 버튼 */}
         <div className="mobile-header-notification">
-          {isLoggedIn && <NotificationButton />}
+          {isMobile && isLoggedIn && <NotificationButton />}
         </div>
 
         {/* 햄버거 메뉴 버튼 */}
