@@ -1,6 +1,5 @@
 .primary-btn {
-  background: var(--color-primary);
-  color: var(--color-white);
+  /* background: var(--color-primary); */
   border: none;
   border-radius: 10px;
   padding: 10px 24px;

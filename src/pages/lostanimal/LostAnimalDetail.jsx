@@ -4,6 +4,7 @@ import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
 import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
+import styles from './LostAnimalDetail.module.css';
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -259,40 +260,14 @@ function LostAnimalDetail() {
         {isLoggedIn && user?.userId === data.authorId ? (
           <button 
             onClick={handleChatButtonClick}
-            style={{
-              // backgroundColor: '#4CAF50',
-              backgroundColor: 'var(--color-primary)',
-              '&:hover': {
-                backgroundColor: 'var(--color-accent)',
-              },
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '12px 24px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
+            className={styles.chatButton}
           >
             요청된 채팅으로 이동
           </button>
         ) : (
           <button 
             onClick={handleChatButtonClick}
-            style={{
-              // backgroundColor: '#FF8A3D',
-              backgroundColor: 'var(--color-primary)',
-              '&:hover': {
-                backgroundColor: 'var(--color-accent)',
-              },
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '12px 24px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
+            className={styles.chatButton}
           >
             채팅하기
           </button>

@@ -29,7 +29,6 @@
 
 /* 활성 채팅방은 진한 테두리, 비활성은 연한/회색 테두리 */
 .chat-room-item:not(.inactive) {
-  /* border-color: var(--color-text); */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 .chat-room-item.inactive {

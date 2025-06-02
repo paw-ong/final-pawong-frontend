@@ -182,7 +182,7 @@ function ChatRooms() {
 
   return (
     <div className="chat-rooms-container">
-      <h1>채팅</h1>
+      <h2>채팅</h2>
       <div className="chat-rooms-list">
       {sortedRooms.length === 0 ? (
           <div className="no-chat-rooms">
