@@ -21,45 +21,42 @@ const ChatRoom = () => {
   const messagesEndRef = useRef(null);
   const [animalData, setAnimalData] = useState(null);
   const [isChatActive, setIsChatActive] = useState(true);
+  const [chatRoomInfo, setChatRoomInfo] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // 채팅방 접근 권한 확인
+  // 채팅방 정보 확인 및 게시글 검증
   useEffect(() => {
-    const checkChatRoomAccess = async () => {
+    const checkChatRoomInfo = async () => {
       try {
-        const response = await client.get(`/chat/rooms/${roomId}`);
-        if (!response.data.exists) {
-          alert('해당 채팅방에 들어갈 수 없습니다.');
+        // 채팅방 정보 조회
+        const chatRoomResponse = await client.get(`/chat/rooms/${roomId}/info`);
+        const chatRoomDetail = chatRoomResponse.data.chatRoomDetail;
+        setChatRoomInfo(chatRoomDetail);
+        setIsChatActive(chatRoomDetail.status === 'ACTIVE');
+
+        // 게시글 정보 조회
+        const postResponse = await client.get(`/lost-animals/lost-posts/${id}`);
+        const postDetail = postResponse.data.lostPostDetailDto;
+
+        // 게시글 ID 검증
+        if (postDetail.lostPostId !== chatRoomDetail.lostPostInfo.postId) {
+          alert('채팅방에 접속할 수 없습니다.');
           navigate('/chatrooms');
+          return;
         }
+
+        setAnimalData(postDetail);
       } catch (error) {
-        alert('해당 채팅방에 들어갈 수 없습니다.');
+        alert('채팅방에 접속할 수 없습니다.');
         navigate('/chatrooms');
       }
     };
 
-    checkChatRoomAccess();
-  }, [roomId, navigate]);
-
-  // 채팅방 상태 확인
-  useEffect(() => {
-    const checkChatRoomStatus = async () => {
-      try {
-        const response = await client.get(`/chat/rooms/${roomId}/status`);
-        setIsChatActive(response.data.active);
-      } catch (error) {
-        if (error.response?.status === 404) {
-          setIsChatActive(false);
-        }
-        navigate('/chatrooms');
-      }
-    };
-
-    checkChatRoomStatus();
-  }, [roomId, navigate]);
+    checkChatRoomInfo();
+  }, [roomId, id, navigate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -116,10 +113,6 @@ const ChatRoom = () => {
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
     };
   }, [roomId]);
-
-  useEffect(() => {
-    client.get(`/lost-animals/lost-posts/${id}`).then(res => setAnimalData(res.data.lostPostDetailDto));
-  }, [id]);
 
   const getOtherProfileImage = (message) => {
     if (!animalData || !user) return userImage;
