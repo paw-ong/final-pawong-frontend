@@ -34,22 +34,37 @@
 }
 
 .chatHeader {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 1.2rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  background-color: #ffffff;
+  padding: 1rem;
   border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 
-.chatHeader h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--color-text);
+.headerAnimalImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.headerNickname {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.headerSubInfo {
+  font-size: 0.875rem;
+  color: #666;
 }
 
 .messagesContainer {
@@ -255,26 +270,20 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
-.chatHeader {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+.goToPostButton {
+  padding: 0.5rem 1rem;
+  background-color: #F86A60;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
-.headerAnimalImage {
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
-  object-fit: cover;
-  background: #eee;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.headerNickname {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+.goToPostButton:hover {
+  background-color: #A71F24;
 }

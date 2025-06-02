@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
@@ -14,16 +14,49 @@ function formatDateWithDay(date) {
 
 const ChatRoom = () => {
   const { id, roomId } = useParams();
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
   const [animalData, setAnimalData] = useState(null);
+  const [isChatActive, setIsChatActive] = useState(true);
+  const [chatRoomInfo, setChatRoomInfo] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // 채팅방 정보 확인 및 게시글 검증
+  useEffect(() => {
+    const checkChatRoomInfo = async () => {
+      try {
+        // 채팅방 정보 조회
+        const chatRoomResponse = await client.get(`/chat/rooms/${roomId}/info`);
+        const chatRoomDetail = chatRoomResponse.data.chatRoomDetail;
+        setChatRoomInfo(chatRoomDetail);
+        setIsChatActive(chatRoomDetail.status === 'ACTIVE');
+
+        // 게시글 정보 조회
+        const postResponse = await client.get(`/lost-animals/lost-posts/${id}`);
+        const postDetail = postResponse.data.lostPostDetailDto;
+
+        // 게시글 ID 검증
+        if (postDetail.lostPostId !== chatRoomDetail.lostPostInfo.postId) {
+          alert('채팅방에 접속할 수 없습니다.');
+          navigate('/chatrooms');
+          return;
+        }
+
+        setAnimalData(postDetail);
+      } catch (error) {
+        alert('채팅방에 접속할 수 없습니다.');
+        navigate('/chatrooms');
+      }
+    };
+
+    checkChatRoomInfo();
+  }, [roomId, id, navigate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -60,7 +93,6 @@ const ChatRoom = () => {
     };
   }, [roomId]);
 
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -81,10 +113,6 @@ const ChatRoom = () => {
       WebSocketService.unsubscribe(`/user/queue/chat/${roomId}`);
     };
   }, [roomId]);
-
-  useEffect(() => {
-    client.get(`/lost-animals/lost-posts/${id}`).then(res => setAnimalData(res.data.lostPostDetailDto));
-  }, [id]);
 
   const getOtherProfileImage = (message) => {
     if (!animalData || !user) return userImage;
@@ -253,9 +281,22 @@ const ChatRoom = () => {
             alt="공고 이미지"
             className={styles.headerAnimalImage}
           />
-          <span className={styles.headerNickname}>
-            {getOtherNickname(animalData, user, messages)}
-          </span>
+          <div className={styles.headerInfo}>
+            <span className={styles.headerNickname}>
+              {getOtherNickname(animalData, user, messages)}
+            </span>
+            {chatRoomInfo && (
+              <span className={styles.headerSubInfo}>
+                {chatRoomInfo.lostPostInfo.kindNm} | {chatRoomInfo.lostPostInfo.location}
+              </span>
+            )}
+          </div>
+          <button 
+            className={styles.goToPostButton}
+            onClick={() => navigate(`/lostAnimal/detail/${chatRoomInfo?.lostPostInfo.postId}`)}
+          >
+            공고로 이동
+          </button>
         </div>
         
         <div className={styles.messagesContainer}>
@@ -268,12 +309,18 @@ const ChatRoom = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="메시지를 입력하세요..."
+            placeholder={isChatActive ? "메시지를 입력하세요..." : "비활성화된 채팅방입니다"}
             className={styles.messageInput}
+            disabled={!isChatActive}
+            style={{ 
+              backgroundColor: !isChatActive ? '#f0f0f0' : 'white',
+              cursor: !isChatActive ? 'not-allowed' : 'text'
+            }}
           />
           <button 
             type="submit" 
             className={styles.sendButton}
+            disabled={!isChatActive}
           >
             전송
           </button>
