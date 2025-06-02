@@ -36,10 +36,14 @@
   line-height: 1.5;
 }
 
-.loginButton {
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 12px;  /* 버튼 사이 간격 */
+}
+
+.loginButton, .closeButton {
   padding: 10px 20px;
-  /* background: var(--color-primary); */
-  color: var(--color-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -47,5 +51,21 @@
   transition: background-color 0.2s;
 }
 
-/* .loginButton:hover {
-  /* background: var(--color-accent); */
+.loginButton {
+  background: #007bff;
+  color: white;
+}
+
+.loginButton:hover {
+  background: #0056b3;
+}
+
+.closeButton {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.closeButton:hover {
+  background: #dee2e6;
+} 
+

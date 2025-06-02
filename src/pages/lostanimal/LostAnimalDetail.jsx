@@ -2,20 +2,31 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
-import "./LostAnimalDetail.css";
+import "./LostAnimal.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import styles from './LostAnimalDetail.module.css';
 
 function LostAnimalDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const currentLocation = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [similarAnimals, setSimilarAnimals] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchingError, setIsSearchingError] = useState(false);
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const hasCalledApi = useRef(false);
   const { user, isLoggedIn } = useContext(AuthContext);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setCurrentUserId(user.userId);
+    }
+  }, [user]);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -126,6 +137,69 @@ function LostAnimalDetail() {
     fetchData();
   }, [id, currentLocation.state]);
 
+  useEffect(() => {
+    let eventSource = null;
+
+    const setupSSE = () => {
+      // LOST 타입이 아닐 경우 SSE 연결하지 않음
+      if (data?.postType !== 'LOST') {
+        setSimilarAnimals([]);
+        setIsSearching(false);
+        return;
+      }
+
+      try {
+        // SSE 연결 설정
+        const baseUrl = client.defaults.baseURL || '';
+        eventSource = new EventSource(`${baseUrl}/lost-animals/lost-posts/${id}/similar-animals/stream`);
+        setIsSearching(true);
+        setIsSearchingError(false);
+
+        // similar-animals 이벤트 리스너
+        eventSource.addEventListener('similar-animals', (event) => {
+          const animals = JSON.parse(event.data);
+          console.log('유사 동물 데이터 수신:', animals);
+          setSimilarAnimals(animals);
+          setIsSearching(false);
+          eventSource.close(); // 데이터를 받으면 연결 종료
+        });
+
+        // 에러 처리
+        eventSource.onerror = (error) => {
+          console.error('SSE 연결 오류:', error);
+          setIsSearching(false);
+          setIsSearchingError(true);
+          eventSource.close();
+        };
+
+      } catch (error) {
+        console.error('SSE 설정 중 오류 발생:', error);
+        setIsSearching(false);
+        setIsSearchingError(true);
+        if (eventSource) {
+          eventSource.close();
+        }
+      }
+    };
+
+    // data가 로드되고 LOST 타입일 때만 SSE 연결
+    if (data && data.postType === 'LOST') {
+      console.log('SSE 연결 시작');
+      setupSSE();
+    } else {
+      setSimilarAnimals([]);
+      setIsSearching(false);
+      setIsSearchingError(false);
+    }
+
+    // cleanup 함수
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, [data, id]);
+  
   // 채팅 버튼 클릭 핸들러
   const handleChatButtonClick = async () => {
     if (!data || !isLoggedIn) {
@@ -144,22 +218,45 @@ function LostAnimalDetail() {
       postId: Number(data.lostPostId),
       authorId: Number(data.authorId)
     };
-    
+
     try {
       const response = await client.post('/chat/rooms', requestData);
-      
+
       if (response && response.data && response.data.chatRoomId) {
         window.location.href = `/lostAnimal/detail/${data.lostPostId}/chat/${response.data.chatRoomId}`;
       }
     } catch (error) {
       console.error('채팅방 생성 오류:', error);
-      
+
       if (error.status === 401 || error.status === 403) {
         alert('로그인이 필요하거나 권한이 없습니다.');
       } else if (error.code === 'CHATROOM_POST_ERROR') {
         alert('채팅방을 생성할 수 없습니다');
       } else {
         alert('채팅방 생성 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/lostAnimal/update/${id}`, {
+      state: {
+        postData: data
+      }
+    });
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      try {
+        const response = await client.delete(`/lost-animals/lost-posts/${id}`);
+        if (response.status === 200) {
+          alert('게시글이 삭제되었습니다.');
+          navigate('/lostAnimal');
+        }
+      } catch (error) {
+        console.error('게시글 삭제 실패:', error);
+        alert('게시글 삭제에 실패했습니다.');
       }
     }
   };
@@ -190,8 +287,16 @@ function LostAnimalDetail() {
   const sexText = sexCd === 'M' ? '수컷' : sexCd === 'F' ? '암컷' : '미상';
 
   return (
-    <div className="lost-animal-detail-container">
-      <div className="lost-animal-detail-image-container">
+    <div className="lost-animal-container" style={{ 
+      maxWidth: '800px', 
+      margin: '0 auto', 
+      padding: '32px',
+      border: '1px solid #e0e0e0',
+      borderRadius: '16px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      backgroundColor: 'white'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
           alt="실종 동물"
@@ -202,11 +307,11 @@ function LostAnimalDetail() {
           }}
         />
       </div>
-      <table className="lost-animal-detail-table">
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
-          <tr className="lost-animal-detail-header">
-            <th colSpan={2}>🐾  실종 신고자 정보</th>
-            <td colSpan={2}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
+          <tr style={{ background: '#f7f7f7' }}>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 실종 신고자 정보</th>
+            <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">신고자</td>
@@ -252,20 +357,74 @@ function LostAnimalDetail() {
             <td className="lost-animal-detail-label">RFID</td>
             <td colSpan={3}>{rfidCd || '-'}</td>
           </tr>
-          </tbody>
-        </table>
-      
+          <tr style={{ background: '#f7f7f7' }}>
+            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 유사 동물</th>
+          </tr>
+          <tr>
+            <td colSpan={4} style={{ padding: 12 }}>
+              {data?.postType !== 'LOST' ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
+                </div>
+              ) : isSearching ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사 동물을 찾는 중입니다...
+                </div>
+              ) : isSearchingError ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: 'brown' }}>
+                  유사 동물을 받아오는데 실패했습니다. 😿
+                </div>
+              ) : similarAnimals.length > 0 ? (
+                <div style={{ 
+                  display: 'flex', 
+                  overflowX: 'auto', 
+                  gap: '16px',
+                  padding: '16px 0',
+                  width: '100%',
+                  scrollbarWidth: 'thin',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': {
+                    height: '6px'
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: '#f1f1f1',
+                    borderRadius: '3px'
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: '#888',
+                    borderRadius: '3px'
+                  }
+                }}>
+                  {similarAnimals.map((animal, index) => (
+                    <div key={index} style={{ 
+                      minWidth: '300px',
+                      flex: '0 0 auto',
+                      maxWidth: '300px'
+                    }}>
+                      <LostAnimalCard post={animal} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  유사한 동물이 없습니다.
+                </div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
       {/* 채팅하기 버튼 */}
       <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
         {isLoggedIn && user?.userId === data.authorId ? (
-          <button 
+          <button
             onClick={handleChatButtonClick}
             className={styles.chatButton}
           >
             요청된 채팅으로 이동
           </button>
         ) : (
-          <button 
+          <button
             onClick={handleChatButtonClick}
             className={styles.chatButton}
           >

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import RecommendSlider from '../../mainpage/RecommendSlider';
 import {getAdoptionList} from "../../../services/adoptionService.js";
 
-function AdoptionRecommendList() {
+function AdoptionRecommendList({ user, onRequireAuth }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

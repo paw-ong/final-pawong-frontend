@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import PetCard from '../pet/card/PetCard';
@@ -17,12 +18,11 @@ import 'swiper/css/pagination';
 function FavoritesSlider() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const userToken = localStorage.getItem('userToken');
-      
-      if (!userToken) {
+      if (!isLoggedIn) {
         setLoading(false);
         return;
       }
@@ -109,7 +109,11 @@ function FavoritesSlider() {
           {favorites.map(pet => (
             <SwiperSlide key={pet.adoptionCard.adoptionId}>
               <div className="favorites-slide">
-                <PetCard pet={formatPetData(pet)} type="adoptions" />
+                <PetCard 
+                pet={formatPetData(pet)} 
+                type="adoptions" 
+                onRequireAuth={() => setShowAuthModal(true)}
+                />
               </div>
             </SwiperSlide>
           ))}

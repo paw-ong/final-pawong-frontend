@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import LostAnimalCard from '../pet/card/LostAnimalCard';
@@ -17,12 +18,11 @@ import 'swiper/css/pagination';
 function LostBookmarksSlider() {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchBookmarks = async () => {
-      const userToken = localStorage.getItem('userToken');
-      
-      if (!userToken) {
+      if (!isLoggedIn) {
         setLoading(false);
         return;
       }
