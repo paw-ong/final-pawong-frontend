@@ -1,28 +1,42 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import React, { useEffect, useState } from 'react';
+import Slider from "react-slick";
 import PetCard from '../pet/card/PetCard';
 import client from '../../api/client';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import './FavoritesSlider.css';
 
-// 화살표 이미지 임포트
-import arrowLeft from '../../assets/images/icons/arrow-left.svg';
-import arrowRight from '../../assets/images/icons/arrow-right.svg';
+function SlickPrevArrow(props) {
+  const { className, onClick } = props;
+  return (
+    <button
+      className={className}
+      onClick={onClick}
+      aria-label="이전"
+    />
+  );
+}
 
-// Swiper 스타일 임포트
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+function SlickNextArrow(props) {
+  const { className, onClick } = props;
+  return (
+    <button
+      className={className}
+      onClick={onClick}
+      aria-label="다음"
+    />
+  );
+}
 
 function FavoritesSlider() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!isLoggedIn) {
+      const userToken = localStorage.getItem('userToken');
+      
+      if (!userToken) {
         setLoading(false);
         return;
       }
@@ -59,75 +73,72 @@ function FavoritesSlider() {
   };
 
   if (loading) {
-    return <div className="favorites-loading">찜 목록을 불러오는 중...</div>;
+    return <div className="section-loading">찜 목록을 불러오는 중...</div>;
   }
 
   if (favorites.length === 0) {
     return (
-      <div className="favorites-empty">
+      <div className="section-empty">
         <p>찜한 공고가 없습니다.</p>
         <p>마음에 드는 공고를 찜해보세요!</p>
       </div>
     );
   }
 
-  return (
-    <div className="favorites-slider-container">
-      <h2 className="favorites-title">내가 찜한 공고</h2>
-      
-      {/* 커스텀 네비게이션 버튼을 위한 이미지 요소 */}
-      <div className="favorites-navigation-container">
-        <Swiper
-          modules={[Navigation, Pagination]}
-          spaceBetween={5}
-          slidesPerView={1}
-          navigation={{
-            prevEl: '.swiper-button-prev-custom',
-            nextEl: '.swiper-button-next-custom',
-          }}
-          pagination={{ clickable: true }}
-          breakpoints={{
-            500: {
-              slidesPerView: 1,
-              spaceBetween: 5,
-            },
-            700: {
-              slidesPerView: 2,
-              spaceBetween: 10,
-            },
-            900: {
-              slidesPerView: 3,
-              spaceBetween: 10,
-            },
-            1200: {
-              slidesPerView: 4,
-              spaceBetween: 10,
-            },
-          }}
-          className="favorites-swiper"
-        >
-          {favorites.map(pet => (
-            <SwiperSlide key={pet.adoptionCard.adoptionId}>
-              <div className="favorites-slide">
-                <PetCard 
-                pet={formatPetData(pet)} 
-                type="adoptions" 
-                onRequireAuth={() => setShowAuthModal(true)}
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-          
-          {/* 커스텀 네비게이션 버튼 */}
-          <div className="swiper-button-prev-custom">
-            <img src={arrowLeft} alt="이전" />
-          </div>
-          <div className="swiper-button-next-custom">
-            <img src={arrowRight} alt="다음" />
-          </div>
-        </Swiper>
+  const settings = {
+    dots: true,
+    arrows: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    variableWidth: true,
+    appendDots: dots => (
+      <div style={{ bottom: '-30px' }}>
+        <ul style={{ margin: '0' }}> {dots} </ul>
       </div>
-    </div>
+    ),
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          variableWidth: true
+        }
+      },
+      {
+        breakpoint: 900,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          variableWidth: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          variableWidth: true
+        }
+      }
+    ]
+  };
+
+  return (
+    <section className="adoption-section">
+      <h2 className="section-title">내가 찜한 공고</h2>
+      <div className="slider-wrapper">
+        <Slider {...settings}>
+          {favorites.map(pet => (
+            <div key={pet.adoptionCard.adoptionId} className="slider-item" style={{ width: 220 }}>
+              <PetCard pet={formatPetData(pet)} type="adoptions" />
+            </div>
+          ))}
+        </Slider>
+      </div>
+    </section>
   );
 }
 
