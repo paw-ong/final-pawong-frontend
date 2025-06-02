@@ -26,6 +26,7 @@ const ChatRoom = () => {
   const [chatRoomInfo, setChatRoomInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,6 +41,11 @@ const ChatRoom = () => {
         const chatRoomDetail = chatRoomResponse.data.chatRoomDetail;
         setChatRoomInfo(chatRoomDetail);
         setIsChatActive(chatRoomDetail.status === 'ACTIVE');
+
+        // 첫 접속 시 모달 표시
+        if (chatRoomDetail.latestMessageContent === "") {
+          setIsWelcomeModalOpen(true);
+        }
 
         // 게시글 정보 조회
         const postResponse = await client.get(`/lost-animals/lost-posts/${id}`);
@@ -380,6 +386,25 @@ const ChatRoom = () => {
                   아니요
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 환영 모달 */}
+        {isWelcomeModalOpen && (
+          <div className={styles.modalOverlay} onClick={() => setIsWelcomeModalOpen(false)}>
+            <div className={`${styles.modal} ${styles.welcomeModal}`} onClick={e => e.stopPropagation()}>
+              <div className={styles.welcomeContent}>
+                <p>💬 자유롭게 채팅을 시작하세요! 언제든 준비될 때 메시지를 보내보세요.</p>
+                <p>🐾 반려동물이 주인을 잘 찾아갈 수 있도록 기여하는 여러분이 있어 세상이 한층 아름다워집니다.</p>
+                <p>🚫 모종의 이유로 공고가 마감되거나 더 이상 채팅을 진행할 의향이 없는 경우, 채팅방을 비활성화 할 수 있습니다.</p>
+              </div>
+              <button 
+                className={styles.welcomeCloseButton}
+                onClick={() => setIsWelcomeModalOpen(false)}
+              >
+                닫기
+              </button>
             </div>
           </div>
         )}

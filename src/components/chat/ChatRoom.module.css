@@ -6,7 +6,7 @@
 
 
 .main-content, .chatRoom, .messagesContainer {
-  min-height: 0 !important;
+  min-height: 70vh !important;
 }
 
 .main-content, .chatRoom {
@@ -365,4 +365,32 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.welcomeModal {
+  max-width: 500px;
+  width: 90%;
+}
+
+.welcomeContent {
+  margin-bottom: 2rem;
+}
+
+.welcomeContent p {
+  margin: 1rem 0;
+  line-height: 1.5;
+  color: #333;
+}
+
+.welcomeCloseButton {
+  display: block;
+  width: 120px;
+  margin: 0 auto;
+  padding: 0.8rem 2rem;
+  background-color: #3581B8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
 }
