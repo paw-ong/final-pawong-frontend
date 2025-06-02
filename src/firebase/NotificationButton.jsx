@@ -28,19 +28,36 @@ const NotificationButton = () => {
 
   // 컴포넌트 마운트 시 권한 상태 확인
   useEffect(() => {
-    const currentStatus = getNotificationPermissionStatus();
-    const existingToken = localStorage.getItem('fcm_token');
-    console.log('현재 알림 권한 상태:', currentStatus);
-    
-    if (currentStatus === 'granted' && existingToken) {
-      console.log('기존 FCM 토큰 발견!');
-      setFcmToken(existingToken);
-    } else {
-      console.log('저장된 FCM 토큰 없음');
-    }
-    
-    setPermissionStatus(currentStatus);
-  }, []);
+    const checkAndRequestToken = async () => {
+      const currentStatus = getNotificationPermissionStatus();
+      const existingToken = localStorage.getItem('fcm_token');
+      console.log('현재 알림 권한 상태:', currentStatus);
+      
+      if (currentStatus === 'granted') {
+        if (existingToken) {
+          console.log('기존 FCM 토큰 발견!');
+          setFcmToken(existingToken);
+        } else {
+          console.log('FCM 토큰 재요청 시작');
+          try {
+            const result = await requestNotificationPermission();
+            if (result.success) {
+              console.log('FCM 토큰 재발급 성공:', result.token);
+              setFcmToken(result.token);
+            } else {
+              console.error('FCM 토큰 재발급 실패:', result.error);
+            }
+          } catch (error) {
+            console.error('FCM 토큰 재발급 중 오류:', error);
+          }
+        }
+      }
+      
+      setPermissionStatus(currentStatus);
+    };
+
+    checkAndRequestToken();
+  }, [setFcmToken]);
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
