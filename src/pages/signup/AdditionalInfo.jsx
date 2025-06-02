@@ -1,3 +1,4 @@
+// src/pages/AdditionalInfo.jsx
 import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import client from '../../api/client'
@@ -23,61 +24,51 @@ export default function AdditionalInfo() {
   const [countdown, setCountdown] = useState(0)
   const [isSendingCode, setIsSendingCode] = useState(false)
   const queryClient = useQueryClient();
+  // useEffect(() => {
+  //   if (token) {
+  //     // AuthContext.login 으로 토큰 저장하고 /auth/me 호출해서 user 상태 세팅
+  //     login(token)
+  //     .catch(() => {
+  //       alert('카카오 로그인 실패: ' + (err.response?.data?.message || err.message))
+  //       navigate('/login')  
+  //     })
+  //   }
+  // }, [searchParams, login, navigate]);
 
   useEffect(() => {
     let timer;
     if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      timer = setInterval(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
     }
-    return () => clearTimeout(timer);
+    return () => clearInterval(timer);
   }, [countdown]);
 
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return emailRegex.test(email);
   };
 
   const validatePhone = (phone) => {
-    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    // 010으로 시작하는 11자리 숫자 또는 하이픈(-)이 포함된 형식 검사
+    const phoneRegex = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
     return phoneRegex.test(phone);
   };
 
   const formatPhoneNumber = (value) => {
-    const numbers = value.replace(/[^\d]/g, '');
-    if (numbers.length <= 3) {
-      return numbers;
-    } else if (numbers.length <= 7) {
-      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-    } else {
-      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
-    }
-  };
-
-  const handleChange = e => {
-    const { name, value } = e.target;
+    // 숫자와 하이픈만 남기고 모두 제거
+    const numbers = value.replace(/[^\d-]/g, '');
     
-    if (name === 'tel') {
-      const formattedValue = formatPhoneNumber(value);
-      setForm(prev => ({ ...prev, [name]: formattedValue }));
-      
-      if (errors.tel) {
-        setErrors(prev => ({ ...prev, tel: '' }));
-      }
-    } else {
-      setForm(prev => ({ ...prev, [name]: value }));
-      
-      if (name === 'email') {
-        setIsEmailChecked(false);
-        setIsEmailVerified(false);
-        if (errors.email) {
-          setErrors(prev => ({ ...prev, email: '' }));
-        }
-      }
-      
-      if (name === 'verificationCode' && errors.verificationCode) {
-        setErrors(prev => ({ ...prev, verificationCode: '' }));
-      }
+    // 하이픈 제거
+    const cleanNumbers = numbers.replace(/-/g, '');
+    
+    // 11자리 숫자인 경우에만 포맷팅
+    if (cleanNumbers.length === 11) {
+      return `${cleanNumbers.slice(0, 3)}-${cleanNumbers.slice(3, 7)}-${cleanNumbers.slice(7)}`;
     }
+    
+    return numbers;
   };
 
   const checkEmailDuplicate = async () => {
@@ -87,62 +78,22 @@ export default function AdditionalInfo() {
     }
 
     try {
-      const response = await client.post('/auth/check-email', { email: form.email });
-      if (response.data.available) {
-        setIsEmailChecked(true);
-        setErrors(prev => ({ ...prev, email: '' }));
-        alert('사용 가능한 이메일입니다.');
-      } else {
-        setErrors(prev => ({ ...prev, email: '이미 사용 중인 이메일입니다.' }));
-      }
-    } catch (error) {
-      console.error('이메일 중복 확인 실패:', error);
-      setErrors(prev => ({ ...prev, email: '이메일 중복 확인에 실패했습니다.' }));
-    }
-  };
-
-  const sendVerificationCode = async () => {
-    if (!isEmailChecked) {
-      setErrors(prev => ({ ...prev, email: '이메일 중복 확인을 먼저 해주세요.' }));
-      return;
-    }
-
-    setIsSendingCode(true);
-    try {
-      await client.post('/auth/send-verification', { email: form.email });
-      setCountdown(300); // 5분
-      alert('인증코드가 발송되었습니다.');
-    } catch (error) {
-      console.error('인증코드 발송 실패:', error);
-      alert('인증코드 발송에 실패했습니다.');
-    } finally {
-      setIsSendingCode(false);
-    }
-  };
-
-  const verifyCode = async () => {
-    if (!form.verificationCode || form.verificationCode.length !== 6) {
-      setErrors(prev => ({ ...prev, verificationCode: '6자리 인증코드를 입력해주세요.' }));
-      return;
-    }
-
-    try {
-      const response = await client.post('/auth/verify-code', {
-        email: form.email,
-        code: form.verificationCode
-      });
+      console.log('이메일 중복 확인 요청:', form.email);
+      const response = await client.get(`/mail/is-email-exist?email=${form.email}`);
+      console.log('이메일 중복 확인 응답:', response.data);
       
-      if (response.data.verified) {
-        setIsEmailVerified(true);
-        setCountdown(0);
-        setErrors(prev => ({ ...prev, verificationCode: '' }));
-        alert('이메일 인증이 완료되었습니다.');
+      if (response.data.exists) {
+        setErrors(prev => ({ ...prev, email: '이미 사용 중인 이메일입니다.' }));
+        setIsEmailChecked(false);
       } else {
-        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 올바르지 않습니다.' }));
+        setErrors(prev => ({ ...prev, email: '' }));
+        setIsEmailChecked(true);
+        alert('사용 가능한 이메일입니다.');
       }
-    } catch (error) {
-      console.error('인증코드 확인 실패:', error);
-      setErrors(prev => ({ ...prev, verificationCode: '인증코드 확인에 실패했습니다.' }));
+    } catch (err) {
+      console.error('이메일 중복 확인 에러:', err.response?.data || err);
+      setErrors(prev => ({ ...prev, email: '이메일 중복 확인 중 오류가 발생했습니다.' }));
+      setIsEmailChecked(false);
     }
   };
 
@@ -151,6 +102,96 @@ export default function AdditionalInfo() {
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
+
+  const sendVerificationCode = async () => {
+    if (!isEmailChecked) {
+      setErrors(prev => ({ ...prev, email: '이메일 중복 확인이 필요합니다.' }));
+      return;
+    }
+
+    setIsSendingCode(true);
+    try {
+      console.log('인증코드 발송 요청:', form.email);
+      const response = await client.post(`/mail/six?email=${encodeURIComponent(form.email)}`);
+      console.log('인증코드 발송 응답:', response.data);
+      
+      setCountdown(1800); // 30분 = 1800초
+      alert('인증코드가 이메일로 발송되었습니다.');
+    } catch (err) {
+      console.error('인증코드 발송 에러:', err.response?.data || err);
+      if (err.response?.data?.message) {
+        setErrors(prev => ({ ...prev, email: err.response.data.message }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '인증코드 발송 중 오류가 발생했습니다.' }));
+      }
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    if (!form.verificationCode) {
+      setErrors(prev => ({ ...prev, verificationCode: '인증코드를 입력해주세요.' }));
+      return;
+    }
+
+    try {
+      console.log('인증코드 검증 요청:', form.verificationCode);
+      const response = await client.post('/mail/verifications', {
+        email: form.email,
+        authCode: form.verificationCode
+      });
+      console.log('인증코드 검증 응답:', response.data);
+      
+      if (response.data) {
+        setIsEmailVerified(true);
+        setCountdown(0);
+        alert('이메일 인증이 완료되었습니다.');
+      } else {
+        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 일치하지 않습니다.' }));
+      }
+    } catch (err) {
+      console.error('인증코드 검증 에러:', err.response?.data || err);
+      if (err.response?.data?.message) {
+        setErrors(prev => ({ ...prev, verificationCode: err.response.data.message }));
+      } else {
+        setErrors(prev => ({ ...prev, verificationCode: '인증코드가 일치하지 않습니다.' }));
+      }
+    }
+  };
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    
+    if (name === 'tel') {
+      // 전화번호 입력 시 자동 포맷팅
+      const formattedValue = formatPhoneNumber(value);
+      setForm(prev => ({ ...prev, [name]: formattedValue }));
+      
+      // 전화번호 유효성 검사
+      if (!formattedValue) {
+        setErrors(prev => ({ ...prev, tel: '전화번호를 입력해주세요.' }));
+      } else if (!validatePhone(formattedValue)) {
+        setErrors(prev => ({ ...prev, tel: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)' }));
+      } else {
+        setErrors(prev => ({ ...prev, tel: '' }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+      
+      // 이메일이 변경되면 중복 확인 상태 초기화
+      if (name === 'email') {
+        setIsEmailChecked(false);
+        if (!value) {
+          setErrors(prev => ({ ...prev, email: '이메일을 입력해주세요.' }));
+        } else if (!validateEmail(value)) {
+          setErrors(prev => ({ ...prev, email: '올바른 이메일 형식이 아닙니다.' }));
+        } else {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      }
+    }
+  }
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -192,6 +233,7 @@ export default function AdditionalInfo() {
       console.log('회원가입 응답:', res.data);
       
       if(res.data.status === 'ACTIVE') {
+        // 사용자 정보 캐시 무효화 및 갱신
         await queryClient.invalidateQueries(['currentUser']);
         console.log('로그인 성공, 메인 페이지로 이동');
         navigate('/main')
@@ -243,8 +285,7 @@ export default function AdditionalInfo() {
             alt="전화번호" 
             className={styles.labelIcon} />
           <input
-            className={styles.input}
-            style={{borderColor: errors.tel ? '#ff4d4f' : '#ccc'}}
+            className={`${styles.input} ${errors.tel ? styles.error : ''}`}
             name="tel"
             value={form.tel}
             placeholder="전화번호를 입력해주세요. (예: 010-1234-5678)"
@@ -261,8 +302,7 @@ export default function AdditionalInfo() {
             className={styles.labelIcon} />
           <div className={styles.emailContainer}>
             <input
-              className={styles.input}
-              style={{borderColor: errors.email ? '#ff4d4f' : '#ccc'}}
+              className={`${styles.input} ${errors.email ? styles.error : ''}`}
               name="email"
               type="email"
               value={form.email}
@@ -286,8 +326,7 @@ export default function AdditionalInfo() {
           <div className={styles.verificationContainer}>
             <div className={styles.verificationInputContainer}>
               <input
-                className={styles.input}
-                style={{borderColor: errors.verificationCode ? '#ff4d4f' : '#ccc'}}
+                className={`${styles.input} ${errors.verificationCode ? styles.error : ''}`}
                 name="verificationCode"
                 value={form.verificationCode}
                 placeholder="인증코드 6자리"
@@ -318,7 +357,7 @@ export default function AdditionalInfo() {
                   </span>
                 </div>
                 {errors.verificationCode && (
-                  <div className={styles.errorText} style={{marginLeft: 0, marginTop: 8}}>{errors.verificationCode}</div>
+                  <div className={`${styles.errorText} ${styles.noMargin}`}>{errors.verificationCode}</div>
                 )}
               </>
             )}
