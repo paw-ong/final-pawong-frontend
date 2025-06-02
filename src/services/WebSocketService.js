@@ -80,7 +80,6 @@ class WebSocketService {
     };
 
     return new Promise((resolve, reject) => {
-      this.stompClient.activate();
       
       this.stompClient.onConnect = (frame) => {
         console.log('[STOMP] Connected successfully:', frame);
@@ -93,6 +92,9 @@ class WebSocketService {
         this.connected = false;
         reject(frame);
       };
+
+      this.stompClient.activate();
+
     });
   }
 
