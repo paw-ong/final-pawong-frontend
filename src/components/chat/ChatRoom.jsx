@@ -20,6 +20,7 @@ const ChatRoom = () => {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
   const [animalData, setAnimalData] = useState(null);
+  const [isChatActive, setIsChatActive] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,6 +42,23 @@ const ChatRoom = () => {
     };
 
     checkChatRoomAccess();
+  }, [roomId, navigate]);
+
+  // 채팅방 상태 확인
+  useEffect(() => {
+    const checkChatRoomStatus = async () => {
+      try {
+        const response = await client.get(`/chat/rooms/${roomId}/status`);
+        setIsChatActive(response.data.active);
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setIsChatActive(false);
+        }
+        navigate('/chatrooms');
+      }
+    };
+
+    checkChatRoomStatus();
   }, [roomId, navigate]);
 
   useEffect(() => {
@@ -285,12 +303,18 @@ const ChatRoom = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="메시지를 입력하세요..."
+            placeholder={isChatActive ? "메시지를 입력하세요..." : "비활성화된 채팅방입니다"}
             className={styles.messageInput}
+            disabled={!isChatActive}
+            style={{ 
+              backgroundColor: !isChatActive ? '#f0f0f0' : 'white',
+              cursor: !isChatActive ? 'not-allowed' : 'text'
+            }}
           />
           <button 
             type="submit" 
             className={styles.sendButton}
+            disabled={!isChatActive}
           >
             전송
           </button>
