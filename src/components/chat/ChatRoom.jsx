@@ -281,9 +281,22 @@ const ChatRoom = () => {
             alt="공고 이미지"
             className={styles.headerAnimalImage}
           />
-          <span className={styles.headerNickname}>
-            {getOtherNickname(animalData, user, messages)}
-          </span>
+          <div className={styles.headerInfo}>
+            <span className={styles.headerNickname}>
+              {getOtherNickname(animalData, user, messages)}
+            </span>
+            {chatRoomInfo && (
+              <span className={styles.headerSubInfo}>
+                {chatRoomInfo.lostPostInfo.kindNm} | {chatRoomInfo.lostPostInfo.location}
+              </span>
+            )}
+          </div>
+          <button 
+            className={styles.goToPostButton}
+            onClick={() => navigate(`/lostAnimal/detail/${chatRoomInfo?.lostPostInfo.postId}`)}
+          >
+            공고로 이동
+          </button>
         </div>
         
         <div className={styles.messagesContainer}>
