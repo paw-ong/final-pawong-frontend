@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import './AdoptionDetail.css';
 import userImage from '../../assets/images/user.jpg'
 import likeImg from '../../assets/images/like/like.png';
 import unlikeImg from '../../assets/images/like/unlike.png';
 import client from "../../api/client";
+import { AuthContext } from '../../contexts/AuthContext';
 
 function AdoptionDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isLoggedIn, handleShowAuthModal } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -36,24 +39,22 @@ function AdoptionDetail() {
 
   // 찜 상태 확인
   useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    
-    if (userToken && id) {
-      client.get(`/users/favorites/${id}/status`)
+    if (isLoggedIn && id) {
+      client.get(`/users/favorites/${id}/status`, {
+        headers: {
+          'X-Skip-Auth-Error': 'true'
+        }
+      })
         .then(response => {
           setIsFavorite(response.data.isInFavorites);
         })
         .catch(error => console.error('찜 상태 확인 실패: ', error));
     }
-  }, [id]);
+  }, [id, isLoggedIn]);
 
   const handleFavoriteClick = () => {
-    const userToken = localStorage.getItem('userToken');
-    
-    if (!userToken) {
-      setModalMsg('로그인이 필요한 서비스입니다!');
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 1500);
+    if (!isLoggedIn) {
+      handleShowAuthModal();
       return;
     }
     

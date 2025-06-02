@@ -7,7 +7,7 @@ import LostBookmarksSlider from '../../components/mypage/LostBookmarksSlider'
 import defaultUserImage from '../../assets/images/user.jpg'
 
 export default function MyPage() {
-  const { user, logout } = useContext(AuthContext)
+  const { user, handleLogout } = useContext(AuthContext);
 
   return (
     <div style={styles.myPageContainer}>
@@ -29,7 +29,7 @@ export default function MyPage() {
           <p style={styles.profileInfo}><strong>전화번호:</strong> {user?.tel || '-'}</p>
           
           <div style={styles.logoutBtnContainer}>
-            <button style={styles.logoutBtn} onClick={logout}>
+            <button style={styles.logoutBtn} onClick={handleLogout}>
               로그아웃
             </button>
           </div>

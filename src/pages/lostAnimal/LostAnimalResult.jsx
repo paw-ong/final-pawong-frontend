@@ -48,7 +48,6 @@ const LostAnimalResultList = () => {
             setError(errorMessage);
             
             if (error.response?.status === 401 || error.response?.status === 404) {
-                localStorage.removeItem('token');
                 navigate('/login');
             }
         } finally {

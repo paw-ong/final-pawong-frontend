@@ -1,45 +1,42 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {Link} from 'react-router-dom';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import AuthRequiredModal from '../../auth/AuthRequiredModal';
 import './PetCard.css';
 import likeImg from '../../../assets/images/like/like.png';
 import unlikeImg from '../../../assets/images/like/unlike.png';
 import PropTypes from 'prop-types';
 import client from "../../../api/client";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨
 
 function PetCard({ pet, type }) {
   const [isFavorite, setIsFavorite] = useState(false);
-
-  // // 디버깅을 위해 pet 객체를 콘솔에 출력
-  // useEffect(() => {
-  //   // console.log('PetCard에 전달된 pet:', pet);
-  // }, [pet]);
+  const { data: user } = useCurrentUser();
+  const isLoggedIn = !!user;
+  const { handleShowAuthModal } = useContext(AuthContext);
 
   useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    
-    // 로그인 상태에서만 찜 상태 확인
-    if (userToken && pet.id) {
-      // 초기 찜 상태 확인 API 호출
-      // console.log(`찜 상태 확인 API 호출: /api/users/favorites/${pet.id}/status`);
-      client.get(`/users/favorites/${pet.id}/status`)
+    // 로그인 상태에서만 초기 찜 상태 확인 API 호출
+    if (isLoggedIn) {
+      client.get(`/users/favorites/${pet.id}/status`, {
+        headers: {
+          'X-Skip-Auth-Error': 'true'
+        }
+      })
       .then(response => {
-        // console.log('찜 상태 응답:', response);
         setIsFavorite(response.data.isInFavorites);
       })
       .catch(error => console.error('찜 상태 확인 실패: ', error));
     }
-  }, [pet.id]);
+  }, [pet.id, isLoggedIn]);
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();
-    
-    const userToken = localStorage.getItem('userToken');
-    
-    if (!userToken) {
-      alert('로그인이 필요한 서비스입니다!');
+    if (!isLoggedIn) {
+      handleShowAuthModal();
       return;
     }
     

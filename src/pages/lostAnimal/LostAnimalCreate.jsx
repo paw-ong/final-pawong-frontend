@@ -146,7 +146,8 @@ export default function LostAnimalCreate() {
           fileName: imageFile.name,
           contentType: imageFile.type,
           expiresInMinutes: 10,
-          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf("."))
+          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf(".")),
+          directoryName: "lost-post"
         });
         await fetch(presign.url, {
           method: "PUT",

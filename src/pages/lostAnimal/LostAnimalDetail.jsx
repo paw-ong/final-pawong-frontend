@@ -22,14 +22,11 @@ function LostAnimalDetail() {
   const hasCalledApi = useRef(false);
   const { user, isLoggedIn } = useContext(AuthContext);
 
-  // localStorage의 userInfo에서 userId 가져오기
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const { userId } = JSON.parse(userInfo);
-      setCurrentUserId(userId);
+    if (user) {
+      setCurrentUserId(user.userId);
     }
-  }, []);
+  }, [user]);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
