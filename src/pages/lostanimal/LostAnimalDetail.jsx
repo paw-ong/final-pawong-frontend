@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
-import "./LostAnimal.css";
+import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import styles from './LostAnimalDetail.module.css';
 

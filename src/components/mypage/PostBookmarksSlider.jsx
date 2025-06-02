@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import Slider from 'react-slick';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 import LostAnimalCard from '../pet/card/LostAnimalCard';
 import client from '../../api/client';
-import './PostBookmarksSlider.css';
+import './FavoritesSlider.css';
 
-// Slick 스타일 임포트
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+// 화살표 이미지 임포트
+import arrowLeft from '../../assets/images/icons/arrow-left.svg';
+import arrowRight from '../../assets/images/icons/arrow-right.svg';
 
-function PostBookmarksSlider() {
+// Swiper 스타일 임포트
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+function LostBookmarksSlider() {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchBookmarks = async () => {
-      const userToken = localStorage.getItem('userToken');
-      
-      if (!userToken) {
+      if (!isLoggedIn) {
         setLoading(false);
         return;
       }
@@ -35,49 +41,13 @@ function PostBookmarksSlider() {
     fetchBookmarks();
   }, []);
 
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    initialSlide: 0,
-    variableWidth: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          variableWidth: true,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          variableWidth: true,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          variableWidth: true,
-        },
-      },
-    ],
-  };
-
   if (loading) {
-    return <div className="post-bookmarks-loading">북마크를 불러오는 중...</div>;
+    return <div className="favorites-loading">북마크를 불러오는 중...</div>;
   }
 
   if (!Array.isArray(bookmarks) || bookmarks.length === 0) {
     return (
-      <div className="post-bookmarks-empty">
+      <div className="favorites-empty">
         <p>북마크한 실종/발견 게시글이 없습니다.</p>
         <p>마음에 드는 실종/발견 게시글을 북마크해보세요!</p>
       </div>
@@ -85,19 +55,57 @@ function PostBookmarksSlider() {
   }
 
   return (
-    <div className="post-bookmarks-slider-container">
-      <h2 className="post-bookmarks-title">북마크한 실종/발견 게시글</h2>
-      <div className="slider-wrapper">
-        <Slider {...settings}>
-          {bookmarks.map((post) => (
-            <div key={post.postId} className="slider-item" style={{ width: 220 }}>
-              <LostAnimalCard post={post} />
-            </div>
+    <div className="favorites-slider-container">
+      <h2 className="favorites-title">북마크한 실종/발견 게시글</h2>
+      
+      <div className="favorites-navigation-container">
+        <Swiper
+          modules={[Navigation, Pagination]}
+          spaceBetween={5}
+          slidesPerView={1}
+          navigation={{
+            prevEl: '.swiper-button-prev-custom',
+            nextEl: '.swiper-button-next-custom',
+          }}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            500: {
+              slidesPerView: 1,
+              spaceBetween: 5,
+            },
+            700: {
+              slidesPerView: 2,
+              spaceBetween: 10,
+            },
+            900: {
+              slidesPerView: 3,
+              spaceBetween: 10,
+            },
+            1200: {
+              slidesPerView: 4,
+              spaceBetween: 10,
+            },
+          }}
+          className="favorites-swiper"
+        >
+          {bookmarks.map(post => (
+            <SwiperSlide key={post.postId}>
+              <div className="favorites-slide">
+                <LostAnimalCard post={post} />
+              </div>
+            </SwiperSlide>
           ))}
-        </Slider>
+          
+          <div className="swiper-button-prev-custom">
+            <img src={arrowLeft} alt="이전" />
+          </div>
+          <div className="swiper-button-next-custom">
+            <img src={arrowRight} alt="다음" />
+          </div>
+        </Swiper>
       </div>
     </div>
   );
 }
 
-export default PostBookmarksSlider; 
+export default LostBookmarksSlider; 
