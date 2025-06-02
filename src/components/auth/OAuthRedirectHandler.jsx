@@ -5,7 +5,6 @@ import { useQueryClient } from '@tanstack/react-query';
 function OAuthRedirectHandler() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
     const queryClient = useQueryClient();
   
     useEffect(() => {
