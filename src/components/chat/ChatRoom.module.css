@@ -336,6 +336,7 @@
   text-align: left;
   font-size: 1rem;
   cursor: pointer;
+  color: #000000;
 }
 
 .modalButton:hover {
@@ -352,7 +353,7 @@
 .confirmButton {
   padding: 0.5rem 1rem;
   background-color: #3581B8;
-  color: white;
+  color: #000000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -361,6 +362,7 @@
 .cancelButton {
   padding: 0.5rem 1rem;
   background-color: #f5f5f5;
+  color: #000000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -387,7 +389,7 @@
   margin: 0 auto;
   padding: 0.8rem 2rem;
   background-color: #3581B8;
-  color: white;
+  color: #000000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
