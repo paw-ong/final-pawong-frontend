@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import PetCard from '../pet/card/PetCard';
+import LostAnimalCard from '../pet/card/LostAnimalCard';
 import client from '../../api/client';
 import './FavoritesSlider.css';
 
@@ -15,67 +15,49 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-function FavoritesSlider() {
-  const [favorites, setFavorites] = useState([]);
+function LostBookmarksSlider() {
+  const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    const fetchBookmarks = async () => {
       if (!isLoggedIn) {
         setLoading(false);
         return;
       }
 
       try {
-        const { data } = await client.get('/users/me/favorites')
-        // console.log('찜 목록 응답:', data);
-        setFavorites(data.content || []);
+        const { data } = await client.get('/users/me/lost-bookmarks');
+        setBookmarks(data.content || []);
       } catch (error) {
-        console.error('찜 목록 로딩 중 오류 발생:', error);
+        console.error('북마크한 실종/발견 게시글 로딩 중 오류 발생:', error);
+        setBookmarks([]); // 에러 발생 시 빈 배열로 설정
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFavorites();
+    fetchBookmarks();
   }, []);
 
-  // PetCard 형식에 맞게 데이터 변환
-  const formatPetData = (item) => {
-    const adoptionCard = item.adoptionCard;
-    const currentYear = new Date().getFullYear();
-    const ageInYears = adoptionCard.age ? currentYear - adoptionCard.age : null;
-    const ageString = ageInYears ? `${ageInYears}살` : '나이 미상';
-
-    return {
-      id: adoptionCard.adoptionId,
-      imgUrl: adoptionCard.popfile1,
-      kindNm: adoptionCard.kindNm || '기타',
-      sexCd: adoptionCard.sexCd === 'M' ? '수컷' : adoptionCard.sexCd === 'F' ? '암컷' : '미상',
-      age: ageString,
-      neuterYn: adoptionCard.neuterYn === 'Y' ? '중성화 O' : adoptionCard.neuterYn === 'N' ? '중성화 X' : '중성화 미상'
-    };
-  };
-
   if (loading) {
-    return <div className="favorites-loading">찜 목록을 불러오는 중...</div>;
+    return <div className="favorites-loading">북마크를 불러오는 중...</div>;
   }
 
-  if (favorites.length === 0) {
+  if (!Array.isArray(bookmarks) || bookmarks.length === 0) {
     return (
       <div className="favorites-empty">
-        <p>찜한 공고가 없습니다.</p>
-        <p>마음에 드는 공고를 찜해보세요!</p>
+        <p>북마크한 실종/발견 게시글이 없습니다.</p>
+        <p>마음에 드는 실종/발견 게시글을 북마크해보세요!</p>
       </div>
     );
   }
 
   return (
     <div className="favorites-slider-container">
-      <h2 className="favorites-title">내가 찜한 공고</h2>
+      <h2 className="favorites-title">북마크한 실종/발견 게시글</h2>
       
-      {/* 커스텀 네비게이션 버튼을 위한 이미지 요소 */}
       <div className="favorites-navigation-container">
         <Swiper
           modules={[Navigation, Pagination]}
@@ -106,19 +88,14 @@ function FavoritesSlider() {
           }}
           className="favorites-swiper"
         >
-          {favorites.map(pet => (
-            <SwiperSlide key={pet.adoptionCard.adoptionId}>
+          {bookmarks.map(post => (
+            <SwiperSlide key={post.postId}>
               <div className="favorites-slide">
-                <PetCard 
-                pet={formatPetData(pet)} 
-                type="adoptions" 
-                onRequireAuth={() => setShowAuthModal(true)}
-                />
+                <LostAnimalCard post={post} />
               </div>
             </SwiperSlide>
           ))}
           
-          {/* 커스텀 네비게이션 버튼 */}
           <div className="swiper-button-prev-custom">
             <img src={arrowLeft} alt="이전" />
           </div>
@@ -131,4 +108,4 @@ function FavoritesSlider() {
   );
 }
 
-export default FavoritesSlider; 
+export default LostBookmarksSlider; 

@@ -28,7 +28,7 @@
 
 /* 새 메시지 도착 강조 */
 .chat-room-item.new-message {
-  border-color: #3B82F6;  /* 파란색 */
+  border-color: var(--color-secondary);  /* 파란색 */
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .chat-room-kind {
-  color: #FF8A3D;
+  color: var(--color-primary);
   font-weight: 500;
   font-size: 14px;
 }

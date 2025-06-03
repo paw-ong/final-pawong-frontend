@@ -9,7 +9,7 @@
 .lost-animal-result-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 16px;
   justify-content: center;
   max-width: 1200px;
   margin: 0 auto;
@@ -38,18 +38,25 @@
 @media (max-width: 1200px) {
   .lost-animal-result-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 900px) {
   .lost-animal-result-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .lost-animal-result-container {
     padding-bottom: 30px;
+  }
+  
+  .lost-animal-result-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 

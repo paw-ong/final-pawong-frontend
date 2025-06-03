@@ -1,21 +1,23 @@
 .adoption-result-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
-  padding-bottom: 20px; /* Footer와의 간격 추가 */
+  box-sizing: border-box;
 }
 
 .adoption-result-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 224px);
   gap: 20px;
-  padding: 20px 0;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .adoption-result-item {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .adoption-result-loading {
@@ -39,30 +41,26 @@
 }
 
 /* 반응형 처리 */
-@media (max-width: 1400px) {
+@media (max-width: 1200px) {
   .adoption-result-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 224px);
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .adoption-result-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .adoption-result-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .adoption-result-container {
-    padding-bottom: 30px;
+    grid-template-columns: repeat(2, 224px);
   }
 }
 
 @media (max-width: 480px) {
+  .adoption-result-grid {
+    grid-template-columns: 224px;
+  }
+
   .adoption-result-container {
-    padding-bottom: 20px;
+    padding: 10px;
   }
 }
+
+

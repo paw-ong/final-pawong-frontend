@@ -8,7 +8,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  color: #3E3232;
+  color: var(--color-text);
 }
 
 .layout {
@@ -25,15 +25,15 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 0;
-  margin-bottom: 20px; /* Footer와의 간격 추가 */
+  margin-bottom: 20px;
 }
 
 .content-container {
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 10px;
   width: 100%;
-  padding-bottom: 40px; /* 하단 여백 추가 */
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 /* 모바일에서 간격 조정 */
@@ -43,7 +43,7 @@ html, body {
   }
 
   .content-container {
-    padding-bottom: 30px;
+    padding: 0 15px;
   }
 }
 
@@ -53,6 +53,6 @@ html, body {
   }
 
   .content-container {
-    padding-bottom: 20px;
+    padding: 0 10px;
   }
 }

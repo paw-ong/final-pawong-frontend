@@ -2,9 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import './AdoptionDetail.css';
 import userImage from '../../assets/images/user.jpg'
-import likeImg from '../../assets/images/like/like.png';
-import unlikeImg from '../../assets/images/like/unlike.png';
 import client from "../../api/client";
+import FavoriteButton from "../../components/common/FavoriteButton";
 import { AuthContext } from '../../contexts/AuthContext';
 
 function AdoptionDetail() {
@@ -21,8 +20,6 @@ function AdoptionDetail() {
     const fetchAdoptionData = async () => {
       try {
         const response = await client.get(`/adoptions/${id}`);
-        console.log(response); // 전체 응답 확인
-        console.log(response.data); // 실제 데이터 확인
         setAdoptionData(response.data);
       } catch (error) {
         console.error('Error fetching adoption data:', error);
@@ -37,7 +34,6 @@ function AdoptionDetail() {
     fetchAdoptionData();
   }, [id]);
 
-  // 찜 상태 확인
   useEffect(() => {
     if (isLoggedIn && id) {
       client.get(`/users/favorites/${id}/status`, {
@@ -96,27 +92,22 @@ function AdoptionDetail() {
 
   return (
     <div className="adoption-container-row">
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <p>{modalMsg}</p>
+          </div>
+        </div>
+      )}
       <div className="adoption-container">
         <div className="adoption-center-row">
           <div className="adoption-image-info-group">
             <div className="adoption-image-box">
               <img src={adoptionDetailDto.popfile2 || userImage} alt="이미지" />
-              <button 
-                className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+              <FavoriteButton 
+                isFavorite={isFavorite}
                 onClick={handleFavoriteClick}
-                data-is-favorite={isFavorite}
-              >
-                <img 
-                  src={isFavorite ? likeImg : unlikeImg}
-                  alt={isFavorite ? "찜 해제" : "찜 하기"}
-                  className="favorite-icon"
-                  style={{ 
-                    width: isFavorite ? '20px' : '18px',
-                    height: isFavorite ? '20px' : '18px',
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-              </button>
+              />
             </div>
             <div className="adoption-info-box">
               <div className="shelter-info">
@@ -141,15 +132,27 @@ function AdoptionDetail() {
                   <span className="shelter-info-value">
                     {adoptionDetailDto.neuterYn === 'Y' ? (
                       <img 
-                        src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" 
+                        src="https://cdn-icons-png.flaticon.com/512/7718/7718410.png"
                         alt="완료" 
-                        style={{width: '18px', height: '18px'}}
+                        style={{
+                          width: '18px', 
+                          height: '18px',
+                          filter: 'invert(45%) sepia(75%) saturate(1250%) hue-rotate(325deg) brightness(101%) contrast(98%)',
+                          verticalAlign: 'middle',
+                          marginTop: '-2px'
+                        }}
                       />
                     ) : adoptionDetailDto.neuterYn === 'N' ? (
                       <img 
-                        src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" 
+                        src="https://cdn-icons-png.flaticon.com/512/657/657059.png"
                         alt="미완료" 
-                        style={{width: '18px', height: '18px'}}
+                        style={{
+                          width: '18px', 
+                          height: '18px',
+                          filter: 'invert(45%) sepia(75%) saturate(1250%) hue-rotate(325deg) brightness(101%) contrast(98%)',
+                          verticalAlign: 'middle',
+                          marginTop: '-2px'
+                        }}
                       />
                     ) : (
                       <span>확인 불가</span>
@@ -225,16 +228,11 @@ function AdoptionDetail() {
               <span className="shelter-info-value">{displayValue(shelterDetailDto.careAddr)}</span>
             </div>
             <div className="shelter-info-notice">
-            입양 안내 및 기타 문의 사항은 유선 연락 바랍니다
+              입양 안내 및 기타 문의 사항은 유선 연락 바랍니다
             </div>
           </div>
         </div>
       </div>
-      {showModal && (
-        <div className="adoption-modal">
-          {modalMsg}
-        </div>
-      )}
     </div>
   );
 }

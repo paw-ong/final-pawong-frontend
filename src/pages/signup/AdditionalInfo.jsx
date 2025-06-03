@@ -8,6 +8,7 @@ import placeholderIcon from '../../assets/images/info/placeholder.png'
 import phoneIcon from '../../assets/images/info/phone.png'
 import emailIcon from '../../assets/images/info/email.svg'
 import { useQueryClient } from '@tanstack/react-query'
+import styles from './AdditionalInfo.module.css'
 
 export default function AdditionalInfo() {
   const [form, setForm] = useState({ nickname: '', region: '', tel: '', email: '', verificationCode: '' })
@@ -247,16 +248,16 @@ export default function AdditionalInfo() {
   }
 
   return (
-    <div style={styles.container} className="additional-info-container">
-      <h2 style={styles.title}>추가 정보 입력</h2>
-      <form style={styles.form} onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
+    <div className={styles.container}>
+      <h2 className={styles.title}>추가 정보 입력</h2>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
           <img 
             src={nicknameIcon} 
             alt="닉네임" 
-            style={styles.labelIcon} />
+            className={styles.labelIcon} />
           <input
-            style={styles.input}
+            className={styles.input}
             name="nickname"
             value={form.nickname}
             placeholder="닉네임을 입력해주세요."
@@ -264,13 +265,13 @@ export default function AdditionalInfo() {
             required
           />
         </div>
-        <div style={styles.formGroup}>
+        <div className={styles.formGroup}>
           <img 
             src={placeholderIcon} 
             alt="지역" 
-            style={styles.labelIcon} />
+            className={styles.labelIcon} />
           <input
-            style={styles.input}
+            className={styles.input}
             name="region"
             value={form.region}
             placeholder="지역을 입력해주세요."
@@ -278,13 +279,13 @@ export default function AdditionalInfo() {
             required
           />
         </div>
-        <div style={styles.formGroup}>
+        <div className={styles.formGroup}>
           <img 
             src={phoneIcon}
             alt="전화번호" 
-            style={styles.labelIcon} />
+            className={styles.labelIcon} />
           <input
-            style={{...styles.input, borderColor: errors.tel ? '#ff4d4f' : '#ccc'}}
+            className={`${styles.input} ${errors.tel ? styles.error : ''}`}
             name="tel"
             value={form.tel}
             placeholder="전화번호를 입력해주세요. (예: 010-1234-5678)"
@@ -292,16 +293,16 @@ export default function AdditionalInfo() {
             required
           />
         </div>
-        {errors.tel && <div style={styles.errorText}>{errors.tel}</div>}
+        {errors.tel && <div className={styles.errorText}>{errors.tel}</div>}
 
-        <div style={styles.formGroup}>
+        <div className={styles.formGroup}>
           <img 
             src={emailIcon}
             alt="이메일" 
-            style={styles.labelIcon} />
-          <div style={styles.emailContainer}>
+            className={styles.labelIcon} />
+          <div className={styles.emailContainer}>
             <input
-              style={{...styles.input, borderColor: errors.email ? '#ff4d4f' : '#ccc'}}
+              className={`${styles.input} ${errors.email ? styles.error : ''}`}
               name="email"
               type="email"
               value={form.email}
@@ -312,20 +313,20 @@ export default function AdditionalInfo() {
             <button
               type="button"
               onClick={checkEmailDuplicate}
-              style={styles.checkButton}
+              className={styles.checkButton}
               disabled={!form.email || !validateEmail(form.email)}
             >
               중복확인
             </button>
           </div>
         </div>
-        {errors.email && <div style={styles.errorText}>{errors.email}</div>}
+        {errors.email && <div className={styles.errorText}>{errors.email}</div>}
 
         {isEmailChecked && !isEmailVerified && (
-          <div style={styles.verificationContainer}>
-            <div style={styles.verificationInputContainer}>
+          <div className={styles.verificationContainer}>
+            <div className={styles.verificationInputContainer}>
               <input
-                style={{...styles.input, borderColor: errors.verificationCode ? '#ff4d4f' : '#ccc'}}
+                className={`${styles.input} ${errors.verificationCode ? styles.error : ''}`}
                 name="verificationCode"
                 value={form.verificationCode}
                 placeholder="인증코드 6자리"
@@ -335,7 +336,7 @@ export default function AdditionalInfo() {
               <button
                 type="button"
                 onClick={sendVerificationCode}
-                style={styles.checkButton}
+                className={styles.checkButton}
                 disabled={isSendingCode || countdown > 0}
               >
                 {countdown > 0 ? `재발송 (${formatTime(countdown)})` : '인증코드 발송'}
@@ -343,141 +344,30 @@ export default function AdditionalInfo() {
             </div>
             {countdown > 0 && (
               <>
-                <div style={styles.verificationActions}>
+                <div className={styles.verificationActions}>
                   <button
                     type="button"
                     onClick={verifyCode}
-                    style={styles.verifyButton}
+                    className={styles.verifyButton}
                   >
                     인증하기
                   </button>
-                  <span style={styles.countdownText}>
+                  <span className={styles.countdownText}>
                     남은 시간: {formatTime(countdown)}
                   </span>
                 </div>
                 {errors.verificationCode && (
-                  <div style={{...styles.errorText, marginLeft: 0, marginTop: 8}}>{errors.verificationCode}</div>
+                  <div className={`${styles.errorText} ${styles.noMargin}`}>{errors.verificationCode}</div>
                 )}
               </>
             )}
           </div>
         )}
 
-        <button style={styles.button} type="submit">
+        <button className={styles.button} type="submit">
           완료
         </button>
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-  },
-  title: {
-    marginBottom: '20px',
-    fontSize: '1.5rem',
-    color: '#3E3232',
-  },
-  form: {
-    width: '100%',
-    maxWidth: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  formGroup: {
-    display: 'flex',          // 가로 배치
-    alignItems: 'center',     // 수직 중앙 정렬
-    marginBottom: '15px',
-  },
-  label: {
-    width: '90px',            // 라벨 고정 너비 (원하는 만큼 조절)
-    marginRight: '10px',      // 라벨과 input 사이 간격
-    fontSize: '1rem',
-    color: '#3E3232',
-    marginBottom: 0,          // flex row 에서 아래 여백 제거
-  },
-  labelIcon: {
-    width: '25px',
-    height: '25px',
-    marginRight: '30px',
-  },
-  input: {
-    flex: 1,                  // 남은 공간 모두 차지
-    padding: '8px',
-    fontSize: '1rem',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    marginTop: '24px',
-    padding: '10px 20px',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  errorText: {
-    color: '#ff4d4f',
-    fontSize: '0.875rem',
-    marginTop: '-10px',
-    marginBottom: '10px',
-    marginLeft: '55px',
-  },
-  emailContainer: {
-    display: 'flex',
-    gap: '10px',
-    flex: 1,
-  },
-  checkButton: {
-    padding: '8px 16px',
-    fontSize: '0.875rem',
-    borderRadius: '4px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition: 'background-color 0.3s ease',
-    '&:disabled': {
-      backgroundColor: '#ccc',
-      cursor: 'not-allowed',
-    },
-  },
-  verificationContainer: {
-    marginLeft: '55px',
-    marginBottom: '15px',
-  },
-  verificationInputContainer: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '10px',
-  },
-  verificationActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  verifyButton: {
-    padding: '8px 16px',
-    fontSize: '0.875rem',
-    borderRadius: '4px',
-    backgroundColor: '#EAD8C0',
-    color: '#3E3232',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  countdownText: {
-    fontSize: '0.875rem',
-    color: '#666',
-  },
 }

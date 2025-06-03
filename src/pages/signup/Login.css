@@ -7,7 +7,7 @@
 
 .login-box {
   border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(167, 146, 119, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 30px;
   width: 100%;
   max-width: 400px;
@@ -15,7 +15,7 @@
 }
 
 .login-title {
-  color: #3E3232;
+  color: var(--color-text);
   margin-bottom: 23px;
   font-size: 1.5rem;
   white-space: nowrap;
@@ -24,6 +24,7 @@
 .kakao-login-link {
   display: inline-block;
   transition: transform 0.3s ease;
+  background-color: var(--color-white); 
 }
 
 .kakao-login-link:hover {

@@ -1,8 +1,8 @@
 .lost-animal-container {
-  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   min-height: calc(100vh - 200px);
+  background-color: var(--color-white);
 }
 
 .lost-animal-header {
@@ -13,13 +13,14 @@
 .lost-animal-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
+  color: var(--color-secondary);
   margin-bottom: 1rem;
 }
 
 .lost-animal-description {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--color-text);
+  opacity: 0.8;
   line-height: 1.6;
 }
 
@@ -28,6 +29,9 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   padding: 1rem;
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(53, 129, 184, 0.1);
 }
 
 @media (max-width: 768px) {

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
 import userImage from '../../assets/images/user.jpg';
-import LostAnimalCard from "../../components/pet/card/LostAnimalCard";
-import "./LostAnimal.css";
+import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
+import styles from './LostAnimalDetail.module.css';
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -33,6 +33,7 @@ function LostAnimalDetail() {
     let isMounted = true;
 
     const loadKakaoMap = () => {
+      console.log('Loading Kakao Map SDK...');
       if (!window.kakao || !window.kakao.maps) {
         const script = document.createElement('script');
         script.id = 'kakao-map-sdk';
@@ -40,21 +41,34 @@ function LostAnimalDetail() {
         script.async = true;
         
         script.onload = () => {
+          console.log('Kakao Map SDK script loaded');
           if (!isMounted) return;
           window.kakao.maps.load(() => {
+            console.log('Kakao Map SDK initialized');
             if (!isMounted) return;
-            if (data?.geoPoint && mapContainerRef.current) {
+            if (data?.lostGeoPoint && mapContainerRef.current) {
+              console.log('Initializing map with data:', data.lostGeoPoint);
               setTimeout(() => {
                 if (isMounted) {
                   initMap();
                 }
               }, 100);
+            } else {
+              console.log('Missing required data for map initialization:', {
+                hasGeoPoint: !!data?.lostGeoPoint,
+                hasMapContainer: !!mapContainerRef.current
+              });
             }
           });
         };
 
+        script.onerror = (error) => {
+          console.error('Failed to load Kakao Map SDK:', error);
+        };
+
         document.head.appendChild(script);
-      } else if (data?.geoPoint && mapContainerRef.current) {
+      } else if (data?.lostGeoPoint && mapContainerRef.current) {
+        console.log('Kakao Map SDK already loaded, initializing map');
         setTimeout(() => {
           if (isMounted) {
             initMap();
@@ -72,10 +86,21 @@ function LostAnimalDetail() {
 
   // 지도 초기화 함수
   const initMap = () => {
-    if (!window.kakao || !window.kakao.maps || !data?.geoPoint || !mapContainerRef.current) return;
+    console.log('Initializing map with data:', data);
+    if (!window.kakao || !window.kakao.maps || !data?.lostGeoPoint || !mapContainerRef.current) {
+      console.error('Failed to initialize map:', {
+        hasKakao: !!window.kakao,
+        hasMaps: !!(window.kakao && window.kakao.maps),
+        hasGeoPoint: !!data?.lostGeoPoint,
+        geoPoint: data?.lostGeoPoint,
+        hasMapContainer: !!mapContainerRef.current
+      });
+      return;
+    }
     
     try {
-      const { latitude, longitude } = data.geoPoint;
+      const { latitude, longitude } = data.lostGeoPoint;
+      console.log('Creating map with coordinates:', { latitude, longitude });
       
       const options = {
         center: new window.kakao.maps.LatLng(latitude, longitude),
@@ -100,14 +125,16 @@ function LostAnimalDetail() {
 
       // 인포윈도우를 마커 위에 표시
       infowindow.open(map, marker);
+      
+      console.log('Map initialized successfully');
     } catch (error) {
-      console.error('지도 초기화 중 오류 발생:', error);
+      console.error('Error initializing map:', error);
     }
   };
 
   // 데이터가 변경될 때마다 지도 업데이트
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && data?.geoPoint && mapContainerRef.current) {
+    if (window.kakao && window.kakao.maps && data?.lostGeoPoint && mapContainerRef.current) {
       setTimeout(() => {
         initMap();
       }, 100);
@@ -123,8 +150,10 @@ function LostAnimalDetail() {
         const response = await client.get(url);
         
         if (response && response.data && response.data.lostPostDetailDto) {
+          console.log('Received data:', response.data.lostPostDetailDto);
           setData(response.data.lostPostDetailDto);
         } else {
+          console.error('Invalid data format:', response);
           setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (error) {
@@ -296,126 +325,77 @@ function LostAnimalDetail() {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       backgroundColor: 'white'
     }}>
-      {currentUserId && data?.authorId && currentUserId === data.authorId && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
-          <button
-            onClick={handleEdit}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              transition: 'background-color 0.3s'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#4CAF50'}
-          >
-            수정
-          </button>
-          <button
-            onClick={handleDelete}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              transition: 'background-color 0.3s'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#da190b'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
-          >
-            삭제
-          </button>
-        </div>
-      )}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
           alt="실종 동물"
-          style={{ 
-            width: 400, 
-            height: 400, 
-            objectFit: 'cover', 
-            borderRadius: 12,
-            border: '1px solid #eee'
-          }}
+          className="lost-animal-detail-image"
           onError={(e) => {
-            e.target.onerror = null; // Prevent infinite loop
+            e.target.onerror = null;
             e.target.src = userImage;
           }}
         />
       </div>
-      <table style={{ 
-        width: '100%', 
-        borderCollapse: 'collapse', 
-        marginBottom: 32,
-        tableLayout: 'fixed'
-      }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 신고자 정보</th>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 실종 신고자 정보</th>
             <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
-          <tr>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>신고자</td>
-            <td style={{ width: '25%', padding: 12 }}>{author || '-'}</td>
-            <td style={{ width: '25%', fontWeight: 600, padding: 12 }}>실종 일자</td>
-            <td style={{ width: '25%', padding: 12 }}>{date || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">신고자</td>
+            <td>{author || '-'}</td>
+            <td className="lost-animal-detail-label">실종 일자</td>
+            <td>{date || '-'}</td>
           </tr>
-          <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 장소</th>
+          <tr className="lost-animal-detail-header">
+            <th colSpan={4}>🐾  실종 장소</th>
+          </tr>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">실종 장소</td>
+            <td colSpan={3}>{location || '-'}</td>
           </tr>
           <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>실종 장소</td>
-            <td colSpan={3} style={{ padding: 12 }}>{location || '-'}</td>
-          </tr>
-          <tr>
-            <td colSpan={4} style={{ padding: 12 }}>
+            <td colSpan={4}>
               <div 
                 ref={mapContainerRef} 
-                style={{ 
-                  width: '100%', 
-                  height: '300px',
+                className="lost-animal-detail-map"
+                style={{
+                  width: '100%',
+                  height: '400px',
+                  marginTop: '10px',
+                  marginBottom: '10px',
+                  border: '1px solid #ddd',
                   borderRadius: '8px',
-                  border: '1px solid #eee'
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundColor: '#f8f8f8'
                 }}
               />
             </td>
           </tr>
-          <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 실종 동물 정보</th>
+          <tr className="lost-animal-detail-header">
+            <th colSpan={4}>🐾  실종 동물 정보</th>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>동물 종류</td>
-            <td style={{ padding: 12 }}>{upKindNm || '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>품종</td>
-            <td style={{ padding: 12 }}>{kindNm || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">품종</td>
+            <td>{upKindNm} {kindNm || '-'}</td>
+            <td className="lost-animal-detail-label">색상</td>
+            <td>{color || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>색상</td>
-            <td style={{ padding: 12 }}>{color || '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>성별</td>
-            <td style={{ padding: 12 }}>{sexText}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">성별</td>
+            <td>{sexText}</td>
+            <td className="lost-animal-detail-label">나이</td>
+            <td>{age || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>나이</td>
-            <td style={{ padding: 12 }}>{age ? `${age}살` : '-'}</td>
-            <td style={{ fontWeight: 600, padding: 12 }}>RFID 번호</td>
-            <td style={{ padding: 12 }}>{rfidCd || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">특징</td>
+            <td colSpan={3}>{specialMark || '-'}</td>
           </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>특징</td>
-            <td colSpan={3} style={{ padding: 12 }}>{specialMark || '-'}</td>
-          </tr>
-          <tr>
-            <td style={{ fontWeight: 600, padding: 12 }}>추가 설명</td>
-            <td colSpan={3} style={{ padding: 12 }}>{content || '-'}</td>
+          <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">RFID</td>
+            <td colSpan={3}>{rfidCd || '-'}</td>
           </tr>
           <tr style={{ background: '#f7f7f7' }}>
             <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 유사 동물</th>
@@ -479,32 +459,14 @@ function LostAnimalDetail() {
         {isLoggedIn && user?.userId === data.authorId ? (
           <button
             onClick={handleChatButtonClick}
-            style={{
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '12px 24px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
+            className={styles.chatButton}
           >
             요청된 채팅으로 이동
           </button>
         ) : (
           <button
             onClick={handleChatButtonClick}
-            style={{
-              backgroundColor: '#FF8A3D',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '12px 24px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
+            className={styles.chatButton}
           >
             채팅하기
           </button>

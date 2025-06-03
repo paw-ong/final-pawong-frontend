@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #3E3232;
+}
+
+.form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.label {
+  width: 90px;
+  margin-right: 10px;
+  font-size: 1rem;
+  color: #3E3232;
+  margin-bottom: 0;
+}
+
+.labelIcon {
+  width: 25px;
+  height: 25px;
+  margin-right: 30px;
+}
+
+.input {
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.input.error {
+  border-color: #ff4d4f;
+}
+
+.button {
+  margin-top: 24px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: var(--color-accent);
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #ff4d4f;
+  font-size: 0.875rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  margin-left: 55px;
+}
+
+.errorText.noMargin {
+  margin-left: 0;
+  margin-top: 8px;
+}
+
+.emailContainer {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.checkButton {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.checkButton:hover {
+  background-color: #2B6CB0;
+}
+
+.checkButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.verificationContainer {
+  margin-left: 55px;
+  margin-bottom: 15px;
+}
+
+.verificationInputContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.verificationActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.verifyButton {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.countdownText {
+  font-size: 0.875rem;
+  color: #666;
+} 

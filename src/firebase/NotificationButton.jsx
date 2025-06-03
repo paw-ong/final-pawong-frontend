@@ -17,7 +17,8 @@ const NotificationButton = () => {
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    clearAllNotifications
+    clearAllNotifications,
+    setFcmToken,
   } = useContext(NotificationContext);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -27,8 +28,36 @@ const NotificationButton = () => {
 
   // 컴포넌트 마운트 시 권한 상태 확인
   useEffect(() => {
-    setPermissionStatus(getNotificationPermissionStatus());
-  }, []);
+    const checkAndRequestToken = async () => {
+      const currentStatus = getNotificationPermissionStatus();
+      const existingToken = localStorage.getItem('fcm_token');
+      console.log('현재 알림 권한 상태:', currentStatus);
+      
+      if (currentStatus === 'granted') {
+        if (existingToken) {
+          console.log('기존 FCM 토큰 발견!');
+          setFcmToken(existingToken);
+        } else {
+          console.log('FCM 토큰 재요청 시작');
+          try {
+            const result = await requestNotificationPermission();
+            if (result.success) {
+              console.log('FCM 토큰 재발급 성공:', result.token);
+              setFcmToken(result.token);
+            } else {
+              console.error('FCM 토큰 재발급 실패:', result.error);
+            }
+          } catch (error) {
+            console.error('FCM 토큰 재발급 중 오류:', error);
+          }
+        }
+      }
+      
+      setPermissionStatus(currentStatus);
+    };
+
+    checkAndRequestToken();
+  }, [setFcmToken]);
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -48,21 +77,30 @@ const NotificationButton = () => {
   const handlePermissionRequest = async () => {
     if (isRequestingPermission) return;
 
+    console.log('NotificationButton: 알림 권한 요청 시작');
     setIsRequestingPermission(true);
     setShowGuideModal(false);
 
     try {
+      console.log('NotificationButton: requestNotificationPermission 호출 전');
       const result = await requestNotificationPermission();
+      console.log('NotificationButton: requestNotificationPermission 결과:', result);
 
       if (result.success) {
         setPermissionStatus('granted');
+        setFcmToken(result.token);
+        console.log('NotificationButton: FCM 토큰 설정 완료:', result.token);
         alert('알림이 활성화되었습니다! 🔔');
+        window.location.reload();
       } else {
         setPermissionStatus('denied');
+        console.log('NotificationButton: 알림 활성화 실패:', result.error);
         alert(`알림 활성화 실패: ${result.error}`);
       }
     } catch (error) {
+      console.error('NotificationButton: 알림 설정 중 오류:', error);
       alert('알림 설정 중 오류가 발생했습니다.');
+      setPermissionStatus('denied');
     } finally {
       setIsRequestingPermission(false);
     }
@@ -114,7 +152,7 @@ const NotificationButton = () => {
 
   return (
       <>
-        <div className="notification-button-container" ref={dropdownRef}>
+        <div className={`notification-button-container ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
           <button
               className={getButtonClass()}
               onClick={() => setIsOpen(!isOpen)}

@@ -124,7 +124,7 @@ function LostAnimalResultList({ isSearch, searchResults, loading, type = "LOST" 
   }
 
   return (
-    <div className="lost-animal-result-container">
+    <>
       <div className="lost-animal-result-grid">
         {pets.map((item, index) => (
           <div 
@@ -141,7 +141,7 @@ function LostAnimalResultList({ isSearch, searchResults, loading, type = "LOST" 
           <LoadingSpinner />
         </div>
       )}
-    </div>
+    </>
   );
 }
 

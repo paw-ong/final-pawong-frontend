@@ -3,14 +3,23 @@ import {Link} from 'react-router-dom';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import AuthRequiredModal from '../../auth/AuthRequiredModal';
 import './PetCard.css';
-import likeImg from '../../../assets/images/like/like.png';
-import unlikeImg from '../../../assets/images/like/unlike.png';
 import PropTypes from 'prop-types';
 import client from "../../../api/client";
+import FavoriteButton from "../../common/FavoriteButton";
 import { AuthContext } from "../../../contexts/AuthContext";
 
 // API 기본 URL 설정 - Nginx 프록시 사용 시 상대 경로 사용
 const API_BASE_URL = '';  // 빈 문자열로 설정하면 현재 호스트로 요청됨
+
+const formatDate = (dateString) => {
+  if (!dateString) return '날짜 정보 없음';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).replace(/\. /g, '.').slice(0, -1); // "2024.03.19" 형식으로 변환
+};
 
 function PetCard({ pet, type }) {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -33,6 +42,7 @@ function PetCard({ pet, type }) {
     }
   }, [pet.id, isLoggedIn]);
 
+
   const handleFavoriteClick = (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
@@ -51,36 +61,49 @@ function PetCard({ pet, type }) {
     });
   };
 
+  const renderInfoItem = (label, value) => {
+    if (!value) return null;
+    return (
+      <div className="info-item">
+        <span className="info-label">{label}</span>
+        <span className="info-value">{value}</span>
+      </div>
+    );
+  };
+
   return (
-    <Link to={`/${type}/${pet.id}`} className="card-link">
-      <div className="card">
-        <div className="card-img-container">
-          <img src={pet.imgUrl} alt={pet.name || '동물 사진'} className="card-img"/>
-          <button 
-            className={`favorite-btn ${isFavorite ? 'active' : ''}`} 
-            onClick={handleFavoriteClick}
-            data-is-favorite={isFavorite}
-          >
-            <img 
-              src={isFavorite ? likeImg : unlikeImg}
-              alt={isFavorite ? "찜 해제" : "찜 하기"}
-              className="favorite-icon"
-              style={{ 
-                width: isFavorite ? '20px' : '18px',
-                height: isFavorite ? '20px' : '18px',
-                transition: 'all 0.3s ease'
-              }}
-            />
-          </button>
+    <Link to={`/${type}/${pet.id}`} className="pet-card-link">
+      <div className="pet-card">
+        <div className="pet-card-img-container">
+          <img src={pet.imgUrl} alt={pet.name || '동물 사진'} className="pet-card-img"/>
         </div>
-        <div className="card-content">
-          <p className="pet-kindNm">{pet.kindNm || '정보 없음'}</p>
-          <div className="pet-info-row">
-            <span className="pet-sexCd">{pet.sexCd || '정보 없음'}</span>
-            <span className="info-divider">•</span>
-            <span className="pet-age">{pet.age || '정보 없음'}</span>
+        <div className="pet-card-content">
+          <div className="pet-card-header">
+            <h3 className="pet-upKindNm">{pet.kindNm}</h3>
+            <div className="pet-favorite-container">
+              <FavoriteButton
+                isFavorite={isFavorite}
+                onClick={handleFavoriteClick}
+                className="pet-card-favorite-btn"
+              />
+            </div>
           </div>
-          <p className="pet-neuterYn">{pet.neuterYn || '중성화 정보 없음'}</p>
+          <div className="pet-card-info">
+            <div className="pet-info-item">
+              <strong>성별</strong>
+              <span>{pet.sexCd}</span>
+            </div>
+            <div className="pet-info-item">
+              <strong>나이</strong>
+              <span>{pet.age}</span>
+            </div>
+            {pet.neuterYn && (
+              <div className="pet-info-item">
+                <strong>중성화 여부</strong>
+                <span>{pet.neuterYn}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Link>
