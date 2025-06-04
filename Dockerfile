@@ -1,13 +1,26 @@
-FROM node:18 AS build
+# Build Stage (프로덕션 빌드)
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# package.json과 package-lock.json을 먼저 복사하여 의존성 설치
+# 의존성 설치
 COPY package.json package-lock.json ./
-RUN npm install @rollup/rollup-linux-x64-gnu --save-optional
 RUN npm install
 
-# 전체 소스 코드 복사 후 빌드 실행
+# 2. 프로덕션 빌드
 COPY . .
+RUN npm run build
 
-# 컨테이너에 가동시 실행되는 명령
-CMD ["npm", "run", "dev"]
+# Runtime Stage (정적 파일 서빙)
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# builder 스테이지에서 생성된 dist 폴더만 복사
+COPY --from=builder /app/dist ./dist
+
+# 경량 정적서버 패키지(serve)를 전역 설치
+RUN npm install -g serve
+
+EXPOSE 5004
+
+# 6. dist/ 아래를 정적 서빙하기
+CMD ["serve", "-s", "dist", "-l", "5004"]
