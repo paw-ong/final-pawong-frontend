@@ -310,11 +310,15 @@ function LostAnimalDetail() {
     location,
     author,
     authorId,
-    createdAt
+    createdAt,
+    postType
   } = data;
 
   // 성별 한글 변환
   const sexText = sexCd === 'M' ? '수컷' : sexCd === 'F' ? '암컷' : '미상';
+  
+  // PostType에 따른 텍스트 설정
+  const typeText = postType === 'LOST' ? '실종' : '발견';
 
   return (
     <div className="lost-animal-container" style={{ 
@@ -326,10 +330,48 @@ function LostAnimalDetail() {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       backgroundColor: 'white'
     }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        {isLoggedIn && user?.userId === data.authorId && (
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={handleEdit}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#3581B8',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#2b6991'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#3581B8'}
+            >
+              수정
+            </button>
+            <button
+              onClick={handleDelete}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#F86A60',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#e54b40'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#F86A60'}
+            >
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
           src={imageUrl || userImage} 
-          alt="실종 동물"
+          alt={`${typeText} 동물`}
           className="lost-animal-detail-image"
           onError={(e) => {
             e.target.onerror = null;
@@ -340,20 +382,20 @@ function LostAnimalDetail() {
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
-            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 실종 신고자 정보</th>
+            <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 {typeText} 신고자 정보</th>
             <td colSpan={2} style={{ textAlign: 'right', padding: 12, fontSize: 14, width: '50%' }}>작성일: {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
           </tr>
           <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">신고자</td>
             <td>{author || '-'}</td>
-            <td className="lost-animal-detail-label">실종 일자</td>
+            <td className="lost-animal-detail-label">{typeText} 일자</td>
             <td>{date || '-'}</td>
           </tr>
           <tr className="lost-animal-detail-header">
-            <th colSpan={4}>🐾  실종 장소</th>
+            <th colSpan={4}>🐾 {typeText} 장소</th>
           </tr>
           <tr className="lost-animal-detail-row">
-            <td className="lost-animal-detail-label">실종 장소</td>
+            <td className="lost-animal-detail-label">{typeText} 장소</td>
             <td colSpan={3}>{location || '-'}</td>
           </tr>
           <tr>
@@ -376,7 +418,7 @@ function LostAnimalDetail() {
             </td>
           </tr>
           <tr className="lost-animal-detail-header">
-            <th colSpan={4}>🐾  실종 동물 정보</th>
+            <th colSpan={4}>🐾 {typeText} 동물 정보</th>
           </tr>
           <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">품종</td>
