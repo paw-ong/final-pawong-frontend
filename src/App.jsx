@@ -7,8 +7,8 @@ import MainPage from "./pages/mainPage/MainPage.jsx";
 import Login from "./pages/signup/Login.jsx";
 import MyPage from "./pages/myPage/MyPage.jsx";
 import AdoptionDetail from "./pages/adoptionAnimal/AdoptionDetail.jsx";
-import LostAnimalDetail from "./pages/lostAnimal/LostAnimalDetail.jsx";
 import LostAnimalCreate from "./pages/lostAnimal/LostAnimalCreate.jsx";
+import LostAnimalDetail from "./pages/lostAnimal/LostAnimalDetail.jsx";
 import OAuthRedirectHandler from "./components/auth/OAuthRedirectHandler.jsx";
 import AdditionalInfo from "./pages/signup/AdditionalInfo.jsx";
 import { AuthContext } from "./contexts/AuthContext";
@@ -23,7 +23,6 @@ import ChatRooms from './components/chat/ChatRooms.jsx';
 import ChatRoomsByPost from './components/chat/ChatRoomsByPost.jsx';
 import { initializeForegroundMessaging, getNotificationPermissionStatus, requestNotificationPermission } from "./services/notificationService";
 import NotificationGuideModal from "./components/notification/NotificationGuideModal";
-
 // 알림 상태를 공유하기 위한 Context 생성
 export const NotificationContext = createContext();
 
@@ -51,30 +50,29 @@ function App() {
   // FCM 메시지 수신 처리
   useEffect(() => {
     const unsubscribe = onMessage(messaging, (payload) => {
-      console.log('포그라운드 메시지 수신:', payload);
-
-      const adoptionId = payload.data?.adoptionId;
-      const actionUrl = adoptionId ? `/adoptions/${adoptionId}` : null;
+      console.log('[알림 디버그] 전체 페이로드:', payload);
+      console.log('[알림 디버그] data:', payload.data);
 
       const newNotification = {
         id: Date.now(),
         title: payload.notification?.title || '알림',
         message: payload.notification?.body || '새로운 메시지가 있습니다',
-        actionUrl: actionUrl,
+        type: payload.data?.type,
+        targetId: payload.data?.targetId,
+        postId: payload.data?.postId,
+        targetType: payload.data?.targetType,
         timestamp: new Date().toISOString(),
         read: false
       };
 
+      console.log('[알림 디버그] 생성된 알림 객체:', newNotification);
+
       setNotifications(prev => [newNotification, ...prev].slice(0, 20));
-      setNotification({
-        title: newNotification.title,
-        message: newNotification.message,
-        actionUrl: newNotification.actionUrl
-      });
+      setNotification(newNotification);
 
       setTimeout(() => {
         setNotification(null);
-      }, 2000);
+      }, 5000);
     });
 
     return () => {
@@ -188,12 +186,9 @@ function App() {
         </Route>
       </Routes>
 
-      {/* 인앱 알림 컴포넌트 */}
       {notification && (
         <InAppNotification
-          title={notification.title}
-          message={notification.message}
-          actionUrl={notification.actionUrl}
+          notification={notification}
           onClose={() => setNotification(null)}
         />
       )}

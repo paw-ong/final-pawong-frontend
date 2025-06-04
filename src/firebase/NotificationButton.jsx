@@ -30,26 +30,20 @@ const NotificationButton = () => {
   useEffect(() => {
     const checkAndRequestToken = async () => {
       const currentStatus = getNotificationPermissionStatus();
-      const existingToken = localStorage.getItem('fcm_token');
       console.log('현재 알림 권한 상태:', currentStatus);
       
       if (currentStatus === 'granted') {
-        if (existingToken) {
-          console.log('기존 FCM 토큰 발견!');
-          setFcmToken(existingToken);
-        } else {
-          console.log('FCM 토큰 재요청 시작');
-          try {
-            const result = await requestNotificationPermission();
-            if (result.success) {
-              console.log('FCM 토큰 재발급 성공:', result.token);
-              setFcmToken(result.token);
-            } else {
-              console.error('FCM 토큰 재발급 실패:', result.error);
-            }
-          } catch (error) {
-            console.error('FCM 토큰 재발급 중 오류:', error);
+        console.log('FCM 토큰 요청 시작');
+        try {
+          const result = await requestNotificationPermission();
+          if (result.success) {
+            console.log('FCM 토큰 발급 성공:', result.token);
+            setFcmToken(result.token);
+          } else {
+            console.error('FCM 토큰 발급 실패:', result.error);
           }
+        } catch (error) {
+          console.error('FCM 토큰 발급 중 오류:', error);
         }
       }
       
@@ -114,11 +108,19 @@ const NotificationButton = () => {
 
   // 알림 클릭 처리
   const handleNotificationClick = (notification) => {
-    markAsRead(notification.id);
-    if (notification.actionUrl) {
-      navigate(notification.actionUrl);
-      console.log("이동할 URL:", notification.actionUrl);
+    console.log('[알림 클릭] 데이터:', notification);
+    
+    if (notification.type === 'CHAT') {
+      const url = `/lostAnimal/detail/${notification.postId}/chat/${notification.targetId}`;
+      console.log('[알림 클릭] 채팅방으로 이동:', url);
+      navigate(url);
+    } else {
+      const url = `/lostAnimal/detail/${notification.targetId}`;
+      console.log('[알림 클릭] 게시물로 이동:', url);
+      navigate(url);
     }
+    
+    markAsRead(notification.id);
     setIsOpen(false);
   };
 
@@ -235,6 +237,7 @@ const NotificationButton = () => {
                               key={notif.id}
                               className={`notification-item ${notif.read ? 'read' : 'unread'}`}
                               onClick={() => handleNotificationClick(notif)}
+                              style={{ cursor: 'pointer' }}
                           >
                             <div className="notification-content">
                               <h4>{notif.title}</h4>
