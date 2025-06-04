@@ -23,7 +23,11 @@ function LostAnimalCard({ post, type }) {
           ? `/users/bookmarks/lost-animals/lost-adoptions/${post.postId}/status`
           : `/users/bookmarks/lost-animals/lost-posts/${post.postId}/status`;
 
-        const { data } = await client.get(endpoint);
+          const { data } = await client.get(endpoint, {
+            headers: {
+              'X-Skip-Auth-Error': 'true'
+            }
+          });
         setIsBookmarked(data.bookmarked);
       } catch (error) {
         console.error('북마크 상태 조회 실패:', error);
