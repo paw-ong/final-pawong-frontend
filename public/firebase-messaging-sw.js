@@ -18,8 +18,46 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: '/favicon.ico'
+    icon: '/favicon.ico',
+    data: {
+      type: payload.data?.type,
+      targetId: payload.data?.targetId
+    },
+    requireInteraction: true
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// 알림 클릭 이벤트 처리
+self.addEventListener('notificationclick', function(event) {
+  console.log('알림 클릭됨:', event);
+  
+  const notification = event.notification;
+  const data = notification.data;
+  notification.close();
+
+  let url = '/';
+  
+  if (data.type === 'CHAT') {
+    url = '/lostAnimal/detail/25';
+  } else if (data.type === 'FOUND' || data.type === 'FOSTER') {
+    url = `/lostAnimal/detail/${data.targetId}`;
+  }
+
+  // 클라이언트를 열거나 포커스
+  event.waitUntil(
+    clients.matchAll({type: 'window'}).then(clientList => {
+      // 이미 열린 탭이 있는지 확인
+      for (const client of clientList) {
+        if (client.url === url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // 열린 탭이 없으면 새로 열기
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
+  );
 });
