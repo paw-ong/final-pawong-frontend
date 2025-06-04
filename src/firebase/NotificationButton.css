@@ -272,12 +272,12 @@
 }
 
 .notification-item.unread {
-  background-color: rgba(248, 106, 96, 0.1);
-  border-left: 4px solid #F86A60;
+  background-color: rgba(53, 129, 184, 0.1);
+  border-left: 4px solid #3581B8;
 }
 
 .notification-item.unread:hover {
-  background-color: rgba(248, 106, 96, 0.15);
+  background-color: rgba(53, 129, 184, 0.15);
 }
 
 .notification-item.read {
@@ -291,14 +291,14 @@
 .notification-content h4 {
   margin: 0 0 4px 0;
   font-size: 0.9rem;
-  color: #3581B8;
+  color: var(--color-text);
   font-weight: 600;
 }
 
 .notification-content p {
   margin: 0 0 4px 0;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--color-text);
   line-height: 1.4;
 }
 

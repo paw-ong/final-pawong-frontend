@@ -5,6 +5,7 @@ import userImage from '../../assets/images/user.jpg';
 import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import styles from './LostAnimalDetail.module.css';
+import LostAnimalCard from "../../components/pet/card/LostAnimalCard";
 
 function LostAnimalDetail() {
   const { id } = useParams();
