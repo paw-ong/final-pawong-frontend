@@ -460,13 +460,12 @@ function LostAnimalDetail() {
               ) : similarAnimals.length > 0 ? (
                 <div style={{ 
                   display: 'flex', 
-                  overflowX: 'auto',
+                  overflowX: 'auto', 
                   gap: '16px',
                   padding: '16px 0',
-                  maxWidth: '100%',
+                  width: '100%',
                   scrollbarWidth: 'thin',
                   msOverflowStyle: 'none',
-                  WebkitOverflowScrolling: 'touch',
                   '&::-webkit-scrollbar': {
                     height: '6px'
                   },
@@ -482,7 +481,7 @@ function LostAnimalDetail() {
                   {similarAnimals.map((animal, index) => (
                     <div key={index} style={{ 
                       minWidth: '300px',
-                      flex: '0 0 300px',
+                      flex: '0 0 auto',
                       maxWidth: '300px'
                     }}>
                       <LostAnimalCard post={animal} />
