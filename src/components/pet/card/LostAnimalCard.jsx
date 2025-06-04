@@ -4,7 +4,7 @@ import client from '../../../api/client';
 import { AuthContext } from '../../../contexts/AuthContext';
 import './LostAnimalCard.css';
 import BookmarkButton from '../../common/BookmarkButton';
-import defaultImage from '../../../assets/images/lostpost/default.jpeg';
+import defaultImage from '../../../assets/images/lostpost/default.png';
 
 // 북마크 이미지 임포트
 import bookmarkEmpty from '../../../assets/images/bookmark/unbookmark.png';

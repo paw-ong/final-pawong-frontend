@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
-import userImage from '../../assets/images/user.jpg';
+import defaultImage from '../../assets/images/lostpost/default.png';
+
 import './ChatRoomsByPost.css';
 
 function ChatRoomsByPost() {
@@ -143,11 +144,11 @@ function ChatRoomsByPost() {
             >
               <div className="chat-room-image">
                 <img 
-                  src={room.lostPostInfo.imageUrl} 
+                  src={room.lostPostInfo.imageUrl || defaultImage}
                   alt={room.lostPostInfo.kindNm}
                   onError={e => {
                     e.target.onerror = null;
-                    e.target.src = userImage;
+                    e.target.src = defaultImage;
                   }}
                 />
               </div>

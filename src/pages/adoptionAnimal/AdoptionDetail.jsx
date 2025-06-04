@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import './AdoptionDetail.css';
-import userImage from '../../assets/images/user.jpg'
+import defaultImage from '../../assets/images/lostpost/default.png';
 import client from "../../api/client";
 import FavoriteButton from "../../components/common/FavoriteButton";
 import { AuthContext } from '../../contexts/AuthContext';
@@ -103,7 +103,7 @@ function AdoptionDetail() {
         <div className="adoption-center-row">
           <div className="adoption-image-info-group">
             <div className="adoption-image-box">
-              <img src={adoptionDetailDto.popfile2 || userImage} alt="이미지" />
+              <img src={adoptionDetailDto.popfile2 || defaultImage} alt="이미지" />
               <FavoriteButton 
                 isFavorite={isFavorite}
                 onClick={handleFavoriteClick}

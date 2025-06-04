@@ -4,9 +4,9 @@ import WebSocketService from '../../services/WebSocketService';
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './ChatRoom.module.css';
 import client from '../../api/client';
-import userImage from '../../assets/images/user.jpg';
 import backArrow from '../../assets/images/icons/back-arrow.svg';
 import kebabMenu from '../../assets/images/icons/kebab-menu.svg';
+import defaultImage from '../../assets/images/lostpost/default.png';
 
 function formatDateWithDay(date) {
   const d = new Date(Number(date));
@@ -125,14 +125,14 @@ const ChatRoom = () => {
   }, [roomId]);
 
   const getOtherProfileImage = (message) => {
-    if (!animalData || !user) return userImage;
+    if (!animalData || !user) return defaultImage;
   
     // 내 userId와 authorId가 같으면 상대방은 profileImage
     if (animalData.authorId === user.userId) {
-      return message.senderProfileImage || userImage;
+      return message.senderProfileImage || defaultImage;
     }
     // 다르면 상대방 프로필 이미지는 공고의 imageUrl
-    return animalData.imageUrl || userImage;
+    return animalData.imageUrl || defaultImage;
   };
   const getOtherNickname = (animalData, user, messages) => {
     if (!animalData || !user) return '';
@@ -275,7 +275,7 @@ const ChatRoom = () => {
         {/* 내 메시지: 말풍선 → 프로필 */}
         {isMyMessage && (
           <img
-            src={user?.profileImage || userImage}
+            src={user?.profileImage || defaultImage}
             alt="프로필"
             className={styles.profileImage}
           />
@@ -316,7 +316,7 @@ const ChatRoom = () => {
             onClick={() => navigate('/chatrooms')}
           />
           <img
-            src={animalData?.imageUrl || userImage}
+            src={animalData?.imageUrl || defaultImage}
             alt="공고 이미지"
             className={styles.headerAnimalImage}
           />
