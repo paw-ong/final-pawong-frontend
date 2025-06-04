@@ -379,7 +379,7 @@ function LostAnimalDetail() {
           }}
         />
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 32, tableLayout: 'fixed' }}>
         <tbody>
           <tr style={{ background: '#f7f7f7' }}>
             <th colSpan={2} style={{ textAlign: 'left', padding: 12, fontSize: 18, width: '50%' }}>🐾 {typeText} 신고자 정보</th>
@@ -444,7 +444,7 @@ function LostAnimalDetail() {
             <th colSpan={4} style={{ textAlign: 'left', padding: 12, fontSize: 18 }}>🐾 유사 동물</th>
           </tr>
           <tr>
-            <td colSpan={4} style={{ padding: 12 }}>
+            <td colSpan={4} style={{ padding: 12, width: '100%', overflow: 'hidden' }}>
               {data?.postType !== 'LOST' ? (
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                   실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
