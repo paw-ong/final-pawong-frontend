@@ -108,7 +108,7 @@ function LostAnimalCard({ post, type }) {
 
   return (
     <a 
-      href={post.postType === 'FOSTER' ? `/adoptions/${post.postId}` : `/lostAnimal/detail/${post.postId}`}
+      href={post.postType === 'FOSTER' ? `lostAnimal/adoption/${post.postId}` : `/lostAnimal/detail/${post.postId}`}
       className="lost-animal-card"
       style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
     >
