@@ -343,7 +343,7 @@ export default function LostAnimalUpdate() {
                 </>
               ) : (
                 <div className="location-placeholder">
-                  <span>지도를 클릭하여 위치를 선택하세요</span>
+                  <span className="location-warning">* 지도를 클릭하여 위치를 선택해주세요</span>
                 </div>
               )}
             </div>
@@ -364,7 +364,25 @@ export default function LostAnimalUpdate() {
             {imageFile && (
               <span className="selected-image-name">{imageFile.name}</span>
             )}
-            {previewUrl && <img src={previewUrl} alt="미리보기" className="image-preview" />}
+            {previewUrl && (
+              <div className="image-preview-container">
+                <img src={previewUrl} alt="미리보기" className="image-preview" />
+                <button 
+                  type="button" 
+                  className="image-delete-btn"
+                  onClick={() => {
+                    setImageFile(null);
+                    setPreviewUrl('');
+                    setFormData(prev => ({
+                      ...prev,
+                      imageUrl: defaultImage
+                    }));
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </form>
