@@ -6,6 +6,7 @@ import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import styles from './LostAnimalDetail.module.css';
 import LostAnimalCard from "../../components/pet/card/LostAnimalCard";
+import LostCardSpinner from "../../components/common/LostCardSpinner";
 
 function LostAnimalDetail() {
   const { id } = useParams();
@@ -450,8 +451,17 @@ function LostAnimalDetail() {
                   실종 동물 게시글에서만 유사 동물을 확인할 수 있습니다.
                 </div>
               ) : isSearching ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  유사 동물을 찾는 중입니다...
+                <div style={{ 
+                  display: 'flex', 
+                  overflowX: 'auto',
+                  gap: '16px',
+                  padding: '16px 0',
+                  width: '100%',
+                  scrollbarWidth: 'thin',
+                  msOverflowStyle: 'none'
+                }}>
+                  <LostCardSpinner />
+                  <LostCardSpinner />
                 </div>
               ) : isSearchingError ? (
                 <div style={{ textAlign: 'center', padding: '20px', color: 'brown' }}>
