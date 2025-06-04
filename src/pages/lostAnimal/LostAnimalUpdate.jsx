@@ -5,6 +5,7 @@ import PrimaryButton from "../../components/common/PrimaryButton";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import LocationSelectModal from "../../components/map/LocationSelectModal";
 import './LostAnimalCreate.css';
+import defaultImage from "../../assets/images/lostpost/default.jpeg";
 
 const POST_TYPE_OPTIONS = [
   { value: 'LOST', label: '실종 동물 게시글' },
@@ -65,7 +66,7 @@ export default function LostAnimalUpdate() {
           color: postData.color || '',
           sexCd: postData.sexCd || '',
           age: postData.age || '',
-          imageUrl: postData.imageUrl || '',
+          imageUrl: postData.imageUrl || defaultImage,
           specialMark: postData.specialMark || '',
           content: postData.content || '',
           rfidCd: postData.rfidCd || '',
