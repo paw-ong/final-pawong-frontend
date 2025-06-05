@@ -5,6 +5,7 @@ import PrimaryButton from "../../components/common/PrimaryButton";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import LocationSelectModal from "../../components/map/LocationSelectModal";
 import './LostAnimalCreate.css';
+import defaultImage from "../../assets/images/lostpost/default.png";
 
 const POST_TYPE_OPTIONS = [
   { value: 'LOST', label: '실종 동물 게시글' },
@@ -48,47 +49,45 @@ export default function LostAnimalUpdate() {
   const [uploading, setUploading] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [locationError, setLocationError] = useState(false);
 
   // 게시글 데이터 불러오기
   useEffect(() => {
-    const fetchPostData = async () => {
+    const fetchPost = async () => {
       try {
         const response = await client.get(`/lost-animals/lost-posts/${postId}`);
         const postData = response.data.lostPostDetailDto;
-        console.log('받아온 게시글 데이터:', postData);
         
         setFormData({
           postType: postData.postType || 'LOST',
-          date: postData.date || '',
-          upKindNm: postData.upKindNm || '',
-          kindNm: postData.kindNm || '',
-          color: postData.color || '',
-          sexCd: postData.sexCd || '',
-          age: postData.age || '',
-          imageUrl: postData.imageUrl || '',
-          specialMark: postData.specialMark || '',
-          content: postData.content || '',
-          rfidCd: postData.rfidCd || '',
-          location: postData.location || '',
-          latitude: postData.geoPoint?.latitude || null,
-          longitude: postData.geoPoint?.longitude || null,
-          address: postData.address || null
+          date: postData.date,
+          upKindNm: postData.upKindNm,
+          kindNm: postData.kindNm,
+          color: postData.color,
+          sexCd: postData.sexCd,
+          age: postData.age,
+          imageUrl: postData.imageUrl,
+          specialMark: postData.specialMark,
+          content: postData.content,
+          rfidCd: postData.rfidCd,
+          location: postData.location,
+          latitude: postData.lostGeoPoint.latitude,
+          longitude: postData.lostGeoPoint.longitude
         });
-
+        
         if (postData.imageUrl) {
           setPreviewUrl(postData.imageUrl);
         }
+        
+        setLoading(false);
       } catch (error) {
-        console.error('게시글 데이터 로드 중 오류 발생:', error);
-        alert('게시글 데이터를 불러오는데 실패했습니다.');
-        navigate('/lostAnimal');
-      } finally {
+        console.error('게시글을 불러오는데 실패했습니다:', error);
         setLoading(false);
       }
     };
 
-    fetchPostData();
-  }, [postId, navigate]);
+    fetchPost();
+  }, [postId]);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -135,8 +134,22 @@ export default function LostAnimalUpdate() {
 
   // 위치가 변경될 때마다 미리보기 지도 업데이트
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && formData.latitude && formData.longitude) {
-      initPreviewMap();
+    if (formData.latitude && formData.longitude) {
+      const container = document.getElementById('map-preview');
+      if (container) {
+        const options = {
+          center: new window.kakao.maps.LatLng(formData.latitude, formData.longitude),
+          level: 3
+        };
+        const map = new window.kakao.maps.Map(container, options);
+        
+        // 마커 생성
+        const markerPosition = new window.kakao.maps.LatLng(formData.latitude, formData.longitude);
+        const marker = new window.kakao.maps.Marker({
+          position: markerPosition
+        });
+        marker.setMap(map);
+      }
     }
   }, [formData.latitude, formData.longitude]);
 
@@ -179,6 +192,13 @@ export default function LostAnimalUpdate() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.latitude || !formData.longitude) {
+      setLocationError(true);
+      return;
+    }
+    
+    setLocationError(false);
     setUploading(true);
     try {
       let imageKey = null;
@@ -187,7 +207,8 @@ export default function LostAnimalUpdate() {
           fileName: imageFile.name,
           contentType: imageFile.type,
           expiresInMinutes: 10,
-          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf("."))
+          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf(".")),
+          directoryName: "lost-post"
         });
         await fetch(presign.url, {
           method: "PUT",
@@ -206,6 +227,10 @@ export default function LostAnimalUpdate() {
       }
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
+      if(error.response.code === "LOCATION_REQUEST_ERROR") {
+        alert('위치 정보 입력이 잘못되었습니다.');
+        return;
+      }
       alert('게시글 수정에 실패했습니다.');
     } finally {
       setUploading(false);
@@ -325,6 +350,9 @@ export default function LostAnimalUpdate() {
             <div className="location-label-container">
               <label className="main-section-label">
                 {formData.postType === 'LOST' ? '실종 장소' : '발견 장소'}
+                {locationError && (
+                    <span className="location-error">장소를 선택해주세요</span>
+                  )}
               </label>
               {formData.address && (
                 <span className="selected-address-inline">
@@ -334,7 +362,10 @@ export default function LostAnimalUpdate() {
             </div>
             <div 
               className="location-map-preview" 
-              onClick={() => setIsMapModalOpen(true)}
+              onClick={() => {
+                setIsMapModalOpen(true);
+                setLocationError(false);
+              }}
               style={{ height: '120px' }}
             >
               {formData.latitude && formData.longitude ? (
@@ -343,7 +374,7 @@ export default function LostAnimalUpdate() {
                 </>
               ) : (
                 <div className="location-placeholder">
-                  <span>지도를 클릭하여 위치를 선택하세요</span>
+                  <span className="location-warning">* 지도를 클릭하여 위치를 선택해주세요</span>
                 </div>
               )}
             </div>
@@ -364,7 +395,25 @@ export default function LostAnimalUpdate() {
             {imageFile && (
               <span className="selected-image-name">{imageFile.name}</span>
             )}
-            {previewUrl && <img src={previewUrl} alt="미리보기" className="image-preview" />}
+            {previewUrl && (
+              <div className="image-preview-container">
+                <img src={previewUrl} alt="미리보기" className="image-preview" />
+                <button 
+                  type="button" 
+                  className="image-delete-btn"
+                  onClick={() => {
+                    setImageFile(null);
+                    setPreviewUrl('');
+                    setFormData(prev => ({
+                      ...prev,
+                      imageUrl: defaultImage
+                    }));
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </form>

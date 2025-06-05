@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import client from "../../api/client";
-import userImage from '../../assets/images/user.jpg';
+import defaultImage from '../../assets/images/lostpost/default.png';
 import "./LostAnimalDetail.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import styles from './LostAnimalDetail.module.css';
@@ -371,12 +371,12 @@ function LostAnimalDetail() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <img 
-          src={imageUrl || userImage} 
+          src={imageUrl || defaultImage} 
           alt={`${typeText} 동물`}
           className="lost-animal-detail-image"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = userImage;
+            e.target.src = defaultImage;
           }}
         />
       </div>

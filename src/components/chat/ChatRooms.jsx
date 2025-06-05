@@ -4,6 +4,7 @@ import client from '../../api/client';
 import { AuthContext } from '../../contexts/AuthContext';
 import './ChatRooms.css';
 import WebSocketService from '../../services/WebSocketService';
+import defaultImage from '../../assets/images/lostpost/default.png';
 
 function ChatRooms() {
   const [chatRooms, setChatRooms] = useState([]);
@@ -192,7 +193,7 @@ function ChatRooms() {
                 onClick={() => handleChatRoomClick(room.chatRoomId, room)}
                 >
                 <div className="chat-room-image">
-                  <img src={room.lostPostInfo.imageUrl} alt="분실동물" />
+                  <img src={room.lostPostInfo.imageUrl || defaultImage} alt="분실동물" />
                 </div>
                 <div className="chat-room-info">
                   

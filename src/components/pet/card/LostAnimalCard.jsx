@@ -4,6 +4,7 @@ import client from '../../../api/client';
 import { AuthContext } from '../../../contexts/AuthContext';
 import './LostAnimalCard.css';
 import BookmarkButton from '../../common/BookmarkButton';
+import defaultImage from '../../../assets/images/lostpost/default.png';
 
 // 북마크 이미지 임포트
 import bookmarkEmpty from '../../../assets/images/bookmark/unbookmark.png';
@@ -117,7 +118,7 @@ function LostAnimalCard({ post, type }) {
       </div>
       
       <div className="card-image">
-        <img src={post.imageUrl} alt={`${post.kindNm} 이미지`} />
+        <img src={post.imageUrl || defaultImage} alt={`${post.kindNm} 이미지`} />
       </div>
 
       <div className="card-content">
