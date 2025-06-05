@@ -53,44 +53,41 @@ export default function LostAnimalUpdate() {
 
   // 게시글 데이터 불러오기
   useEffect(() => {
-    const fetchPostData = async () => {
+    const fetchPost = async () => {
       try {
         const response = await client.get(`/lost-animals/lost-posts/${postId}`);
         const postData = response.data.lostPostDetailDto;
-        console.log('받아온 게시글 데이터:', postData);
         
         setFormData({
           postType: postData.postType || 'LOST',
-          date: postData.date || '',
-          upKindNm: postData.upKindNm || '',
-          kindNm: postData.kindNm || '',
-          color: postData.color || '',
-          sexCd: postData.sexCd || '',
-          age: postData.age || '',
-          imageUrl: postData.imageUrl || defaultImage,
-          specialMark: postData.specialMark || '',
-          content: postData.content || '',
-          rfidCd: postData.rfidCd || '',
-          location: postData.location || '',
-          latitude: postData.geoPoint?.latitude || null,
-          longitude: postData.geoPoint?.longitude || null,
-          address: postData.address || null
+          date: postData.date,
+          upKindNm: postData.upKindNm,
+          kindNm: postData.kindNm,
+          color: postData.color,
+          sexCd: postData.sexCd,
+          age: postData.age,
+          imageUrl: postData.imageUrl,
+          specialMark: postData.specialMark,
+          content: postData.content,
+          rfidCd: postData.rfidCd,
+          location: postData.location,
+          latitude: postData.lostGeoPoint.latitude,
+          longitude: postData.lostGeoPoint.longitude
         });
-
+        
         if (postData.imageUrl) {
           setPreviewUrl(postData.imageUrl);
         }
+        
+        setLoading(false);
       } catch (error) {
-        console.error('게시글 데이터 로드 중 오류 발생:', error);
-        alert('게시글 데이터를 불러오는데 실패했습니다.');
-        navigate('/lostAnimal');
-      } finally {
+        console.error('게시글을 불러오는데 실패했습니다:', error);
         setLoading(false);
       }
     };
 
-    fetchPostData();
-  }, [postId, navigate]);
+    fetchPost();
+  }, [postId]);
 
   // 카카오맵 SDK 로드
   useEffect(() => {
@@ -137,8 +134,22 @@ export default function LostAnimalUpdate() {
 
   // 위치가 변경될 때마다 미리보기 지도 업데이트
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && formData.latitude && formData.longitude) {
-      initPreviewMap();
+    if (formData.latitude && formData.longitude) {
+      const container = document.getElementById('map-preview');
+      if (container) {
+        const options = {
+          center: new window.kakao.maps.LatLng(formData.latitude, formData.longitude),
+          level: 3
+        };
+        const map = new window.kakao.maps.Map(container, options);
+        
+        // 마커 생성
+        const markerPosition = new window.kakao.maps.LatLng(formData.latitude, formData.longitude);
+        const marker = new window.kakao.maps.Marker({
+          position: markerPosition
+        });
+        marker.setMap(map);
+      }
     }
   }, [formData.latitude, formData.longitude]);
 
@@ -196,7 +207,8 @@ export default function LostAnimalUpdate() {
           fileName: imageFile.name,
           contentType: imageFile.type,
           expiresInMinutes: 10,
-          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf("."))
+          fileExtension: imageFile.name.substring(imageFile.name.lastIndexOf(".")),
+          directoryName: "lost-post"
         });
         await fetch(presign.url, {
           method: "PUT",
