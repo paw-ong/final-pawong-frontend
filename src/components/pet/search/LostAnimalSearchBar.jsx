@@ -273,6 +273,22 @@ function LostAnimalSearchBar({ onSearch }) {
                 onChange={handleSearchTermChange}
                 onKeyDown={handleKeyDown}
               />
+              {selectedAddresses && selectedAddresses.length > 0 && (
+                <div className="lost-animal-selected-addresses">
+                  {selectedAddresses.map((address) => (
+                    <div key={address.id} className="lost-animal-address-tag">
+                      <span>{address.city} {address.district}</span>
+                      <button 
+                        onClick={() => handleRemoveAddress(address.id)}
+                        className="lost-animal-remove-address-btn"
+                        aria-label="주소 제거"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               {isLoading && (
                 <div className="lost-animal-search-loading">검색중...</div>
               )}
@@ -287,23 +303,6 @@ function LostAnimalSearchBar({ onSearch }) {
                     onClick={() => handleAutocompleteSelect(item)}
                   >
                     {item}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {selectedAddresses.length > 0 && (
-              <div className="lost-animal-selected-addresses">
-                {selectedAddresses.map((address) => (
-                  <div key={address.id} className="lost-animal-address-tag">
-                    <span>{address.city} {address.district}</span>
-                    <button 
-                      onClick={() => handleRemoveAddress(address.id)}
-                      className="lost-animal-remove-address-btn"
-                      aria-label="주소 제거"
-                    >
-                      ×
-                    </button>
                   </div>
                 ))}
               </div>
