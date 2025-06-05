@@ -438,6 +438,10 @@ function LostAnimalDetail() {
             <td colSpan={3}>{specialMark || '-'}</td>
           </tr>
           <tr className="lost-animal-detail-row">
+            <td className="lost-animal-detail-label">전달 사항</td>
+            <td colSpan={3}>{content || '-'}</td>
+          </tr>
+          <tr className="lost-animal-detail-row">
             <td className="lost-animal-detail-label">RFID</td>
             <td colSpan={3}>{rfidCd || '-'}</td>
           </tr>
