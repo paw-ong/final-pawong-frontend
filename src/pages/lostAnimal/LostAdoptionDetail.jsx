@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import './LostAdoptionDetail.css';
+import '../adoptionAnimal/AdoptionDetail.css';
 import userImage from '../../assets/images/user.jpg'
 import client from "../../api/client";
 import { AuthContext } from '../../contexts/AuthContext';
